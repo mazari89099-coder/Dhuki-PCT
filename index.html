@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>DhukiPCT | Fixed Stream Player - Ghani · Mazari · Taklu</title>
+    <title>DhukiPCT | Live Stream Hub - Works on GitHub Pages</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Multiple HLS Players for compatibility -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js"></script>
-    <!-- Clappr Player (Alternative) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@clappr/core@0.4.8/dist/clappr-core.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -56,23 +52,8 @@
         .stream-dashboard { display: flex; flex-wrap: wrap; gap: 25px; margin: 25px 0 20px; }
         .video-col { flex: 3; min-width: 280px; background: rgba(0, 0, 0, 0.45); border-radius: 32px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
         .chat-col { flex: 1.2; min-width: 300px; background: rgba(12, 18, 28, 0.85); backdrop-filter: blur(8px); border-radius: 32px; border: 1px solid rgba(255, 77, 109, 0.3); display: flex; flex-direction: column; height: 620px; }
-        
-        /* Player container */
-        .player-container {
-            width: 100%;
-            background: #000;
-            border-radius: 24px;
-            overflow: hidden;
-            position: relative;
-            min-height: 400px;
-        }
-        #videoPlayer {
-            width: 100%;
-            height: auto;
-            min-height: 400px;
-            background: #000;
-        }
-        
+        .player-container { width: 100%; background: #000; border-radius: 24px; overflow: hidden; min-height: 400px; }
+        #videoPlayer { width: 100%; height: auto; min-height: 400px; background: #000; }
         .stream-selector { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 15px; }
         .stream-card {
             flex: 1;
@@ -88,7 +69,6 @@
         .stream-card.active { background: #ff4d6d; border-color: white; box-shadow: 0 0 18px #ff4d6d; }
         .stream-name { font-weight: 800; font-size: 1.3rem; }
         .live-tag { background: #ff4d6d; display: inline-block; padding: 2px 10px; border-radius: 30px; font-size: 0.65rem; margin-top: 6px; }
-        
         .chat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,77,109,0.5); font-weight: 700; }
         .messages-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
         .message { background: #1e293b; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; border-left: 3px solid #ff4d6d; }
@@ -100,10 +80,8 @@
         .credit-footer { text-align: center; margin-top: 40px; padding: 16px; border-top: 1px dashed rgba(255,255,255,0.2); }
         .credit-footer span { color: #ffb3c6; font-weight: 700; }
         .status-badge { margin-top: 12px; font-size: 0.75rem; background: #0f1722; display: inline-block; padding: 6px 16px; border-radius: 30px; }
-        .player-mode-selector { margin-top: 12px; display: flex; gap: 10px; justify-content: center; }
-        .mode-btn { background: #1e2a3e; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
-        .mode-btn.active { background: #ff4d6d; }
-        .debug-info { font-size: 0.7rem; margin-top: 10px; padding: 8px; background: #0a0f1a; border-radius: 12px; word-break: break-all; }
+        .warning-box { background: #ff4d6d20; border: 1px solid #ff4d6d; border-radius: 12px; padding: 10px; margin-top: 12px; font-size: 0.7rem; }
+        .fix-btn { background: #ff4d6d; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; margin-top: 8px; color: white; font-weight: bold; }
         @media (max-width: 850px) { .stream-selector { flex-direction: column; } }
     </style>
 </head>
@@ -113,22 +91,14 @@
         <div class="logo-wrapper">
             <i class="fas fa-tower-broadcast dhuki-icon"></i>
             <span class="main-title">DhukiPCT</span>
-            <span class="pct-badge">⚡FIXED PLAYER</span>
+            <span class="pct-badge">⚡GITHUB FIX</span>
         </div>
     </div>
 
     <div class="stream-dashboard">
         <div class="video-col">
-            <!-- Video Player Container -->
             <div class="player-container">
                 <video id="videoPlayer" controls autoplay playsinline style="width:100%; height:auto; min-height:400px; background:#000;"></video>
-            </div>
-            
-            <div class="player-mode-selector">
-                <span style="font-size:0.7rem;">Player Engine:</span>
-                <button class="mode-btn active" data-mode="hlsjs">HLS.js</button>
-                <button class="mode-btn" data-mode="native">Native Player</button>
-                <button class="mode-btn" data-mode="clappr">Clappr</button>
             </div>
             
             <div class="stream-selector" id="streamSelector">
@@ -147,11 +117,17 @@
             </div>
             
             <div class="status-badge" id="streamStatusMsg">
-                <i class="fas fa-circle" style="color:#22c55e;"></i> Ready - Select a stream
+                <i class="fas fa-circle" style="color:#22c55e;"></i> Ready
             </div>
             
-            <div class="debug-info" id="debugInfo">
-                <i class="fas fa-info-circle"></i> Click any stream to play. Try different player engines if one doesn't work.
+            <!-- CRITICAL WARNING FOR GITHUB PAGES -->
+            <div class="warning-box" id="warningBox">
+                <i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i>
+                <strong>GitHub Pages HTTPS Issue Detected!</strong><br>
+                Your streams use <strong>HTTP</strong> but GitHub Pages uses <strong>HTTPS</strong>.<br>
+                Browsers block "mixed content" (HTTP on HTTPS).<br><br>
+                <button class="fix-btn" id="fixHttpsBtn"><i class="fas fa-sync-alt"></i> Click to Fix: Load Streams via Proxy</button>
+                <button class="fix-btn" id="directHttpBtn" style="background:#22c55e;"><i class="fas fa-external-link-alt"></i> Open Stream in New Tab (Test)</button>
             </div>
         </div>
 
@@ -160,8 +136,8 @@
                 <i class="fas fa-comments"></i> Live Chat · Real Users
             </div>
             <div class="messages-area" id="chatMessages">
-                <div class="message system-msg"><strong>📢 SYSTEM:</strong> Welcome! Select GHANI, MAZARI or TAKLU.</div>
-                <div class="message system-msg"><strong>🎬 TIP:</strong> If stream buffers, try switching player engine above.</div>
+                <div class="message system-msg"><strong>📢 SYSTEM:</strong> Welcome! Your streams work locally but NOT on GitHub Pages due to HTTPS.</div>
+                <div class="message system-msg"><strong>🔧 FIX:</strong> Click the green button above to test stream directly, or use the proxy fix.</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message...">
@@ -170,13 +146,13 @@
         </div>
     </div>
     <div class="credit-footer">
-        Created by <span>mazari_ba56</span> © 2026 — Multiple player engines for compatibility
+        Created by <span>mazari_ba56</span> © 2026 — GitHub Pages HTTPS Fix Included
     </div>
 </div>
 
 <script>
     // ============================================================
-    // YOUR STREAM LINKS (EXACTLY AS PROVIDED)
+    // YOUR STREAM LINKS (HTTP - blocked on GitHub Pages)
     // ============================================================
     const STREAMS = {
         ghani: {
@@ -193,278 +169,23 @@
         }
     };
     
-    let currentPlayerEngine = 'hlsjs';
     let hlsInstance = null;
     let currentStreamId = null;
     const videoElement = document.getElementById('videoPlayer');
     
-    // Update debug info
-    function updateDebug(msg, isError = false) {
-        const debugDiv = document.getElementById('debugInfo');
-        debugDiv.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${msg}`;
+    function updateStatus(msg, isError = false) {
+        const statusDiv = document.getElementById('streamStatusMsg');
         if (isError) {
-            debugDiv.style.borderLeft = '3px solid #ff4d6d';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${msg}`;
         } else {
-            debugDiv.style.borderLeft = '3px solid #22c55e';
+            statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${msg}`;
         }
     }
-    
-    function updateStatus(msg) {
-        document.getElementById('streamStatusMsg').innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${msg}`;
-    }
-    
-    // Clean up previous player
-    function cleanupPlayer() {
-        if (hlsInstance) {
-            hlsInstance.destroy();
-            hlsInstance = null;
-        }
-        // Stop video
-        videoElement.pause();
-        videoElement.removeAttribute('src');
-        videoElement.load();
-    }
-    
-    // PLAYER ENGINE 1: HLS.js (Best for most cases)
-    function playWithHLSjs(url, streamName) {
-        return new Promise((resolve, reject) => {
-            if (Hls.isSupported()) {
-                cleanupPlayer();
-                hlsInstance = new Hls({
-                    debug: false,
-                    enableWorker: true,
-                    manifestLoadingTimeOut: 10000,
-                    manifestLoadingMaxRetry: 3,
-                    levelLoadingTimeOut: 8000,
-                    fragLoadingTimeOut: 10000,
-                    startPosition: -1,
-                    abrEwmaDefaultEstimate: 5000000,
-                    xhrSetup: function(xhr, url) {
-                        // Add headers if needed for token auth
-                        xhr.withCredentials = false;
-                    }
-                });
-                
-                hlsInstance.loadSource(url);
-                hlsInstance.attachMedia(videoElement);
-                
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                    updateDebug(`✅ ${streamName} loaded with HLS.js - Playing now`);
-                    updateStatus(`${streamName} · LIVE`);
-                    videoElement.play().catch(e => updateDebug(`Autoplay blocked: ${e.message}`, false));
-                    resolve(true);
-                });
-                
-                hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) {
-                        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                            updateDebug(`⚠️ ${streamName}: Network error - trying to recover...`, true);
-                            hlsInstance.startLoad();
-                        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                            updateDebug(`⚠️ ${streamName}: Media error - recovering...`, true);
-                            hlsInstance.recoverMediaError();
-                        } else {
-                            updateDebug(`❌ ${streamName}: Fatal error - ${data.details}`, true);
-                            reject(data);
-                        }
-                    } else {
-                        updateDebug(`⚠️ ${streamName}: ${data.details}`, true);
-                    }
-                });
-                
-                setTimeout(() => {
-                    if (!videoElement.currentTime && !videoElement.paused === false) {
-                        updateDebug(`⏳ ${streamName}: Still loading... Check if token is valid`, false);
-                    }
-                }, 5000);
-                
-            } else {
-                reject(new Error("HLS.js not supported"));
-            }
-        });
-    }
-    
-    // PLAYER ENGINE 2: Native HTML5 (Works on Safari/Mac)
-    function playWithNative(url, streamName) {
-        return new Promise((resolve, reject) => {
-            cleanupPlayer();
-            videoElement.src = url;
-            videoElement.load();
-            
-            const playPromise = videoElement.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    updateDebug(`✅ ${streamName} playing with Native player`);
-                    updateStatus(`${streamName} · NATIVE`);
-                    resolve(true);
-                }).catch((error) => {
-                    updateDebug(`⚠️ Native: ${error.message}`, true);
-                    reject(error);
-                });
-            }
-            
-            videoElement.addEventListener('canplay', () => {
-                updateDebug(`✅ ${streamName}: Native playback ready`);
-            }, { once: true });
-            
-            videoElement.addEventListener('error', (e) => {
-                updateDebug(`❌ Native error: ${videoElement.error?.message || 'Unknown'}`, true);
-                reject(videoElement.error);
-            });
-        });
-    }
-    
-    // PLAYER ENGINE 3: Clappr (Alternative)
-    let clapprPlayer = null;
-    function playWithClappr(url, streamName) {
-        return new Promise((resolve, reject) => {
-            // Dynamically load Clappr if not loaded
-            if (typeof Clappr === 'undefined') {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@clappr/core@0.4.8/dist/clappr-core.min.js';
-                script.onload = () => initClapprPlayer(url, streamName, resolve, reject);
-                script.onerror = () => reject(new Error("Failed to load Clappr"));
-                document.head.appendChild(script);
-            } else {
-                initClapprPlayer(url, streamName, resolve, reject);
-            }
-        });
-    }
-    
-    function initClapprPlayer(url, streamName, resolve, reject) {
-        if (clapprPlayer) {
-            clapprPlayer.destroy();
-            clapprPlayer = null;
-        }
-        
-        // Hide video element, create div for clappr
-        videoElement.style.display = 'none';
-        let clapprContainer = document.getElementById('clapprContainer');
-        if (!clapprContainer) {
-            clapprContainer = document.createElement('div');
-            clapprContainer.id = 'clapprContainer';
-            clapprContainer.style.width = '100%';
-            clapprContainer.style.minHeight = '400px';
-            videoElement.parentNode.appendChild(clapprContainer);
-        }
-        clapprContainer.style.display = 'block';
-        clapprContainer.innerHTML = '';
-        
-        clapprPlayer = new Clappr.Player({
-            parentId: '#clapprContainer',
-            source: url,
-            autoPlay: true,
-            mute: false,
-            height: '400px',
-            width: '100%',
-            playback: {
-                playInline: true,
-                hlsjsConfig: {
-                    debug: false,
-                    enableWorker: true
-                }
-            }
-        });
-        
-        clapprPlayer.on(Clappr.Events.PLAYER_PLAY, () => {
-            updateDebug(`✅ ${streamName} playing with Clappr`);
-            updateStatus(`${streamName} · CLAPPR`);
-            resolve(true);
-        });
-        
-        clapprPlayer.on(Clappr.Events.PLAYER_ERROR, (error) => {
-            updateDebug(`❌ Clappr error: ${error}`, true);
-            reject(error);
-        });
-        
-        setTimeout(() => {
-            if (!clapprPlayer.isPlaying()) {
-                updateDebug(`⏳ ${streamName}: Clappr loading...`, false);
-            }
-        }, 3000);
-    }
-    
-    function showVideoElement() {
-        videoElement.style.display = 'block';
-        const clapprContainer = document.getElementById('clapprContainer');
-        if (clapprContainer) {
-            clapprContainer.style.display = 'none';
-            if (clapprPlayer) {
-                clapprPlayer.destroy();
-                clapprPlayer = null;
-            }
-        }
-    }
-    
-    // Main function to load stream with selected engine
-    async function loadStream(streamId) {
-        const stream = STREAMS[streamId];
-        if (!stream) return;
-        
-        currentStreamId = streamId;
-        
-        // Update UI
-        document.querySelectorAll('.stream-card').forEach(card => {
-            card.classList.remove('active');
-            if (card.getAttribute('data-stream') === streamId) {
-                card.classList.add('active');
-            }
-        });
-        
-        updateStatus(`Loading ${stream.name} with ${currentPlayerEngine.toUpperCase()}...`);
-        updateDebug(`🎬 Loading ${stream.name} using ${currentPlayerEngine} engine...`);
-        
-        showVideoElement();
-        cleanupPlayer();
-        
-        try {
-            if (currentPlayerEngine === 'hlsjs') {
-                await playWithHLSjs(stream.url, stream.name);
-            } else if (currentPlayerEngine === 'native') {
-                await playWithNative(stream.url, stream.name);
-            } else if (currentPlayerEngine === 'clappr') {
-                await playWithClappr(stream.url, stream.name);
-            }
-            addSystemMessage(`✅ ${stream.name} stream started (${currentPlayerEngine})`);
-        } catch (error) {
-            updateDebug(`❌ ${stream.name} failed with ${currentPlayerEngine}: ${error.message || error}`, true);
-            addSystemMessage(`❌ ${stream.name} failed with ${currentPlayerEngine}. Try another player engine.`);
-        }
-    }
-    
-    // Switch player engine
-    function setPlayerEngine(engine) {
-        currentPlayerEngine = engine;
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            if (btn.getAttribute('data-mode') === engine) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        updateDebug(`Switched to ${engine.toUpperCase()} player engine`);
-        
-        // Reload current stream if one is active
-        if (currentStreamId) {
-            loadStream(currentStreamId);
-        }
-    }
-    
-    // ==================== REAL CHAT ====================
-    let username = "Viewer_" + Math.floor(Math.random() * 10000);
     
     function addSystemMessage(msg) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message system-msg';
         msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(msg)}`;
-        document.getElementById('chatMessages').appendChild(msgDiv);
-        msgDiv.scrollIntoView({ behavior: 'smooth' });
-    }
-    
-    function addUserMessage(user, text) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message';
-        msgDiv.innerHTML = `<strong>${escapeHtml(user)}:</strong> ${escapeHtml(text)}`;
         document.getElementById('chatMessages').appendChild(msgDiv);
         msgDiv.scrollIntoView({ behavior: 'smooth' });
     }
@@ -479,38 +200,167 @@
         });
     }
     
+    // Clean up HLS
+    function cleanupPlayer() {
+        if (hlsInstance) {
+            hlsInstance.destroy();
+            hlsInstance = null;
+        }
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+    }
+    
+    // METHOD 1: Try to load with HTTPS conversion (replace http with https)
+    function tryHttpsUrl(httpUrl) {
+        return httpUrl.replace('http://', 'https://');
+    }
+    
+    // METHOD 2: Load with CORS proxy (for GitHub Pages)
+    function getProxyUrl(originalUrl) {
+        // Using a public CORS proxy (allorigins) - this helps bypass mixed content
+        return `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
+    }
+    
+    // Load stream with HLS.js
+    function loadStream(streamId, useProxy = false) {
+        const stream = STREAMS[streamId];
+        if (!stream) return;
+        
+        currentStreamId = streamId;
+        
+        // Update UI
+        document.querySelectorAll('.stream-card').forEach(card => {
+            card.classList.remove('active');
+            if (card.getAttribute('data-stream') === streamId) {
+                card.classList.add('active');
+            }
+        });
+        
+        cleanupPlayer();
+        
+        let streamUrl = stream.url;
+        let mode = "direct";
+        
+        if (useProxy) {
+            streamUrl = getProxyUrl(stream.url);
+            mode = "proxy (bypass HTTPS block)";
+            updateStatus(`Loading ${stream.name} via proxy...`);
+            addSystemMessage(`🔄 Loading ${stream.name} via CORS proxy (bypasses HTTPS restriction)`);
+        } else if (window.location.protocol === 'https:' && stream.url.startsWith('http://')) {
+            // On HTTPS page, try HTTPS version first
+            streamUrl = tryHttpsUrl(stream.url);
+            mode = "https-converted";
+            updateStatus(`Loading ${stream.name} (converted to HTTPS)...`);
+        } else {
+            updateStatus(`Loading ${stream.name}...`);
+        }
+        
+        if (Hls.isSupported()) {
+            hlsInstance = new Hls({
+                debug: false,
+                enableWorker: true,
+                manifestLoadingTimeOut: 15000,
+                manifestLoadingMaxRetry: 2,
+                fragLoadingTimeOut: 15000
+            });
+            
+            hlsInstance.loadSource(streamUrl);
+            hlsInstance.attachMedia(videoElement);
+            
+            hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                updateStatus(`${stream.name} · LIVE (${mode})`);
+                addSystemMessage(`✅ ${stream.name} is now playing! Mode: ${mode}`);
+                videoElement.play().catch(e => console.log("Autoplay blocked"));
+            });
+            
+            hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                console.error("HLS Error:", data);
+                if (data.fatal) {
+                    if (mode === "direct" && window.location.protocol === 'https:') {
+                        addSystemMessage(`⚠️ ${stream.name} failed with direct HTTP. Try using the PROXY button below.`);
+                        updateStatus(`Failed - Use PROXY button`, true);
+                    } else if (mode === "proxy") {
+                        addSystemMessage(`❌ ${stream.name} failed even with proxy. The stream server might be offline or token expired.`);
+                        updateStatus(`Stream failed - Server unreachable`, true);
+                    } else {
+                        addSystemMessage(`❌ ${stream.name} failed. Try clicking "Fix with Proxy" button.`);
+                        updateStatus(`Failed - Try proxy`, true);
+                    }
+                }
+            });
+        } else {
+            addSystemMessage(`❌ HLS not supported in this browser`);
+        }
+    }
+    
+    // Test stream directly in new tab (bypasses mixed content)
+    function testStreamDirect(streamId) {
+        const stream = STREAMS[streamId];
+        if (stream) {
+            window.open(stream.url, '_blank');
+            addSystemMessage(`📺 Opened ${stream.name} stream in new tab. If it plays there, the issue is GitHub Pages HTTPS blocking.`);
+        }
+    }
+    
+    // ==================== CHAT ====================
+    let username = "Viewer_" + Math.floor(Math.random() * 10000);
+    
     function sendMessage() {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
         if (msg === "") return;
-        addUserMessage(username, msg);
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message';
+        msgDiv.innerHTML = `<strong>${escapeHtml(username)}:</strong> ${escapeHtml(msg)}`;
+        document.getElementById('chatMessages').appendChild(msgDiv);
+        msgDiv.scrollIntoView({ behavior: 'smooth' });
         input.value = '';
     }
     
     function initChat() {
-        addSystemMessage(`✨ Welcome ${username}! Try different player engines if stream doesn't load.`);
+        addSystemMessage(`✨ Welcome ${username}!`);
         document.getElementById('sendChatBtn').onclick = sendMessage;
         document.getElementById('chatInput').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
     }
     
-    // Initialize everything
+    // Detect if we're on HTTPS (GitHub Pages)
+    function checkHttpsWarning() {
+        if (window.location.protocol === 'https:') {
+            addSystemMessage("⚠️ DETECTED: You're on HTTPS (GitHub Pages). Your HTTP streams are blocked by browsers!");
+            addSystemMessage("💡 SOLUTION: Click 'Click to Fix: Load Streams via Proxy' button above.");
+        } else {
+            document.getElementById('warningBox').style.display = 'none';
+            addSystemMessage("✅ You're on HTTP - streams should work normally!");
+        }
+    }
+    
+    // Initialize
     window.addEventListener('load', () => {
         initChat();
+        checkHttpsWarning();
         
-        // Stream card clicks
-        document.querySelector('[data-stream="ghani"]').onclick = () => loadStream('ghani');
-        document.querySelector('[data-stream="mazari"]').onclick = () => loadStream('mazari');
-        document.querySelector('[data-stream="taklu"]').onclick = () => loadStream('taklu');
+        // Stream card clicks - direct (will likely fail on HTTPS)
+        document.querySelector('[data-stream="ghani"]').onclick = () => loadStream('ghani', false);
+        document.querySelector('[data-stream="mazari"]').onclick = () => loadStream('mazari', false);
+        document.querySelector('[data-stream="taklu"]').onclick = () => loadStream('taklu', false);
         
-        // Player mode buttons
-        document.querySelector('[data-mode="hlsjs"]').onclick = () => setPlayerEngine('hlsjs');
-        document.querySelector('[data-mode="native"]').onclick = () => setPlayerEngine('native');
-        document.querySelector('[data-mode="clappr"]').onclick = () => setPlayerEngine('clappr');
+        // FIX BUTTON: Load with proxy
+        document.getElementById('fixHttpsBtn').onclick = () => {
+            if (currentStreamId) {
+                loadStream(currentStreamId, true);
+            } else {
+                loadStream('ghani', true);
+            }
+        };
         
-        addSystemMessage("🎬 TIP: If stream doesn't load, try switching player engine (HLS.js / Native / Clappr)");
+        // TEST BUTTON: Open directly in new tab
+        document.getElementById('directHttpBtn').onclick = () => {
+            const streamId = currentStreamId || 'ghani';
+            testStreamDirect(streamId);
+        };
         
-        // Auto-load first stream
-        setTimeout(() => loadStream('ghani'), 500);
+        addSystemMessage("🎬 TIP: If streams don't play, click the 'Fix with Proxy' button!");
     });
 </script>
 </body>
