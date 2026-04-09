@@ -3,52 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>DhukiPCT | Live Stream Hub - Ghani · Mazari · Taklu</title>
-    <!-- Google Fonts & Icons -->
+    <title>DhukiPCT | Fixed Stream Player - Ghani · Mazari · Taklu</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- HLS.js for reliable m3u8 playback (fixes buffering issues) -->
+    <!-- Multiple HLS Players for compatibility -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
-    <!-- Video.js -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js"></script>
+    <!-- Clappr Player (Alternative) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@clappr/core@0.4.8/dist/clappr-core.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
             color: #f0f3fa;
             min-height: 100vh;
-            overflow-x: hidden;
         }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #141b2b;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #ff4d6d;
-            border-radius: 10px;
-        }
-
-        .container {
-            max-width: 1500px;
-            margin: 0 auto;
-            padding: 20px 25px 40px;
-        }
-
-        .hero {
-            text-align: center;
-            margin-bottom: 35px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #141b2b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ff4d6d; border-radius: 10px; }
+        .container { max-width: 1500px; margin: 0 auto; padding: 20px 25px 40px; }
+        .hero { text-align: center; margin-bottom: 35px; }
         .logo-wrapper {
             display: inline-flex;
             align-items: baseline;
@@ -58,7 +33,6 @@
             padding: 12px 32px;
             border-radius: 100px;
             border: 1px solid rgba(255, 77, 109, 0.4);
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
         }
         .dhuki-icon {
             font-size: 3rem;
@@ -73,63 +47,33 @@
             -webkit-background-clip: text;
             color: transparent;
         }
-        .pct-badge {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: #1e2a3e;
-            padding: 5px 12px;
-            border-radius: 40px;
-            color: #ff9eb5;
-        }
+        .pct-badge { font-size: 1.6rem; font-weight: 700; background: #1e2a3e; padding: 5px 12px; border-radius: 40px; color: #ff9eb5; }
         @keyframes floatIcon {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
             100% { transform: translateY(0px); }
         }
-
-        .stream-dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            margin: 25px 0 20px;
-        }
-        .video-col {
-            flex: 3;
-            min-width: 280px;
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 32px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            box-shadow: 0 25px 40px -12px black;
-        }
-        .chat-col {
-            flex: 1.2;
-            min-width: 300px;
-            background: rgba(12, 18, 28, 0.85);
-            backdrop-filter: blur(8px);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 77, 109, 0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            height: 620px;
-        }
-
-        .video-js {
+        .stream-dashboard { display: flex; flex-wrap: wrap; gap: 25px; margin: 25px 0 20px; }
+        .video-col { flex: 3; min-width: 280px; background: rgba(0, 0, 0, 0.45); border-radius: 32px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); padding: 20px; }
+        .chat-col { flex: 1.2; min-width: 300px; background: rgba(12, 18, 28, 0.85); backdrop-filter: blur(8px); border-radius: 32px; border: 1px solid rgba(255, 77, 109, 0.3); display: flex; flex-direction: column; height: 620px; }
+        
+        /* Player container */
+        .player-container {
             width: 100%;
+            background: #000;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            position: relative;
+            min-height: 400px;
         }
-
-        .stream-selector {
-            margin-top: 22px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: space-between;
+        #videoPlayer {
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+            background: #000;
         }
+        
+        .stream-selector { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 15px; }
         .stream-card {
             flex: 1;
             background: linear-gradient(145deg, #111827, #0a0f1a);
@@ -139,136 +83,28 @@
             cursor: pointer;
             transition: all 0.25s ease;
             border: 1px solid rgba(255, 77, 109, 0.3);
-            backdrop-filter: blur(4px);
         }
-        .stream-card:hover {
-            transform: translateY(-5px);
-            background: #1e2a3e;
-            border-color: #ff4d6d;
-            box-shadow: 0 10px 25px rgba(255,77,109,0.2);
-        }
-        .stream-card.active {
-            background: #ff4d6d;
-            border-color: white;
-            box-shadow: 0 0 18px #ff4d6d;
-        }
-        .stream-card.active .stream-name {
-            color: white;
-            text-shadow: 0 0 3px black;
-        }
-        .stream-icon {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-        }
-        .stream-name {
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: 1px;
-        }
-        .stream-label {
-            font-size: 0.7rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        .live-tag {
-            background: #ff4d6d;
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            margin-top: 6px;
-        }
-
-        .chat-header {
-            padding: 18px 20px;
-            background: rgba(0,0,0,0.4);
-            border-bottom: 1px solid rgba(255,77,109,0.5);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            background: #1e293b;
-            padding: 10px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            word-break: break-word;
-            border-left: 3px solid #ff4d6d;
-        }
-        .message strong {
-            color: #ff9eb5;
-        }
-        .message.system-msg {
-            border-left-color: #facc15;
-            opacity: 0.9;
-        }
-        .chat-input-area {
-            display: flex;
-            padding: 16px;
-            gap: 10px;
-            background: #0b1018;
-            border-top: 1px solid #2d3a4a;
-        }
-        .chat-input-area input {
-            flex: 1;
-            background: #1e2a3a;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 40px;
-            color: white;
-            outline: none;
-        }
-        .chat-input-area button {
-            background: #ff4d6d;
-            border: none;
-            padding: 0 22px;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-        }
-        .credit-footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 16px;
-            font-size: 0.85rem;
-            border-top: 1px dashed rgba(255,255,255,0.2);
-        }
-        .credit-footer span {
-            color: #ffb3c6;
-            font-weight: 700;
-        }
-        .status-badge {
-            margin-top: 12px;
-            font-size: 0.75rem;
-            background: #0f1722;
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 30px;
-        }
-        .retry-btn {
-            background: #ff4d6d;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 20px;
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 0.7rem;
-        }
-        @media (max-width: 850px) {
-            .stream-selector { flex-direction: column; }
-            .container { padding: 15px; }
-        }
+        .stream-card:hover { transform: translateY(-5px); background: #1e2a3e; border-color: #ff4d6d; }
+        .stream-card.active { background: #ff4d6d; border-color: white; box-shadow: 0 0 18px #ff4d6d; }
+        .stream-name { font-weight: 800; font-size: 1.3rem; }
+        .live-tag { background: #ff4d6d; display: inline-block; padding: 2px 10px; border-radius: 30px; font-size: 0.65rem; margin-top: 6px; }
+        
+        .chat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,77,109,0.5); font-weight: 700; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .message { background: #1e293b; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; border-left: 3px solid #ff4d6d; }
+        .message strong { color: #ff9eb5; }
+        .message.system-msg { border-left-color: #facc15; }
+        .chat-input-area { display: flex; padding: 16px; gap: 10px; background: #0b1018; border-top: 1px solid #2d3a4a; }
+        .chat-input-area input { flex: 1; background: #1e2a3a; border: none; padding: 12px 16px; border-radius: 40px; color: white; outline: none; }
+        .chat-input-area button { background: #ff4d6d; border: none; padding: 0 22px; border-radius: 40px; font-weight: bold; cursor: pointer; color: white; }
+        .credit-footer { text-align: center; margin-top: 40px; padding: 16px; border-top: 1px dashed rgba(255,255,255,0.2); }
+        .credit-footer span { color: #ffb3c6; font-weight: 700; }
+        .status-badge { margin-top: 12px; font-size: 0.75rem; background: #0f1722; display: inline-block; padding: 6px 16px; border-radius: 30px; }
+        .player-mode-selector { margin-top: 12px; display: flex; gap: 10px; justify-content: center; }
+        .mode-btn { background: #1e2a3e; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
+        .mode-btn.active { background: #ff4d6d; }
+        .debug-info { font-size: 0.7rem; margin-top: 10px; padding: 8px; background: #0a0f1a; border-radius: 12px; word-break: break-all; }
+        @media (max-width: 850px) { .stream-selector { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -277,51 +113,55 @@
         <div class="logo-wrapper">
             <i class="fas fa-tower-broadcast dhuki-icon"></i>
             <span class="main-title">DhukiPCT</span>
-            <span class="pct-badge">⚡LIVE TRIO</span>
-        </div>
-        <div style="margin-top: 12px;">
-            <p style="font-weight: 500; background: linear-gradient(90deg, #ffffff80, #ff4d6d80); display: inline-block; padding: 4px 20px; border-radius: 30px;">Premium Stream Hub · Ghani · Mazari · Taklu</p>
+            <span class="pct-badge">⚡FIXED PLAYER</span>
         </div>
     </div>
 
     <div class="stream-dashboard">
         <div class="video-col">
-            <video id="premiumPlayer" class="video-js vjs-big-play-centered" controls preload="auto" width="100%" height="auto" data-setup='{}'>
-                <p class="vjs-no-js">To view this stream please enable JavaScript</p>
-            </video>
+            <!-- Video Player Container -->
+            <div class="player-container">
+                <video id="videoPlayer" controls autoplay playsinline style="width:100%; height:auto; min-height:400px; background:#000;"></video>
+            </div>
+            
+            <div class="player-mode-selector">
+                <span style="font-size:0.7rem;">Player Engine:</span>
+                <button class="mode-btn active" data-mode="hlsjs">HLS.js</button>
+                <button class="mode-btn" data-mode="native">Native Player</button>
+                <button class="mode-btn" data-mode="clappr">Clappr</button>
+            </div>
             
             <div class="stream-selector" id="streamSelector">
                 <div class="stream-card" data-stream="ghani">
-                    <div class="stream-icon"><i class="fas fa-crown"></i></div>
-                    <div class="stream-name">GHANI</div>
-                    <div class="stream-label">Primary Channel</div>
-                    <div class="live-tag">LIVE</div>
+                    <div class="stream-name">🎬 GHANI</div>
+                    <div class="live-tag">Channel 1</div>
                 </div>
                 <div class="stream-card" data-stream="mazari">
-                    <div class="stream-icon"><i class="fas fa-bolt"></i></div>
-                    <div class="stream-name">MAZARI</div>
-                    <div class="stream-label">Elite Stream</div>
-                    <div class="live-tag">LIVE</div>
+                    <div class="stream-name">⚡ MAZARI</div>
+                    <div class="live-tag">Channel 2</div>
                 </div>
                 <div class="stream-card" data-stream="taklu">
-                    <div class="stream-icon"><i class="fas fa-fire"></i></div>
-                    <div class="stream-name">TAKLU</div>
-                    <div class="stream-label">Ultra HD</div>
-                    <div class="live-tag">LIVE</div>
+                    <div class="stream-name">🔥 TAKLU</div>
+                    <div class="live-tag">Channel 3</div>
                 </div>
             </div>
+            
             <div class="status-badge" id="streamStatusMsg">
-                <i class="fas fa-circle" style="color:#22c55e; font-size: 0.6rem;"></i> Ready — Select a stream
+                <i class="fas fa-circle" style="color:#22c55e;"></i> Ready - Select a stream
+            </div>
+            
+            <div class="debug-info" id="debugInfo">
+                <i class="fas fa-info-circle"></i> Click any stream to play. Try different player engines if one doesn't work.
             </div>
         </div>
 
         <div class="chat-col">
             <div class="chat-header">
-                <i class="fas fa-comments"></i> Live Chat · Real Users Only
-                <i class="fas fa-circle" style="font-size: 0.6rem; color:#22c55e; margin-left:auto;"></i>
+                <i class="fas fa-comments"></i> Live Chat · Real Users
             </div>
             <div class="messages-area" id="chatMessages">
-                <div class="message system-msg"><strong>🏟️ DhukiPCT:</strong> Welcome! Select GHANI, MAZARI or TAKLU stream. Only real messages appear here.</div>
+                <div class="message system-msg"><strong>📢 SYSTEM:</strong> Welcome! Select GHANI, MAZARI or TAKLU.</div>
+                <div class="message system-msg"><strong>🎬 TIP:</strong> If stream buffers, try switching player engine above.</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message...">
@@ -330,316 +170,347 @@
         </div>
     </div>
     <div class="credit-footer">
-        Created by <span>mazari_ba56</span> © 2026 — DhukiPCT · Real chat · Fixed HLS playback
+        Created by <span>mazari_ba56</span> © 2026 — Multiple player engines for compatibility
     </div>
 </div>
 
 <script>
     // ============================================================
-    // THE THREE STREAM LINKS (PROVIDED BY MAZARI BA56)
+    // YOUR STREAM LINKS (EXACTLY AS PROVIDED)
     // ============================================================
-    const STREAMS_CONFIG = {
+    const STREAMS = {
         ghani: {
             name: "GHANI",
-            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0d52307b0af002/index.m3u8?token=13f2d2bdc62dc7ae8c138b0145cf641f23d49f7eaaeb099b315a8374fdcaa7c9b823ece882b4615a2c1767df6e69d6bb29c7a47c39f0d90c4b84c35005d9373de25c7fe632-47cf95fdc3671819022b5d040697c7b4",
-            icon: "fa-crown"
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0d52307b0af002/index.m3u8?token=13f2d2bdc62dc7ae8c138b0145cf641f23d49f7eaaeb099b315a8374fdcaa7c9b823ece882b4615a2c1767df6e69d6bb29c7a47c39f0d90c4b84c35005d9373de25c7fe632-47cf95fdc3671819022b5d040697c7b4"
         },
         mazari: {
             name: "MAZARI",
-            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fc46b134b64af718c39015e307513ed02b0bfaf/index.m3u8?token=b506bc3044a9be48471e6a7d181a3ae8f6f29e15702d0320d542d70039c067fa99dcb608420f05e80afc98bca9bcfaa83da7107758abfc416fb268fe76e7eca7902b41e9e9-faa167c28dde314c0bbc8124ddcfae39",
-            icon: "fa-bolt"
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fc46b134b64af718c39015e307513ed02b0bfaf/index.m3u8?token=b506bc3044a9be48471e6a7d181a3ae8f6f29e15702d0320d542d70039c067fa99dcb608420f05e80afc98bca9bcfaa83da7107758abfc416fb268fe76e7eca7902b41e9e9-faa167c28dde314c0bbc8124ddcfae39"
         },
         taklu: {
             name: "TAKLU",
-            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0155327b07e703adbdaa7755/index.m3u8?token=76b0b9c5575d4f75f6cc53197ad02d24f23074a6097a9de95faf5e160e2513353c041914d270739061187be088beca7caf7ba8f6901672290e82dd7393a9dc1146c9583b6a-ec890b61a2b970fe17be01c17a000aff",
-            icon: "fa-fire"
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0155327b07e703adbdaa7755/index.m3u8?token=76b0b9c5575d4f75f6cc53197ad02d24f23074a6097a9de95faf5e160e2513353c041914d270739061187be088beca7caf7ba8f6901672290e82dd7393a9dc1146c9583b6a-ec890b61a2b970fe17be01c17a000aff"
         }
     };
-
-    // Get video element and initialize player
-    const videoElement = document.getElementById('premiumPlayer');
-    let player = null;
+    
+    let currentPlayerEngine = 'hlsjs';
     let hlsInstance = null;
     let currentStreamId = null;
-    let retryCount = 0;
-
-    // Initialize Video.js player
-    function initPlayer() {
-        player = videojs(videoElement, {
-            controls: true,
-            autoplay: true,
-            fluid: true,
-            playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
-            controlBar: {
-                volumePanel: true,
-                pictureInPictureToggle: true
+    const videoElement = document.getElementById('videoPlayer');
+    
+    // Update debug info
+    function updateDebug(msg, isError = false) {
+        const debugDiv = document.getElementById('debugInfo');
+        debugDiv.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${msg}`;
+        if (isError) {
+            debugDiv.style.borderLeft = '3px solid #ff4d6d';
+        } else {
+            debugDiv.style.borderLeft = '3px solid #22c55e';
+        }
+    }
+    
+    function updateStatus(msg) {
+        document.getElementById('streamStatusMsg').innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${msg}`;
+    }
+    
+    // Clean up previous player
+    function cleanupPlayer() {
+        if (hlsInstance) {
+            hlsInstance.destroy();
+            hlsInstance = null;
+        }
+        // Stop video
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+    }
+    
+    // PLAYER ENGINE 1: HLS.js (Best for most cases)
+    function playWithHLSjs(url, streamName) {
+        return new Promise((resolve, reject) => {
+            if (Hls.isSupported()) {
+                cleanupPlayer();
+                hlsInstance = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    manifestLoadingTimeOut: 10000,
+                    manifestLoadingMaxRetry: 3,
+                    levelLoadingTimeOut: 8000,
+                    fragLoadingTimeOut: 10000,
+                    startPosition: -1,
+                    abrEwmaDefaultEstimate: 5000000,
+                    xhrSetup: function(xhr, url) {
+                        // Add headers if needed for token auth
+                        xhr.withCredentials = false;
+                    }
+                });
+                
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(videoElement);
+                
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    updateDebug(`✅ ${streamName} loaded with HLS.js - Playing now`);
+                    updateStatus(`${streamName} · LIVE`);
+                    videoElement.play().catch(e => updateDebug(`Autoplay blocked: ${e.message}`, false));
+                    resolve(true);
+                });
+                
+                hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                            updateDebug(`⚠️ ${streamName}: Network error - trying to recover...`, true);
+                            hlsInstance.startLoad();
+                        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                            updateDebug(`⚠️ ${streamName}: Media error - recovering...`, true);
+                            hlsInstance.recoverMediaError();
+                        } else {
+                            updateDebug(`❌ ${streamName}: Fatal error - ${data.details}`, true);
+                            reject(data);
+                        }
+                    } else {
+                        updateDebug(`⚠️ ${streamName}: ${data.details}`, true);
+                    }
+                });
+                
+                setTimeout(() => {
+                    if (!videoElement.currentTime && !videoElement.paused === false) {
+                        updateDebug(`⏳ ${streamName}: Still loading... Check if token is valid`, false);
+                    }
+                }, 5000);
+                
+            } else {
+                reject(new Error("HLS.js not supported"));
+            }
+        });
+    }
+    
+    // PLAYER ENGINE 2: Native HTML5 (Works on Safari/Mac)
+    function playWithNative(url, streamName) {
+        return new Promise((resolve, reject) => {
+            cleanupPlayer();
+            videoElement.src = url;
+            videoElement.load();
+            
+            const playPromise = videoElement.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    updateDebug(`✅ ${streamName} playing with Native player`);
+                    updateStatus(`${streamName} · NATIVE`);
+                    resolve(true);
+                }).catch((error) => {
+                    updateDebug(`⚠️ Native: ${error.message}`, true);
+                    reject(error);
+                });
+            }
+            
+            videoElement.addEventListener('canplay', () => {
+                updateDebug(`✅ ${streamName}: Native playback ready`);
+            }, { once: true });
+            
+            videoElement.addEventListener('error', (e) => {
+                updateDebug(`❌ Native error: ${videoElement.error?.message || 'Unknown'}`, true);
+                reject(videoElement.error);
+            });
+        });
+    }
+    
+    // PLAYER ENGINE 3: Clappr (Alternative)
+    let clapprPlayer = null;
+    function playWithClappr(url, streamName) {
+        return new Promise((resolve, reject) => {
+            // Dynamically load Clappr if not loaded
+            if (typeof Clappr === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@clappr/core@0.4.8/dist/clappr-core.min.js';
+                script.onload = () => initClapprPlayer(url, streamName, resolve, reject);
+                script.onerror = () => reject(new Error("Failed to load Clappr"));
+                document.head.appendChild(script);
+            } else {
+                initClapprPlayer(url, streamName, resolve, reject);
+            }
+        });
+    }
+    
+    function initClapprPlayer(url, streamName, resolve, reject) {
+        if (clapprPlayer) {
+            clapprPlayer.destroy();
+            clapprPlayer = null;
+        }
+        
+        // Hide video element, create div for clappr
+        videoElement.style.display = 'none';
+        let clapprContainer = document.getElementById('clapprContainer');
+        if (!clapprContainer) {
+            clapprContainer = document.createElement('div');
+            clapprContainer.id = 'clapprContainer';
+            clapprContainer.style.width = '100%';
+            clapprContainer.style.minHeight = '400px';
+            videoElement.parentNode.appendChild(clapprContainer);
+        }
+        clapprContainer.style.display = 'block';
+        clapprContainer.innerHTML = '';
+        
+        clapprPlayer = new Clappr.Player({
+            parentId: '#clapprContainer',
+            source: url,
+            autoPlay: true,
+            mute: false,
+            height: '400px',
+            width: '100%',
+            playback: {
+                playInline: true,
+                hlsjsConfig: {
+                    debug: false,
+                    enableWorker: true
+                }
             }
         });
         
-        player.on('error', function() {
-            console.log("Video.js error");
-            updateStatusMessage("Stream error - try switching stream or reload", true);
+        clapprPlayer.on(Clappr.Events.PLAYER_PLAY, () => {
+            updateDebug(`✅ ${streamName} playing with Clappr`);
+            updateStatus(`${streamName} · CLAPPR`);
+            resolve(true);
         });
+        
+        clapprPlayer.on(Clappr.Events.PLAYER_ERROR, (error) => {
+            updateDebug(`❌ Clappr error: ${error}`, true);
+            reject(error);
+        });
+        
+        setTimeout(() => {
+            if (!clapprPlayer.isPlaying()) {
+                updateDebug(`⏳ ${streamName}: Clappr loading...`, false);
+            }
+        }, 3000);
     }
-
-    // Update status message
-    function updateStatusMessage(msg, isError = false) {
-        const statusDiv = document.getElementById('streamStatusMsg');
-        if (isError) {
-            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${msg} <button class="retry-btn" onclick="retryCurrentStream()">Retry</button>`;
-        } else {
-            statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e; font-size: 0.6rem;"></i> ${msg}`;
+    
+    function showVideoElement() {
+        videoElement.style.display = 'block';
+        const clapprContainer = document.getElementById('clapprContainer');
+        if (clapprContainer) {
+            clapprContainer.style.display = 'none';
+            if (clapprPlayer) {
+                clapprPlayer.destroy();
+                clapprPlayer = null;
+            }
         }
     }
-
-    // Retry function exposed globally
-    window.retryCurrentStream = function() {
-        if (currentStreamId) {
-            loadStreamWithHLS(currentStreamId, true);
-        }
-    };
-
-    // Main HLS loading function using HLS.js (fixes buffering issues)
-    function loadStreamWithHLS(streamId, forceRetry = false) {
-        const stream = STREAMS_CONFIG[streamId];
-        if (!stream || !stream.url) {
-            addSystemMessage(`❌ Stream configuration missing`);
-            return;
-        }
-
-        // Update active UI
+    
+    // Main function to load stream with selected engine
+    async function loadStream(streamId) {
+        const stream = STREAMS[streamId];
+        if (!stream) return;
+        
+        currentStreamId = streamId;
+        
+        // Update UI
         document.querySelectorAll('.stream-card').forEach(card => {
             card.classList.remove('active');
             if (card.getAttribute('data-stream') === streamId) {
                 card.classList.add('active');
             }
         });
-
-        updateStatusMessage(`Loading ${stream.name} stream...`);
-        currentStreamId = streamId;
         
-        // Clean up previous HLS instance
-        if (hlsInstance) {
-            hlsInstance.destroy();
-            hlsInstance = null;
-        }
+        updateStatus(`Loading ${stream.name} with ${currentPlayerEngine.toUpperCase()}...`);
+        updateDebug(`🎬 Loading ${stream.name} using ${currentPlayerEngine} engine...`);
         
-        // If player exists and has source, clean
-        if (player) {
-            player.pause();
-            player.reset ? player.reset() : null;
-        }
+        showVideoElement();
+        cleanupPlayer();
         
-        const streamUrl = stream.url;
-        
-        // Check if HLS.js is supported (for m3u8)
-        if (Hls.isSupported()) {
-            hlsInstance = new Hls({
-                enableWorker: true,
-                lowLatencyMode: true,
-                maxBufferLength: 30,
-                maxMaxBufferLength: 60,
-                startFragPrefetch: true,
-                abrEwmaDefaultEstimate: 5000000, // 5 Mbps initial
-                abrBandWidthFactor: 0.95,
-                manifestLoadingTimeOut: 20000,
-                manifestLoadingRetryDelay: 1000,
-                manifestLoadingMaxRetry: 3,
-                levelLoadingTimeOut: 10000,
-                levelLoadingRetryDelay: 1000,
-                fragLoadingTimeOut: 15000,
-                fragLoadingRetryDelay: 1000,
-                fragLoadingMaxRetry: 4
-            });
-            
-            hlsInstance.loadSource(streamUrl);
-            hlsInstance.attachMedia(videoElement);
-            
-            hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-                updateStatusMessage(`${stream.name} · LIVE STREAM ACTIVE`);
-                addSystemMessage(`✅ ${stream.name} stream loaded successfully.`);
-                retryCount = 0;
-                if (player) {
-                    player.play().catch(e => console.log("Autoplay blocked:", e));
-                }
-            });
-            
-            hlsInstance.on(Hls.Events.ERROR, function(event, data) {
-                if (data.fatal) {
-                    switch(data.type) {
-                        case Hls.ErrorTypes.NETWORK_ERROR:
-                            addSystemMessage(`⚠️ ${stream.name}: Network error. Trying to recover...`);
-                            hlsInstance.startLoad();
-                            break;
-                        case Hls.ErrorTypes.MEDIA_ERROR:
-                            addSystemMessage(`⚠️ ${stream.name}: Media error. Attempting recovery...`);
-                            hlsInstance.recoverMediaError();
-                            break;
-                        default:
-                            addSystemMessage(`❌ ${stream.name}: Fatal error - stream may be offline.`);
-                            updateStatusMessage(`${stream.name} stream failed - token may be expired`, true);
-                            break;
-                    }
-                } else {
-                    console.log("HLS non-fatal error", data);
-                }
-            });
-            
-            // Buffering handling - remove infinite buffering
-            hlsInstance.on(Hls.Events.BUFFER_APPENDING, function() {
-                // Just ensure UI updates
-            });
-            
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            // For Safari native HLS support
-            videoElement.src = streamUrl;
-            if (player) {
-                player.src({ type: "application/x-mpegURL", src: streamUrl });
-                player.load();
-                player.play().catch(e => console.log(e));
+        try {
+            if (currentPlayerEngine === 'hlsjs') {
+                await playWithHLSjs(stream.url, stream.name);
+            } else if (currentPlayerEngine === 'native') {
+                await playWithNative(stream.url, stream.name);
+            } else if (currentPlayerEngine === 'clappr') {
+                await playWithClappr(stream.url, stream.name);
             }
-            updateStatusMessage(`${stream.name} · Playing (Native HLS)`);
-            addSystemMessage(`✅ ${stream.name} stream started.`);
-        } else {
-            addSystemMessage(`❌ HLS not supported in this browser.`);
-            updateStatusMessage("HLS not supported", true);
+            addSystemMessage(`✅ ${stream.name} stream started (${currentPlayerEngine})`);
+        } catch (error) {
+            updateDebug(`❌ ${stream.name} failed with ${currentPlayerEngine}: ${error.message || error}`, true);
+            addSystemMessage(`❌ ${stream.name} failed with ${currentPlayerEngine}. Try another player engine.`);
         }
     }
     
-    // Attach click handlers
-    function initStreamCards() {
-        const ghaniCard = document.querySelector('.stream-card[data-stream="ghani"]');
-        const mazariCard = document.querySelector('.stream-card[data-stream="mazari"]');
-        const takluCard = document.querySelector('.stream-card[data-stream="taklu"]');
+    // Switch player engine
+    function setPlayerEngine(engine) {
+        currentPlayerEngine = engine;
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            if (btn.getAttribute('data-mode') === engine) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        updateDebug(`Switched to ${engine.toUpperCase()} player engine`);
         
-        if (ghaniCard) ghaniCard.addEventListener('click', () => loadStreamWithHLS('ghani'));
-        if (mazariCard) mazariCard.addEventListener('click', () => loadStreamWithHLS('mazari'));
-        if (takluCard) takluCard.addEventListener('click', () => loadStreamWithHLS('taklu'));
-        
-        // Load first stream (Ghani) by default
-        setTimeout(() => loadStreamWithHLS('ghani'), 500);
+        // Reload current stream if one is active
+        if (currentStreamId) {
+            loadStream(currentStreamId);
+        }
     }
-
-    // ==================== REAL CHAT SYSTEM (NO FAKE USERS, NO AUTO MESSAGES) ====================
-    // Only messages typed by real users appear. No simulated chatter, no random viewers.
-    let currentUsername = "";
     
-    function generateUsername() {
-        // Simple guest username based on timestamp to keep it unique but clean
-        const randomNum = Math.floor(Math.random() * 9000) + 1000;
-        return `Guest_${randomNum}`;
+    // ==================== REAL CHAT ====================
+    let username = "Viewer_" + Math.floor(Math.random() * 10000);
+    
+    function addSystemMessage(msg) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message system-msg';
+        msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(msg)}`;
+        document.getElementById('chatMessages').appendChild(msgDiv);
+        msgDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function addUserMessage(user, text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message';
+        msgDiv.innerHTML = `<strong>${escapeHtml(user)}:</strong> ${escapeHtml(text)}`;
+        document.getElementById('chatMessages').appendChild(msgDiv);
+        msgDiv.scrollIntoView({ behavior: 'smooth' });
     }
     
     function escapeHtml(str) {
-        if (!str) return "";
+        if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
         });
     }
     
-    function addMessageToUI(username, text, isSystem = false) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message';
-        if (isSystem) {
-            msgDiv.classList.add('system-msg');
-            msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(text)}`;
-        } else {
-            msgDiv.innerHTML = `<strong>${escapeHtml(username)}:</strong> ${escapeHtml(text)}`;
-        }
-        const container = document.getElementById('chatMessages');
-        container.appendChild(msgDiv);
-        msgDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        // Keep last 200 messages to avoid overflow
-        while (container.children.length > 200) {
-            container.removeChild(container.firstChild);
-        }
-    }
-    
-    function addSystemMessage(msg) {
-        addMessageToUI("System", msg, true);
-    }
-    
-    function sendChatMessage() {
+    function sendMessage() {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
         if (msg === "") return;
-        // Add real user message to chat
-        addMessageToUI(currentUsername, msg, false);
-        input.value = "";
-        // Focus back on input
-        input.focus();
+        addUserMessage(username, msg);
+        input.value = '';
     }
     
     function initChat() {
-        currentUsername = generateUsername();
-        addSystemMessage(`✨ Welcome ${currentUsername}! Type messages below. Only real user messages appear in chat.`);
-        
-        const sendBtn = document.getElementById('sendChatBtn');
-        const chatInput = document.getElementById('chatInput');
-        sendBtn.addEventListener('click', sendChatMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendChatMessage();
-        });
-        
-        // No fake viewers counter - remove or set to 0 static
-        const viewerCountSpan = document.getElementById('chatUserCount');
-        if (viewerCountSpan) {
-            viewerCountSpan.innerText = "Real";
-        }
-        // Remove any fake viewer counter element text
-        const chatHeader = document.querySelector('.chat-header');
-        if (chatHeader && !document.getElementById('chatUserCount')) {
-            // ensure the span exists, but we already have it.
-        }
-        // Override the header text to remove fake counter
-        const headerSpan = document.getElementById('chatUserCount');
-        if (headerSpan) headerSpan.innerText = "Real";
-        
-        // No periodic fake messages, no random chatter
+        addSystemMessage(`✨ Welcome ${username}! Try different player engines if stream doesn't load.`);
+        document.getElementById('sendChatBtn').onclick = sendMessage;
+        document.getElementById('chatInput').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
     }
-    
-    // Clean up any fake viewer updates
-    // No setInterval for fake viewers
-    
-    // Add reload stream helper
-    window.reloadStream = function() {
-        if (currentStreamId) {
-            loadStreamWithHLS(currentStreamId, true);
-        }
-    };
     
     // Initialize everything
     window.addEventListener('load', () => {
-        initPlayer();
-        initStreamCards();
         initChat();
         
-        // Animate header icon
-        const dhukiIcon = document.querySelector('.dhuki-icon');
-        if (dhukiIcon) {
-            setInterval(() => {
-                dhukiIcon.style.transform = 'scale(1.07)';
-                setTimeout(() => { dhukiIcon.style.transform = 'scale(1)'; }, 350);
-            }, 4700);
-        }
+        // Stream card clicks
+        document.querySelector('[data-stream="ghani"]').onclick = () => loadStream('ghani');
+        document.querySelector('[data-stream="mazari"]').onclick = () => loadStream('mazari');
+        document.querySelector('[data-stream="taklu"]').onclick = () => loadStream('taklu');
         
-        addSystemMessage("💡 Three streams: GHANI, MAZARI, TAKLU. Click any card to switch. If buffering occurs, use 'Retry' button.");
-        console.log("DhukiPCT: Fixed HLS playback with HLS.js, real chat only - no fake users.");
-    });
-    
-    // Handle page visibility to avoid unnecessary reloads
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && player && currentStreamId) {
-            // Small resume if needed
-            if (player.paused()) {
-                player.play().catch(e => console.log("Resume failed"));
-            }
-        }
+        // Player mode buttons
+        document.querySelector('[data-mode="hlsjs"]').onclick = () => setPlayerEngine('hlsjs');
+        document.querySelector('[data-mode="native"]').onclick = () => setPlayerEngine('native');
+        document.querySelector('[data-mode="clappr"]').onclick = () => setPlayerEngine('clappr');
+        
+        addSystemMessage("🎬 TIP: If stream doesn't load, try switching player engine (HLS.js / Native / Clappr)");
+        
+        // Auto-load first stream
+        setTimeout(() => loadStream('ghani'), 500);
     });
 </script>
 </body>
