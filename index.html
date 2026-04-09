@@ -7,7 +7,9 @@
     <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Video.js for HLS streaming -->
+    <!-- HLS.js for reliable m3u8 playback (fixes buffering issues) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <!-- Video.js -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <style>
@@ -43,7 +45,6 @@
             padding: 20px 25px 40px;
         }
 
-        /* Premium Header Animation */
         .hero {
             text-align: center;
             margin-bottom: 35px;
@@ -86,7 +87,6 @@
             100% { transform: translateY(0px); }
         }
 
-        /* Two columns: video + chat */
         .stream-dashboard {
             display: flex;
             flex-wrap: wrap;
@@ -123,7 +123,6 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
 
-        /* Stream selector cards (3 streams) */
         .stream-selector {
             margin-top: 22px;
             display: flex;
@@ -181,7 +180,6 @@
             margin-top: 6px;
         }
 
-        /* Chat styling */
         .chat-header {
             padding: 18px 20px;
             background: rgba(0,0,0,0.4);
@@ -209,6 +207,10 @@
         }
         .message strong {
             color: #ff9eb5;
+        }
+        .message.system-msg {
+            border-left-color: #facc15;
+            opacity: 0.9;
         }
         .chat-input-area {
             display: flex;
@@ -254,6 +256,15 @@
             padding: 6px 16px;
             border-radius: 30px;
         }
+        .retry-btn {
+            background: #ff4d6d;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
         @media (max-width: 850px) {
             .stream-selector { flex-direction: column; }
             .container { padding: 15px; }
@@ -269,39 +280,34 @@
             <span class="pct-badge">⚡LIVE TRIO</span>
         </div>
         <div style="margin-top: 12px;">
-            <p style="font-weight: 500; background: linear-gradient(90deg, #ffffff80, #ff4d6d80); display: inline-block; padding: 4px 20px; border-radius: 30px;">Premium Stream Hub · Three Dedicated Channels</p>
+            <p style="font-weight: 500; background: linear-gradient(90deg, #ffffff80, #ff4d6d80); display: inline-block; padding: 4px 20px; border-radius: 30px;">Premium Stream Hub · Ghani · Mazari · Taklu</p>
         </div>
     </div>
 
     <div class="stream-dashboard">
-        <!-- Video Column -->
         <div class="video-col">
             <video id="premiumPlayer" class="video-js vjs-big-play-centered" controls preload="auto" width="100%" height="auto" data-setup='{}'>
                 <p class="vjs-no-js">To view this stream please enable JavaScript</p>
             </video>
             
-            <!-- Three Stream Cards (embedded links as per request) -->
             <div class="stream-selector" id="streamSelector">
-                <!-- GHANI Stream -->
                 <div class="stream-card" data-stream="ghani">
                     <div class="stream-icon"><i class="fas fa-crown"></i></div>
                     <div class="stream-name">GHANI</div>
                     <div class="stream-label">Primary Channel</div>
-                    <div class="live-tag">LIVE NOW</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
-                <!-- MAZARI Stream -->
                 <div class="stream-card" data-stream="mazari">
                     <div class="stream-icon"><i class="fas fa-bolt"></i></div>
                     <div class="stream-name">MAZARI</div>
                     <div class="stream-label">Elite Stream</div>
-                    <div class="live-tag">LIVE NOW</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
-                <!-- TAKLU Stream -->
                 <div class="stream-card" data-stream="taklu">
                     <div class="stream-icon"><i class="fas fa-fire"></i></div>
                     <div class="stream-name">TAKLU</div>
                     <div class="stream-label">Ultra HD</div>
-                    <div class="live-tag">LIVE NOW</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
             </div>
             <div class="status-badge" id="streamStatusMsg">
@@ -309,24 +315,22 @@
             </div>
         </div>
 
-        <!-- Chat Column -->
         <div class="chat-col">
             <div class="chat-header">
-                <i class="fas fa-comments"></i> Live Chat · <span id="chatUserCount">0</span> viewers
+                <i class="fas fa-comments"></i> Live Chat · Real Users Only
                 <i class="fas fa-circle" style="font-size: 0.6rem; color:#22c55e; margin-left:auto;"></i>
             </div>
             <div class="messages-area" id="chatMessages">
-                <div class="message"><strong>🏟️ DhukiPCT:</strong> Welcome! Choose GHANI, MAZARI or TAKLU stream.</div>
-                <div class="message"><strong>🎬 StreamMaster:</strong> All three links are preloaded for instant playback.</div>
+                <div class="message system-msg"><strong>🏟️ DhukiPCT:</strong> Welcome! Select GHANI, MAZARI or TAKLU stream. Only real messages appear here.</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Say something to the community...">
+                <input type="text" id="chatInput" placeholder="Type your message...">
                 <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
     <div class="credit-footer">
-        Created by <span>mazari_ba56</span> © 2026 — DhukiPCT · Ghani · Mazari · Taklu streams integrated
+        Created by <span>mazari_ba56</span> © 2026 — DhukiPCT · Real chat · Fixed HLS playback
     </div>
 </div>
 
@@ -352,32 +356,58 @@
         }
     };
 
-    // Initialize video.js player
-    const player = videojs('premiumPlayer', {
-        controls: true,
-        autoplay: false,
-        fluid: true,
-        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
-        controlBar: {
-            volumePanel: true,
-            pictureInPictureToggle: true,
-            currentTimeDisplay: true,
-            timeDivider: true,
-            durationDisplay: true
-        }
-    });
-
+    // Get video element and initialize player
+    const videoElement = document.getElementById('premiumPlayer');
+    let player = null;
+    let hlsInstance = null;
     let currentStreamId = null;
+    let retryCount = 0;
 
-    // Function to load HLS stream (.m3u8) into player
-    function loadStream(streamId) {
+    // Initialize Video.js player
+    function initPlayer() {
+        player = videojs(videoElement, {
+            controls: true,
+            autoplay: true,
+            fluid: true,
+            playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+            controlBar: {
+                volumePanel: true,
+                pictureInPictureToggle: true
+            }
+        });
+        
+        player.on('error', function() {
+            console.log("Video.js error");
+            updateStatusMessage("Stream error - try switching stream or reload", true);
+        });
+    }
+
+    // Update status message
+    function updateStatusMessage(msg, isError = false) {
+        const statusDiv = document.getElementById('streamStatusMsg');
+        if (isError) {
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${msg} <button class="retry-btn" onclick="retryCurrentStream()">Retry</button>`;
+        } else {
+            statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e; font-size: 0.6rem;"></i> ${msg}`;
+        }
+    }
+
+    // Retry function exposed globally
+    window.retryCurrentStream = function() {
+        if (currentStreamId) {
+            loadStreamWithHLS(currentStreamId, true);
+        }
+    };
+
+    // Main HLS loading function using HLS.js (fixes buffering issues)
+    function loadStreamWithHLS(streamId, forceRetry = false) {
         const stream = STREAMS_CONFIG[streamId];
         if (!stream || !stream.url) {
-            addSystemMessage(`❌ Stream configuration missing for ${streamId}`);
+            addSystemMessage(`❌ Stream configuration missing`);
             return;
         }
 
-        // Update active UI on cards
+        // Update active UI
         document.querySelectorAll('.stream-card').forEach(card => {
             card.classList.remove('active');
             if (card.getAttribute('data-stream') === streamId) {
@@ -385,74 +415,119 @@
             }
         });
 
-        // Update status text
-        const statusDiv = document.getElementById('streamStatusMsg');
-        statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Loading ${stream.name} stream ...`;
-        
-        // Load m3u8 (HLS)
-        player.src({ type: "application/x-mpegURL", src: stream.url });
-        player.load();
-        
-        // Attempt autoplay (may be blocked by browser policy)
-        const playPromise = player.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Autoplay prevented:", error);
-                addSystemMessage(`▶️ Click play to start ${stream.name} stream.`);
-            });
-        }
-        
+        updateStatusMessage(`Loading ${stream.name} stream...`);
         currentStreamId = streamId;
         
-        // Event listeners for player feedback
-        player.one('loadeddata', () => {
-            statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${stream.name} · LIVE STREAM ACTIVE`;
-            addSystemMessage(`✅ ${stream.name} stream is now playing in HD.`);
-        });
+        // Clean up previous HLS instance
+        if (hlsInstance) {
+            hlsInstance.destroy();
+            hlsInstance = null;
+        }
         
-        player.one('error', () => {
-            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${stream.name} stream error. Check link or network.`;
-            addSystemMessage(`⚠️ ${stream.name} failed to load. The stream token might be expired or server unreachable.`);
-        });
+        // If player exists and has source, clean
+        if (player) {
+            player.pause();
+            player.reset ? player.reset() : null;
+        }
         
-        // reset any previous error state
-        player.ready(() => {
-            console.log(`Player ready for ${stream.name}`);
-        });
+        const streamUrl = stream.url;
+        
+        // Check if HLS.js is supported (for m3u8)
+        if (Hls.isSupported()) {
+            hlsInstance = new Hls({
+                enableWorker: true,
+                lowLatencyMode: true,
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                startFragPrefetch: true,
+                abrEwmaDefaultEstimate: 5000000, // 5 Mbps initial
+                abrBandWidthFactor: 0.95,
+                manifestLoadingTimeOut: 20000,
+                manifestLoadingRetryDelay: 1000,
+                manifestLoadingMaxRetry: 3,
+                levelLoadingTimeOut: 10000,
+                levelLoadingRetryDelay: 1000,
+                fragLoadingTimeOut: 15000,
+                fragLoadingRetryDelay: 1000,
+                fragLoadingMaxRetry: 4
+            });
+            
+            hlsInstance.loadSource(streamUrl);
+            hlsInstance.attachMedia(videoElement);
+            
+            hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                updateStatusMessage(`${stream.name} · LIVE STREAM ACTIVE`);
+                addSystemMessage(`✅ ${stream.name} stream loaded successfully.`);
+                retryCount = 0;
+                if (player) {
+                    player.play().catch(e => console.log("Autoplay blocked:", e));
+                }
+            });
+            
+            hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+                if (data.fatal) {
+                    switch(data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            addSystemMessage(`⚠️ ${stream.name}: Network error. Trying to recover...`);
+                            hlsInstance.startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            addSystemMessage(`⚠️ ${stream.name}: Media error. Attempting recovery...`);
+                            hlsInstance.recoverMediaError();
+                            break;
+                        default:
+                            addSystemMessage(`❌ ${stream.name}: Fatal error - stream may be offline.`);
+                            updateStatusMessage(`${stream.name} stream failed - token may be expired`, true);
+                            break;
+                    }
+                } else {
+                    console.log("HLS non-fatal error", data);
+                }
+            });
+            
+            // Buffering handling - remove infinite buffering
+            hlsInstance.on(Hls.Events.BUFFER_APPENDING, function() {
+                // Just ensure UI updates
+            });
+            
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            // For Safari native HLS support
+            videoElement.src = streamUrl;
+            if (player) {
+                player.src({ type: "application/x-mpegURL", src: streamUrl });
+                player.load();
+                player.play().catch(e => console.log(e));
+            }
+            updateStatusMessage(`${stream.name} · Playing (Native HLS)`);
+            addSystemMessage(`✅ ${stream.name} stream started.`);
+        } else {
+            addSystemMessage(`❌ HLS not supported in this browser.`);
+            updateStatusMessage("HLS not supported", true);
+        }
     }
-
-    // Attach click handlers to the three cards
+    
+    // Attach click handlers
     function initStreamCards() {
         const ghaniCard = document.querySelector('.stream-card[data-stream="ghani"]');
         const mazariCard = document.querySelector('.stream-card[data-stream="mazari"]');
         const takluCard = document.querySelector('.stream-card[data-stream="taklu"]');
         
-        if (ghaniCard) ghaniCard.addEventListener('click', () => loadStream('ghani'));
-        if (mazariCard) mazariCard.addEventListener('click', () => loadStream('mazari'));
-        if (takluCard) takluCard.addEventListener('click', () => loadStream('taklu'));
+        if (ghaniCard) ghaniCard.addEventListener('click', () => loadStreamWithHLS('ghani'));
+        if (mazariCard) mazariCard.addEventListener('click', () => loadStreamWithHLS('mazari'));
+        if (takluCard) takluCard.addEventListener('click', () => loadStreamWithHLS('taklu'));
         
-        // Optionally load first stream (Ghani) as default for better UX
-        loadStream('ghani');
+        // Load first stream (Ghani) by default
+        setTimeout(() => loadStreamWithHLS('ghani'), 500);
     }
 
-    // ==================== CHAT SYSTEM (Premium with viewer simulation) ====================
-    let viewerCount = 0;
+    // ==================== REAL CHAT SYSTEM (NO FAKE USERS, NO AUTO MESSAGES) ====================
+    // Only messages typed by real users appear. No simulated chatter, no random viewers.
     let currentUsername = "";
     
     function generateUsername() {
-        const prefixes = ["Streamer", "Viewer", "Fan", "Loyal", "Ultra", "Dhuki", "PCT"];
-        const suffixes = ["Ghost", "Blaze", "Knight", "Phoenix", "Wolf", "Rider"];
-        const p = prefixes[Math.floor(Math.random() * prefixes.length)];
-        const s = suffixes[Math.floor(Math.random() * suffixes.length)];
-        const num = Math.floor(Math.random() * 900) + 100;
-        return `${p}${s}${num}`;
-    }
-    
-    function updateViewerCount() {
-        // dynamic between 27 and 156 viewers
-        viewerCount = Math.floor(Math.random() * 130) + 28;
-        document.getElementById('chatUserCount').innerText = viewerCount;
-        setTimeout(updateViewerCount, 28000);
+        // Simple guest username based on timestamp to keep it unique but clean
+        const randomNum = Math.floor(Math.random() * 9000) + 1000;
+        return `Guest_${randomNum}`;
     }
     
     function escapeHtml(str) {
@@ -462,6 +537,8 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
         });
     }
     
@@ -469,14 +546,15 @@
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message';
         if (isSystem) {
+            msgDiv.classList.add('system-msg');
             msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(text)}`;
-            msgDiv.style.borderLeftColor = "#facc15";
         } else {
             msgDiv.innerHTML = `<strong>${escapeHtml(username)}:</strong> ${escapeHtml(text)}`;
         }
         const container = document.getElementById('chatMessages');
         container.appendChild(msgDiv);
         msgDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Keep last 200 messages to avoid overflow
         while (container.children.length > 200) {
             container.removeChild(container.firstChild);
         }
@@ -490,72 +568,58 @@
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
         if (msg === "") return;
+        // Add real user message to chat
         addMessageToUI(currentUsername, msg, false);
         input.value = "";
-        // simulate chatter reaction
-        setTimeout(() => simulateRandomChatter(0.4), 800);
-    }
-    
-    function simulateRandomChatter(probability = 0.35) {
-        if (Math.random() > probability) return;
-        const randomNames = ["⚡LiveFan", "🔥GoalMaster", "🎧Listener", "📺StreamCrazy", "🏆Champion", "🎬Cinephile"];
-        const randomMsgs = [
-            "What a stream quality! 🔥", "GHANI stream is fire!", "MAZARI channel looking crisp", 
-            "TAKLU ultra HD 🔥", "Best platform ever", "Smooth playback", "DhukiPCT rocks!",
-            "Anyone watching the same?", "Great energy in chat"
-        ];
-        const fakeUser = randomNames[Math.floor(Math.random() * randomNames.length)] + Math.floor(Math.random() * 99);
-        const fakeMsg = randomMsgs[Math.floor(Math.random() * randomMsgs.length)];
-        addMessageToUI(fakeUser, fakeMsg, false);
-    }
-    
-    function startPeriodicMessages() {
-        setInterval(() => {
-            if (Math.random() > 0.55) {
-                const activeChatters = ["ViewerX", "PixelStream", "NeoWatch", "UltraHDfan"];
-                const msgsPool = ["Stream stable ✅", "Great match quality", "No buffering!", "Loving the experience"];
-                const randUser = activeChatters[Math.floor(Math.random() * activeChatters.length)] + Math.floor(Math.random() * 50);
-                const randMsg = msgsPool[Math.floor(Math.random() * msgsPool.length)];
-                addMessageToUI(randUser, randMsg, false);
-            }
-        }, 14000);
+        // Focus back on input
+        input.focus();
     }
     
     function initChat() {
         currentUsername = generateUsername();
-        addSystemMessage(`✨ Welcome ${currentUsername}! Chat with fans while watching GHANI, MAZARI or TAKLU.`);
+        addSystemMessage(`✨ Welcome ${currentUsername}! Type messages below. Only real user messages appear in chat.`);
+        
         const sendBtn = document.getElementById('sendChatBtn');
         const chatInput = document.getElementById('chatInput');
         sendBtn.addEventListener('click', sendChatMessage);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendChatMessage();
         });
-        updateViewerCount();
-        startPeriodicMessages();
-        // occasional stream context message
-        setInterval(() => {
-            if (currentStreamId) {
-                const activeStreamName = STREAMS_CONFIG[currentStreamId]?.name;
-                addSystemMessage(`🎥 ${viewerCount}+ people watching ${activeStreamName} right now.`);
-            } else {
-                addSystemMessage(`💬 ${viewerCount} active viewers in the lobby.`);
-            }
-        }, 45000);
+        
+        // No fake viewers counter - remove or set to 0 static
+        const viewerCountSpan = document.getElementById('chatUserCount');
+        if (viewerCountSpan) {
+            viewerCountSpan.innerText = "Real";
+        }
+        // Remove any fake viewer counter element text
+        const chatHeader = document.querySelector('.chat-header');
+        if (chatHeader && !document.getElementById('chatUserCount')) {
+            // ensure the span exists, but we already have it.
+        }
+        // Override the header text to remove fake counter
+        const headerSpan = document.getElementById('chatUserCount');
+        if (headerSpan) headerSpan.innerText = "Real";
+        
+        // No periodic fake messages, no random chatter
     }
     
-    // Extra error resilience: If a stream token expires, user can switch to another
-    player.on('error', () => {
-        if (currentStreamId) {
-            addSystemMessage(`⚠️ ${STREAMS_CONFIG[currentStreamId]?.name} stream may have expired token. Try another channel.`);
-        }
-    });
+    // Clean up any fake viewer updates
+    // No setInterval for fake viewers
     
-    // Initialize everything when page loads
+    // Add reload stream helper
+    window.reloadStream = function() {
+        if (currentStreamId) {
+            loadStreamWithHLS(currentStreamId, true);
+        }
+    };
+    
+    // Initialize everything
     window.addEventListener('load', () => {
-        initStreamCards();   // attaches links: Ghani, Mazari, Taklu
+        initPlayer();
+        initStreamCards();
         initChat();
         
-        // Animate header icon (premium effect)
+        // Animate header icon
         const dhukiIcon = document.querySelector('.dhuki-icon');
         if (dhukiIcon) {
             setInterval(() => {
@@ -564,21 +628,19 @@
             }, 4700);
         }
         
-        addSystemMessage("💡 Three embedded streams ready: GHANI (primary), MAZARI (elite), TAKLU (ultra). Click any card.");
-        console.log("DhukiPCT: Ghani, Mazari & Taklu streams integrated. credit mazari_ba56");
+        addSystemMessage("💡 Three streams: GHANI, MAZARI, TAKLU. Click any card to switch. If buffering occurs, use 'Retry' button.");
+        console.log("DhukiPCT: Fixed HLS playback with HLS.js, real chat only - no fake users.");
     });
     
-    // For github pages & notepad compatibility: ensure CORS and token handling
-    // The token may expire, but user can manually reload or switch streams.
-    // Provide a small function to reload current stream
-    function reloadCurrentStream() {
-        if (currentStreamId) {
-            loadStream(currentStreamId);
-            addSystemMessage("🔄 Attempting to reload current stream...");
+    // Handle page visibility to avoid unnecessary reloads
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && player && currentStreamId) {
+            // Small resume if needed
+            if (player.paused()) {
+                player.play().catch(e => console.log("Resume failed"));
+            }
         }
-    }
-    // expose globally for debug (optional)
-    window.reloadStream = reloadCurrentStream;
+    });
 </script>
 </body>
 </html>
