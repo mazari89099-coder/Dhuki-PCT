@@ -3,143 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DhukiPCT | Live Sports Hub</title>
+<title>Dhuki-PCT | Pro Live Streaming</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-body {
+:root {
+    --bg: #0a0f1e;
+    --card: rgba(255,255,255,0.06);
+    --accent: #ff4d6d;
+    --accent2: #00ffcc;
+}
+
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: Arial;
-    background: #0a0f1e;
+}
+
+body {
+    background: radial-gradient(circle at top, #111a33, var(--bg));
     color: white;
-    text-align: center;
 }
 
-/* 🔥 HEADER */
+/* HEADER */
 .header {
-    padding: 20px;
+    text-align: center;
+    padding: 25px 10px;
 }
 
-.brand {
-    font-size: 40px;
-    font-weight: bold;
-    background: linear-gradient(90deg,#00ffcc,#00aaff,#ff4d6d);
+.logo {
+    font-size: 42px;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--accent2), var(--accent), #fff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: glow 3s infinite linear;
+    animation: glow 3s infinite;
 }
 
 @keyframes glow {
     0% { filter: drop-shadow(0 0 5px #00ffcc); }
     50% { filter: drop-shadow(0 0 15px #ff4d6d); }
-    100% { filter: drop-shadow(0 0 5px #00aaff); }
+    100% { filter: drop-shadow(0 0 5px #00ffcc); }
 }
 
-/* 🎥 PLAYER */
+.tagline {
+    opacity: 0.7;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+/* LAYOUT */
+.container {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* PLAYER */
+.player-box {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 12px;
+}
+
 video {
-    width: 90%;
-    max-width: 900px;
+    width: 100%;
     border-radius: 12px;
-    margin-top: 10px;
+    background: black;
 }
 
-/* 🎮 BUTTONS */
-button {
-    padding: 10px 15px;
-    margin: 5px;
+/* STREAM BUTTONS */
+.streams {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stream-btn {
+    padding: 10px 14px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: #00ffcc;
+    background: #1c2540;
+    color: white;
+    transition: 0.3s;
+}
+
+.stream-btn:hover {
+    background: var(--accent);
+}
+
+.stream-btn.active {
+    background: var(--accent2);
+    color: black;
+}
+
+/* CHAT */
+.chat {
+    background: var(--card);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+}
+
+.chat-header {
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
     font-weight: bold;
 }
 
-button:hover {
-    background: #00ffaa;
-}
-
-/* 💬 CHAT */
-#chatBox {
-    width: 90%;
-    max-width: 900px;
-    height: 200px;
-    margin: 20px auto;
-    background: #111;
+.messages {
+    flex: 1;
     overflow-y: auto;
     padding: 10px;
-    border-radius: 10px;
-    text-align: left;
+}
+
+.msg {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+}
+
+.input-box {
+    display: flex;
+    padding: 10px;
+    gap: 5px;
 }
 
 input {
-    width: 60%;
+    flex: 1;
     padding: 10px;
-    border-radius: 8px;
     border: none;
+    border-radius: 8px;
+    outline: none;
 }
 
-/* 🏷 CORNER */
-.corner {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background: #ff4d6d;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    animation: pulse 2s infinite;
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+/* RESPONSIVE */
+@media(max-width:900px){
+    .container{
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="corner">Dhuki -PCT</div>
-
 <div class="header">
-    <div class="brand">DhukiPCT</div>
-    <p>Live Sports Streaming Platform</p>
+    <div class="logo">Dhuki-PCT</div>
+    <div class="tagline">Professional Live Sports Streaming Platform</div>
 </div>
 
-<!-- 🎥 STREAM PLAYER -->
-<video id="player" controls autoplay></video>
+<div class="container">
 
-<br>
+    <!-- PLAYER SECTION -->
+    <div class="player-box">
+        <video id="video" controls></video>
 
-<!-- 🎬 STREAM SWITCH -->
-<button onclick="loadStream(0)">Stream 1</button>
-<button onclick="loadStream(1)">Stream 2</button>
-<button onclick="loadStream(2)">Stream 3</button>
+        <div class="streams">
+            <button class="stream-btn" onclick="loadStream(0)">Stream 1</button>
+            <button class="stream-btn" onclick="loadStream(1)">Stream 2</button>
+            <button class="stream-btn" onclick="loadStream(2)">Stream 3</button>
+        </div>
+    </div>
 
-<br>
+    <!-- CHAT -->
+    <div class="chat">
+        <div class="chat-header">Live Chat</div>
+        <div class="messages" id="box"></div>
 
-<!-- 💬 CHAT -->
-<h3>💬 Live Chat</h3>
+        <div class="input-box">
+            <input id="msg" placeholder="Type message...">
+            <button onclick="send()">Send</button>
+        </div>
+    </div>
 
-<div id="chatBox"></div>
-
-<input id="msg" placeholder="Type message...">
-<button onclick="sendMsg()">Send</button>
+</div>
 
 <script>
 const streams = [
-    "http://152.233.35.239/5fe4bf4471c8e39b39fb18214daa75c31e2b7599ed278748c0b57091fc589b2cc689b5/mono.m3u8?token=a515272a689c21155c5df8fcf496d28c",
-    "http://152.233.35.239/5fe4bf4471c8e39b39fb18214a8252f0300f5686f0218009b8c87199f25f912bcb83b1ad51a9/mono.m3u8?token=bd584ed407b1fa963b40cad998785ee7",
-    "http://152.233.35.239/5fe4bf4471c8e39b39fb18214e8047cf2f177782ec10861393e726ddf95c902fc786b5a659a4018e/mono.m3u8?token=7fda671e7f6c67268fd0251a0b93971a"
+    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0d52307b0af002/index.m3u8?token=13f2d2bdc62dc7ae8c138b0145cf641f23d49f7eaaeb099b315a8374fdcaa7c9b823ece882b4615a2c1767df6e69d6bb29c7a47c39f0d90c4b84c35005d9373de25c7fe632-47cf95fdc3671819022b5d040697c7b4",
+    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fc46b134b64af718c39015e307513ed02b0bfaf/index.m3u8?token=b506bc3044a9be48471e6a7d181a3ae8f6f29e15702d0320d542d70039c067fa99dcb608420f05e80afc98bca9bcfaa83da7107758abfc416fb268fe76e7eca7902b41e9e9-faa167c28dde314c0bbc8124ddcfae39",
+    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0155327b07e703adbdaa7755/index.m3u8?token=76b0b9c5575d4f75f6cc53197ad02d24f23074a6097a9de95faf5e160e2513353c041914d270739061187be088beca7caf7ba8f6901672290e82dd7393a9dc1146c9583b6a-ec890b61a2b970fe17be01c17a000aff"
 ];
 
-let video = document.getElementById("player");
+let video = document.getElementById("video");
 let hls;
+let buttons = document.querySelectorAll(".stream-btn");
 
-/* 🎥 LOAD STREAM */
 function loadStream(i){
+
+    buttons.forEach(b=>b.classList.remove("active"));
+    buttons[i].classList.add("active");
+
     if(hls) hls.destroy();
 
     if(Hls.isSupported()){
@@ -149,21 +220,27 @@ function loadStream(i){
     } else {
         video.src = streams[i];
     }
+
+    video.play();
 }
 
-/* 💬 CHAT (LOCAL ONLY) */
-function sendMsg(){
-    let msg = document.getElementById("msg").value;
-    if(msg.trim() === "") return;
+/* CHAT */
+function send(){
+    let msg = document.getElementById("msg");
+    if(msg.value.trim() === "") return;
 
-    let box = document.getElementById("chatBox");
-    box.innerHTML += "<div>👤 " + msg + "</div>";
+    let box = document.getElementById("box");
 
-    document.getElementById("msg").value = "";
+    let div = document.createElement("div");
+    div.className = "msg";
+    div.innerText = "You: " + msg.value;
+
+    box.appendChild(div);
+    msg.value = "";
     box.scrollTop = box.scrollHeight;
 }
 
-/* AUTO LOAD */
+/* default stream */
 loadStream(0);
 </script>
 
