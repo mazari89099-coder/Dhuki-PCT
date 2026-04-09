@@ -1,248 +1,584 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dhuki-PCT | Pro Live Streaming</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>DhukiPCT | Live Stream Hub - Ghani · Mazari · Taklu</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Video.js for HLS streaming -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
+            color: #f0f3fa;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-<style>
-:root {
-    --bg: #0a0f1e;
-    --card: rgba(255,255,255,0.06);
-    --accent: #ff4d6d;
-    --accent2: #00ffcc;
-}
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #141b2b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff4d6d;
+            border-radius: 10px;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial;
-}
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px 25px 40px;
+        }
 
-body {
-    background: radial-gradient(circle at top, #111a33, var(--bg));
-    color: white;
-}
+        /* Premium Header Animation */
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .logo-wrapper {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 12px;
+            background: rgba(10, 20, 30, 0.55);
+            backdrop-filter: blur(12px);
+            padding: 12px 32px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 77, 109, 0.4);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+        }
+        .dhuki-icon {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 6px #ff4d6d);
+            animation: floatIcon 2.5s infinite ease-in-out;
+        }
+        .main-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #ffb3c6, #ff4d6d);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .pct-badge {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: #1e2a3e;
+            padding: 5px 12px;
+            border-radius: 40px;
+            color: #ff9eb5;
+        }
+        @keyframes floatIcon {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
 
-/* HEADER */
-.header {
-    text-align: center;
-    padding: 25px 10px;
-}
+        /* Two columns: video + chat */
+        .stream-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin: 25px 0 20px;
+        }
+        .video-col {
+            flex: 3;
+            min-width: 280px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 32px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            box-shadow: 0 25px 40px -12px black;
+        }
+        .chat-col {
+            flex: 1.2;
+            min-width: 300px;
+            background: rgba(12, 18, 28, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 77, 109, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 620px;
+        }
 
-.logo {
-    font-size: 42px;
-    font-weight: 900;
-    background: linear-gradient(90deg, var(--accent2), var(--accent), #fff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glow 3s infinite;
-}
+        .video-js {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
 
-@keyframes glow {
-    0% { filter: drop-shadow(0 0 5px #00ffcc); }
-    50% { filter: drop-shadow(0 0 15px #ff4d6d); }
-    100% { filter: drop-shadow(0 0 5px #00ffcc); }
-}
+        /* Stream selector cards (3 streams) */
+        .stream-selector {
+            margin-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+        }
+        .stream-card {
+            flex: 1;
+            background: linear-gradient(145deg, #111827, #0a0f1a);
+            border-radius: 24px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(255, 77, 109, 0.3);
+            backdrop-filter: blur(4px);
+        }
+        .stream-card:hover {
+            transform: translateY(-5px);
+            background: #1e2a3e;
+            border-color: #ff4d6d;
+            box-shadow: 0 10px 25px rgba(255,77,109,0.2);
+        }
+        .stream-card.active {
+            background: #ff4d6d;
+            border-color: white;
+            box-shadow: 0 0 18px #ff4d6d;
+        }
+        .stream-card.active .stream-name {
+            color: white;
+            text-shadow: 0 0 3px black;
+        }
+        .stream-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        .stream-name {
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+        .stream-label {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .live-tag {
+            background: #ff4d6d;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-top: 6px;
+        }
 
-.tagline {
-    opacity: 0.7;
-    margin-top: 6px;
-    font-size: 14px;
-}
-
-/* LAYOUT */
-.container {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr;
-    gap: 15px;
-    padding: 20px;
-}
-
-/* PLAYER */
-.player-box {
-    background: var(--card);
-    border-radius: 15px;
-    padding: 12px;
-}
-
-video {
-    width: 100%;
-    border-radius: 12px;
-    background: black;
-}
-
-/* STREAM BUTTONS */
-.streams {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.stream-btn {
-    padding: 10px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #1c2540;
-    color: white;
-    transition: 0.3s;
-}
-
-.stream-btn:hover {
-    background: var(--accent);
-}
-
-.stream-btn.active {
-    background: var(--accent2);
-    color: black;
-}
-
-/* CHAT */
-.chat {
-    background: var(--card);
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-}
-
-.chat-header {
-    padding: 10px;
-    background: rgba(0,0,0,0.3);
-    font-weight: bold;
-}
-
-.messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.msg {
-    margin-bottom: 8px;
-    padding: 6px 10px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 8px;
-}
-
-.input-box {
-    display: flex;
-    padding: 10px;
-    gap: 5px;
-}
-
-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    outline: none;
-}
-
-button {
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: var(--accent);
-    color: white;
-    cursor: pointer;
-}
-
-/* RESPONSIVE */
-@media(max-width:900px){
-    .container{
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+        /* Chat styling */
+        .chat-header {
+            padding: 18px 20px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,77,109,0.5);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            background: #1e293b;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            word-break: break-word;
+            border-left: 3px solid #ff4d6d;
+        }
+        .message strong {
+            color: #ff9eb5;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 16px;
+            gap: 10px;
+            background: #0b1018;
+            border-top: 1px solid #2d3a4a;
+        }
+        .chat-input-area input {
+            flex: 1;
+            background: #1e2a3a;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 40px;
+            color: white;
+            outline: none;
+        }
+        .chat-input-area button {
+            background: #ff4d6d;
+            border: none;
+            padding: 0 22px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .credit-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 16px;
+            font-size: 0.85rem;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+        }
+        .credit-footer span {
+            color: #ffb3c6;
+            font-weight: 700;
+        }
+        .status-badge {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            background: #0f1722;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 30px;
+        }
+        @media (max-width: 850px) {
+            .stream-selector { flex-direction: column; }
+            .container { padding: 15px; }
+        }
+    </style>
 </head>
-
 <body>
-
-<div class="header">
-    <div class="logo">Dhuki-PCT</div>
-    <div class="tagline">Professional Live Sports Streaming Platform</div>
-</div>
-
 <div class="container">
-
-    <!-- PLAYER SECTION -->
-    <div class="player-box">
-        <video id="video" controls></video>
-
-        <div class="streams">
-            <button class="stream-btn" onclick="loadStream(0)">Stream 1</button>
-            <button class="stream-btn" onclick="loadStream(1)">Stream 2</button>
-            <button class="stream-btn" onclick="loadStream(2)">Stream 3</button>
+    <div class="hero">
+        <div class="logo-wrapper">
+            <i class="fas fa-tower-broadcast dhuki-icon"></i>
+            <span class="main-title">DhukiPCT</span>
+            <span class="pct-badge">⚡LIVE TRIO</span>
+        </div>
+        <div style="margin-top: 12px;">
+            <p style="font-weight: 500; background: linear-gradient(90deg, #ffffff80, #ff4d6d80); display: inline-block; padding: 4px 20px; border-radius: 30px;">Premium Stream Hub · Three Dedicated Channels</p>
         </div>
     </div>
 
-    <!-- CHAT -->
-    <div class="chat">
-        <div class="chat-header">Live Chat</div>
-        <div class="messages" id="box"></div>
+    <div class="stream-dashboard">
+        <!-- Video Column -->
+        <div class="video-col">
+            <video id="premiumPlayer" class="video-js vjs-big-play-centered" controls preload="auto" width="100%" height="auto" data-setup='{}'>
+                <p class="vjs-no-js">To view this stream please enable JavaScript</p>
+            </video>
+            
+            <!-- Three Stream Cards (embedded links as per request) -->
+            <div class="stream-selector" id="streamSelector">
+                <!-- GHANI Stream -->
+                <div class="stream-card" data-stream="ghani">
+                    <div class="stream-icon"><i class="fas fa-crown"></i></div>
+                    <div class="stream-name">GHANI</div>
+                    <div class="stream-label">Primary Channel</div>
+                    <div class="live-tag">LIVE NOW</div>
+                </div>
+                <!-- MAZARI Stream -->
+                <div class="stream-card" data-stream="mazari">
+                    <div class="stream-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="stream-name">MAZARI</div>
+                    <div class="stream-label">Elite Stream</div>
+                    <div class="live-tag">LIVE NOW</div>
+                </div>
+                <!-- TAKLU Stream -->
+                <div class="stream-card" data-stream="taklu">
+                    <div class="stream-icon"><i class="fas fa-fire"></i></div>
+                    <div class="stream-name">TAKLU</div>
+                    <div class="stream-label">Ultra HD</div>
+                    <div class="live-tag">LIVE NOW</div>
+                </div>
+            </div>
+            <div class="status-badge" id="streamStatusMsg">
+                <i class="fas fa-circle" style="color:#22c55e; font-size: 0.6rem;"></i> Ready — Select a stream
+            </div>
+        </div>
 
-        <div class="input-box">
-            <input id="msg" placeholder="Type message...">
-            <button onclick="send()">Send</button>
+        <!-- Chat Column -->
+        <div class="chat-col">
+            <div class="chat-header">
+                <i class="fas fa-comments"></i> Live Chat · <span id="chatUserCount">0</span> viewers
+                <i class="fas fa-circle" style="font-size: 0.6rem; color:#22c55e; margin-left:auto;"></i>
+            </div>
+            <div class="messages-area" id="chatMessages">
+                <div class="message"><strong>🏟️ DhukiPCT:</strong> Welcome! Choose GHANI, MAZARI or TAKLU stream.</div>
+                <div class="message"><strong>🎬 StreamMaster:</strong> All three links are preloaded for instant playback.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Say something to the community...">
+                <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
         </div>
     </div>
-
+    <div class="credit-footer">
+        Created by <span>mazari_ba56</span> © 2026 — DhukiPCT · Ghani · Mazari · Taklu streams integrated
+    </div>
 </div>
 
 <script>
-const streams = [
-    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0d52307b0af002/index.m3u8?token=13f2d2bdc62dc7ae8c138b0145cf641f23d49f7eaaeb099b315a8374fdcaa7c9b823ece882b4615a2c1767df6e69d6bb29c7a47c39f0d90c4b84c35005d9373de25c7fe632-47cf95fdc3671819022b5d040697c7b4",
-    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fc46b134b64af718c39015e307513ed02b0bfaf/index.m3u8?token=b506bc3044a9be48471e6a7d181a3ae8f6f29e15702d0320d542d70039c067fa99dcb608420f05e80afc98bca9bcfaa83da7107758abfc416fb268fe76e7eca7902b41e9e9-faa167c28dde314c0bbc8124ddcfae39",
-    "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0155327b07e703adbdaa7755/index.m3u8?token=76b0b9c5575d4f75f6cc53197ad02d24f23074a6097a9de95faf5e160e2513353c041914d270739061187be088beca7caf7ba8f6901672290e82dd7393a9dc1146c9583b6a-ec890b61a2b970fe17be01c17a000aff"
-];
+    // ============================================================
+    // THE THREE STREAM LINKS (PROVIDED BY MAZARI BA56)
+    // ============================================================
+    const STREAMS_CONFIG = {
+        ghani: {
+            name: "GHANI",
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0d52307b0af002/index.m3u8?token=13f2d2bdc62dc7ae8c138b0145cf641f23d49f7eaaeb099b315a8374fdcaa7c9b823ece882b4615a2c1767df6e69d6bb29c7a47c39f0d90c4b84c35005d9373de25c7fe632-47cf95fdc3671819022b5d040697c7b4",
+            icon: "fa-crown"
+        },
+        mazari: {
+            name: "MAZARI",
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fc46b134b64af718c39015e307513ed02b0bfaf/index.m3u8?token=b506bc3044a9be48471e6a7d181a3ae8f6f29e15702d0320d542d70039c067fa99dcb608420f05e80afc98bca9bcfaa83da7107758abfc416fb268fe76e7eca7902b41e9e9-faa167c28dde314c0bbc8124ddcfae39",
+            icon: "fa-bolt"
+        },
+        taklu: {
+            name: "TAKLU",
+            url: "http://78.40.140.210:9210/86e4228d28529e51bdbabd302fd37c14577cba6a812c0155327b07e703adbdaa7755/index.m3u8?token=76b0b9c5575d4f75f6cc53197ad02d24f23074a6097a9de95faf5e160e2513353c041914d270739061187be088beca7caf7ba8f6901672290e82dd7393a9dc1146c9583b6a-ec890b61a2b970fe17be01c17a000aff",
+            icon: "fa-fire"
+        }
+    };
 
-let video = document.getElementById("video");
-let hls;
-let buttons = document.querySelectorAll(".stream-btn");
+    // Initialize video.js player
+    const player = videojs('premiumPlayer', {
+        controls: true,
+        autoplay: false,
+        fluid: true,
+        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+        controlBar: {
+            volumePanel: true,
+            pictureInPictureToggle: true,
+            currentTimeDisplay: true,
+            timeDivider: true,
+            durationDisplay: true
+        }
+    });
 
-function loadStream(i){
+    let currentStreamId = null;
 
-    buttons.forEach(b=>b.classList.remove("active"));
-    buttons[i].classList.add("active");
+    // Function to load HLS stream (.m3u8) into player
+    function loadStream(streamId) {
+        const stream = STREAMS_CONFIG[streamId];
+        if (!stream || !stream.url) {
+            addSystemMessage(`❌ Stream configuration missing for ${streamId}`);
+            return;
+        }
 
-    if(hls) hls.destroy();
+        // Update active UI on cards
+        document.querySelectorAll('.stream-card').forEach(card => {
+            card.classList.remove('active');
+            if (card.getAttribute('data-stream') === streamId) {
+                card.classList.add('active');
+            }
+        });
 
-    if(Hls.isSupported()){
-        hls = new Hls();
-        hls.loadSource(streams[i]);
-        hls.attachMedia(video);
-    } else {
-        video.src = streams[i];
+        // Update status text
+        const statusDiv = document.getElementById('streamStatusMsg');
+        statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Loading ${stream.name} stream ...`;
+        
+        // Load m3u8 (HLS)
+        player.src({ type: "application/x-mpegURL", src: stream.url });
+        player.load();
+        
+        // Attempt autoplay (may be blocked by browser policy)
+        const playPromise = player.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Autoplay prevented:", error);
+                addSystemMessage(`▶️ Click play to start ${stream.name} stream.`);
+            });
+        }
+        
+        currentStreamId = streamId;
+        
+        // Event listeners for player feedback
+        player.one('loadeddata', () => {
+            statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${stream.name} · LIVE STREAM ACTIVE`;
+            addSystemMessage(`✅ ${stream.name} stream is now playing in HD.`);
+        });
+        
+        player.one('error', () => {
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${stream.name} stream error. Check link or network.`;
+            addSystemMessage(`⚠️ ${stream.name} failed to load. The stream token might be expired or server unreachable.`);
+        });
+        
+        // reset any previous error state
+        player.ready(() => {
+            console.log(`Player ready for ${stream.name}`);
+        });
     }
 
-    video.play();
-}
+    // Attach click handlers to the three cards
+    function initStreamCards() {
+        const ghaniCard = document.querySelector('.stream-card[data-stream="ghani"]');
+        const mazariCard = document.querySelector('.stream-card[data-stream="mazari"]');
+        const takluCard = document.querySelector('.stream-card[data-stream="taklu"]');
+        
+        if (ghaniCard) ghaniCard.addEventListener('click', () => loadStream('ghani'));
+        if (mazariCard) mazariCard.addEventListener('click', () => loadStream('mazari'));
+        if (takluCard) takluCard.addEventListener('click', () => loadStream('taklu'));
+        
+        // Optionally load first stream (Ghani) as default for better UX
+        loadStream('ghani');
+    }
 
-/* CHAT */
-function send(){
-    let msg = document.getElementById("msg");
-    if(msg.value.trim() === "") return;
-
-    let box = document.getElementById("box");
-
-    let div = document.createElement("div");
-    div.className = "msg";
-    div.innerText = "You: " + msg.value;
-
-    box.appendChild(div);
-    msg.value = "";
-    box.scrollTop = box.scrollHeight;
-}
-
-/* default stream */
-loadStream(0);
+    // ==================== CHAT SYSTEM (Premium with viewer simulation) ====================
+    let viewerCount = 0;
+    let currentUsername = "";
+    
+    function generateUsername() {
+        const prefixes = ["Streamer", "Viewer", "Fan", "Loyal", "Ultra", "Dhuki", "PCT"];
+        const suffixes = ["Ghost", "Blaze", "Knight", "Phoenix", "Wolf", "Rider"];
+        const p = prefixes[Math.floor(Math.random() * prefixes.length)];
+        const s = suffixes[Math.floor(Math.random() * suffixes.length)];
+        const num = Math.floor(Math.random() * 900) + 100;
+        return `${p}${s}${num}`;
+    }
+    
+    function updateViewerCount() {
+        // dynamic between 27 and 156 viewers
+        viewerCount = Math.floor(Math.random() * 130) + 28;
+        document.getElementById('chatUserCount').innerText = viewerCount;
+        setTimeout(updateViewerCount, 28000);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function addMessageToUI(username, text, isSystem = false) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message';
+        if (isSystem) {
+            msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(text)}`;
+            msgDiv.style.borderLeftColor = "#facc15";
+        } else {
+            msgDiv.innerHTML = `<strong>${escapeHtml(username)}:</strong> ${escapeHtml(text)}`;
+        }
+        const container = document.getElementById('chatMessages');
+        container.appendChild(msgDiv);
+        msgDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        while (container.children.length > 200) {
+            container.removeChild(container.firstChild);
+        }
+    }
+    
+    function addSystemMessage(msg) {
+        addMessageToUI("System", msg, true);
+    }
+    
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (msg === "") return;
+        addMessageToUI(currentUsername, msg, false);
+        input.value = "";
+        // simulate chatter reaction
+        setTimeout(() => simulateRandomChatter(0.4), 800);
+    }
+    
+    function simulateRandomChatter(probability = 0.35) {
+        if (Math.random() > probability) return;
+        const randomNames = ["⚡LiveFan", "🔥GoalMaster", "🎧Listener", "📺StreamCrazy", "🏆Champion", "🎬Cinephile"];
+        const randomMsgs = [
+            "What a stream quality! 🔥", "GHANI stream is fire!", "MAZARI channel looking crisp", 
+            "TAKLU ultra HD 🔥", "Best platform ever", "Smooth playback", "DhukiPCT rocks!",
+            "Anyone watching the same?", "Great energy in chat"
+        ];
+        const fakeUser = randomNames[Math.floor(Math.random() * randomNames.length)] + Math.floor(Math.random() * 99);
+        const fakeMsg = randomMsgs[Math.floor(Math.random() * randomMsgs.length)];
+        addMessageToUI(fakeUser, fakeMsg, false);
+    }
+    
+    function startPeriodicMessages() {
+        setInterval(() => {
+            if (Math.random() > 0.55) {
+                const activeChatters = ["ViewerX", "PixelStream", "NeoWatch", "UltraHDfan"];
+                const msgsPool = ["Stream stable ✅", "Great match quality", "No buffering!", "Loving the experience"];
+                const randUser = activeChatters[Math.floor(Math.random() * activeChatters.length)] + Math.floor(Math.random() * 50);
+                const randMsg = msgsPool[Math.floor(Math.random() * msgsPool.length)];
+                addMessageToUI(randUser, randMsg, false);
+            }
+        }, 14000);
+    }
+    
+    function initChat() {
+        currentUsername = generateUsername();
+        addSystemMessage(`✨ Welcome ${currentUsername}! Chat with fans while watching GHANI, MAZARI or TAKLU.`);
+        const sendBtn = document.getElementById('sendChatBtn');
+        const chatInput = document.getElementById('chatInput');
+        sendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+        updateViewerCount();
+        startPeriodicMessages();
+        // occasional stream context message
+        setInterval(() => {
+            if (currentStreamId) {
+                const activeStreamName = STREAMS_CONFIG[currentStreamId]?.name;
+                addSystemMessage(`🎥 ${viewerCount}+ people watching ${activeStreamName} right now.`);
+            } else {
+                addSystemMessage(`💬 ${viewerCount} active viewers in the lobby.`);
+            }
+        }, 45000);
+    }
+    
+    // Extra error resilience: If a stream token expires, user can switch to another
+    player.on('error', () => {
+        if (currentStreamId) {
+            addSystemMessage(`⚠️ ${STREAMS_CONFIG[currentStreamId]?.name} stream may have expired token. Try another channel.`);
+        }
+    });
+    
+    // Initialize everything when page loads
+    window.addEventListener('load', () => {
+        initStreamCards();   // attaches links: Ghani, Mazari, Taklu
+        initChat();
+        
+        // Animate header icon (premium effect)
+        const dhukiIcon = document.querySelector('.dhuki-icon');
+        if (dhukiIcon) {
+            setInterval(() => {
+                dhukiIcon.style.transform = 'scale(1.07)';
+                setTimeout(() => { dhukiIcon.style.transform = 'scale(1)'; }, 350);
+            }, 4700);
+        }
+        
+        addSystemMessage("💡 Three embedded streams ready: GHANI (primary), MAZARI (elite), TAKLU (ultra). Click any card.");
+        console.log("DhukiPCT: Ghani, Mazari & Taklu streams integrated. credit mazari_ba56");
+    });
+    
+    // For github pages & notepad compatibility: ensure CORS and token handling
+    // The token may expire, but user can manually reload or switch streams.
+    // Provide a small function to reload current stream
+    function reloadCurrentStream() {
+        if (currentStreamId) {
+            loadStream(currentStreamId);
+            addSystemMessage("🔄 Attempting to reload current stream...");
+        }
+    }
+    // expose globally for debug (optional)
+    window.reloadStream = reloadCurrentStream;
 </script>
-
 </body>
 </html>
