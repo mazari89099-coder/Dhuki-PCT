@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>DhukiPCT | Live Stream Hub - Works on GitHub Pages</title>
+    <title>DhukiPCT | Live Stream - GHANI · MAZARI · TAKLU</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
@@ -69,20 +69,23 @@
         .stream-card.active { background: #ff4d6d; border-color: white; box-shadow: 0 0 18px #ff4d6d; }
         .stream-name { font-weight: 800; font-size: 1.3rem; }
         .live-tag { background: #ff4d6d; display: inline-block; padding: 2px 10px; border-radius: 30px; font-size: 0.65rem; margin-top: 6px; }
-        .chat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,77,109,0.5); font-weight: 700; }
+        .chat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,77,109,0.5); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .online-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .messages-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        .message { background: #1e293b; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; border-left: 3px solid #ff4d6d; }
+        .message { background: #1e293b; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; border-left: 3px solid #ff4d6d; word-break: break-word; }
         .message strong { color: #ff9eb5; }
-        .message.system-msg { border-left-color: #facc15; }
+        .message.system-msg { border-left-color: #facc15; background: #1e293b80; }
         .chat-input-area { display: flex; padding: 16px; gap: 10px; background: #0b1018; border-top: 1px solid #2d3a4a; }
         .chat-input-area input { flex: 1; background: #1e2a3a; border: none; padding: 12px 16px; border-radius: 40px; color: white; outline: none; }
         .chat-input-area button { background: #ff4d6d; border: none; padding: 0 22px; border-radius: 40px; font-weight: bold; cursor: pointer; color: white; }
         .credit-footer { text-align: center; margin-top: 40px; padding: 16px; border-top: 1px dashed rgba(255,255,255,0.2); }
         .credit-footer span { color: #ffb3c6; font-weight: 700; }
         .status-badge { margin-top: 12px; font-size: 0.75rem; background: #0f1722; display: inline-block; padding: 6px 16px; border-radius: 30px; }
-        .warning-box { background: #ff4d6d20; border: 1px solid #ff4d6d; border-radius: 12px; padding: 10px; margin-top: 12px; font-size: 0.7rem; }
-        .fix-btn { background: #ff4d6d; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; margin-top: 8px; color: white; font-weight: bold; }
-        @media (max-width: 850px) { .stream-selector { flex-direction: column; } }
+        .warning-box { background: #ff4d6d20; border: 1px solid #ff4d6d; border-radius: 12px; padding: 15px; margin-top: 12px; text-align: center; }
+        .warning-box button { background: #ff4d6d; border: none; padding: 10px 20px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; margin: 5px; }
+        .success-box { background: #22c55e20; border: 1px solid #22c55e; border-radius: 12px; padding: 10px; margin-top: 12px; display: none; }
+        @media (max-width: 850px) { .stream-selector { flex-direction: column; } .main-title { font-size: 2rem; } }
     </style>
 </head>
 <body>
@@ -91,7 +94,7 @@
         <div class="logo-wrapper">
             <i class="fas fa-tower-broadcast dhuki-icon"></i>
             <span class="main-title">DhukiPCT</span>
-            <span class="pct-badge">⚡GITHUB FIX</span>
+            <span class="pct-badge">⚡LIVE</span>
         </div>
     </div>
 
@@ -101,18 +104,18 @@
                 <video id="videoPlayer" controls autoplay playsinline style="width:100%; height:auto; min-height:400px; background:#000;"></video>
             </div>
             
-            <div class="stream-selector" id="streamSelector">
+            <div class="stream-selector">
                 <div class="stream-card" data-stream="ghani">
                     <div class="stream-name">🎬 GHANI</div>
-                    <div class="live-tag">Channel 1</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
                 <div class="stream-card" data-stream="mazari">
                     <div class="stream-name">⚡ MAZARI</div>
-                    <div class="live-tag">Channel 2</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
                 <div class="stream-card" data-stream="taklu">
                     <div class="stream-name">🔥 TAKLU</div>
-                    <div class="live-tag">Channel 3</div>
+                    <div class="live-tag">LIVE</div>
                 </div>
             </div>
             
@@ -120,24 +123,30 @@
                 <i class="fas fa-circle" style="color:#22c55e;"></i> Ready
             </div>
             
-            <!-- CRITICAL WARNING FOR GITHUB PAGES -->
             <div class="warning-box" id="warningBox">
-                <i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i>
-                <strong>GitHub Pages HTTPS Issue Detected!</strong><br>
-                Your streams use <strong>HTTP</strong> but GitHub Pages uses <strong>HTTPS</strong>.<br>
-                Browsers block "mixed content" (HTTP on HTTPS).<br><br>
-                <button class="fix-btn" id="fixHttpsBtn"><i class="fas fa-sync-alt"></i> Click to Fix: Load Streams via Proxy</button>
-                <button class="fix-btn" id="directHttpBtn" style="background:#22c55e;"><i class="fas fa-external-link-alt"></i> Open Stream in New Tab (Test)</button>
+                <i class="fas fa-exclamation-triangle" style="color:#ffaa44; font-size: 1.2rem;"></i>
+                <strong>HTTPS vs HTTP Issue Detected!</strong><br>
+                Your website is on <strong>HTTPS</strong> but streams use <strong>HTTP</strong>.<br>
+                Browsers block this for security.<br><br>
+                <button id="proxyBtn1"><i class="fas fa-magic"></i> Fix 1: Use Proxy (Auto)</button>
+                <button id="proxyBtn2"><i class="fas fa-globe"></i> Fix 2: Alternative Proxy</button>
+                <button id="testTabBtn"><i class="fas fa-external-link-alt"></i> Test Stream in New Tab</button>
+            </div>
+            
+            <div class="success-box" id="successBox">
+                <i class="fas fa-check-circle" style="color:#22c55e;"></i>
+                <strong>Proxy Active!</strong> Streams are now being routed through HTTPS.
             </div>
         </div>
 
         <div class="chat-col">
             <div class="chat-header">
-                <i class="fas fa-comments"></i> Live Chat · Real Users
+                <i class="fas fa-comments"></i> Live Chat
+                <span class="online-dot"></span>
             </div>
             <div class="messages-area" id="chatMessages">
-                <div class="message system-msg"><strong>📢 SYSTEM:</strong> Welcome! Your streams work locally but NOT on GitHub Pages due to HTTPS.</div>
-                <div class="message system-msg"><strong>🔧 FIX:</strong> Click the green button above to test stream directly, or use the proxy fix.</div>
+                <div class="message system-msg"><strong>🏟️ DhukiPCT:</strong> Welcome! Click one of the FIX buttons above to play streams.</div>
+                <div class="message system-msg"><strong>📢 INFO:</strong> Your streams work in new tabs - the proxy fixes embedded playback.</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message...">
@@ -146,13 +155,13 @@
         </div>
     </div>
     <div class="credit-footer">
-        Created by <span>mazari_ba56</span> © 2026 — GitHub Pages HTTPS Fix Included
+        Created by <span>mazari_ba56</span> © 2026 — HTTPS Compatible Version
     </div>
 </div>
 
 <script>
     // ============================================================
-    // YOUR STREAM LINKS (HTTP - blocked on GitHub Pages)
+    // YOUR STREAM LINKS
     // ============================================================
     const STREAMS = {
         ghani: {
@@ -169,16 +178,23 @@
         }
     };
     
+    // PROXY SERVICES (Convert HTTP to HTTPS)
+    const PROXIES = {
+        proxy1: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        proxy2: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+    };
+    
     let hlsInstance = null;
     let currentStreamId = null;
+    let currentProxy = null;
     const videoElement = document.getElementById('videoPlayer');
     
-    function updateStatus(msg, isError = false) {
+    function updateStatus(msg, isPlaying = false) {
         const statusDiv = document.getElementById('streamStatusMsg');
-        if (isError) {
-            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffaa44;"></i> ${msg}`;
-        } else {
+        if (isPlaying) {
             statusDiv.innerHTML = `<i class="fas fa-circle" style="color:#22c55e;"></i> ${msg}`;
+        } else {
+            statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> ${msg}`;
         }
     }
     
@@ -188,6 +204,8 @@
         msgDiv.innerHTML = `<strong>📢 SYSTEM:</strong> ${escapeHtml(msg)}`;
         document.getElementById('chatMessages').appendChild(msgDiv);
         msgDiv.scrollIntoView({ behavior: 'smooth' });
+        const container = document.getElementById('chatMessages');
+        while (container.children.length > 100) container.removeChild(container.firstChild);
     }
     
     function escapeHtml(str) {
@@ -200,7 +218,6 @@
         });
     }
     
-    // Clean up HLS
     function cleanupPlayer() {
         if (hlsInstance) {
             hlsInstance.destroy();
@@ -211,49 +228,36 @@
         videoElement.load();
     }
     
-    // METHOD 1: Try to load with HTTPS conversion (replace http with https)
-    function tryHttpsUrl(httpUrl) {
-        return httpUrl.replace('http://', 'https://');
-    }
-    
-    // METHOD 2: Load with CORS proxy (for GitHub Pages)
-    function getProxyUrl(originalUrl) {
-        // Using a public CORS proxy (allorigins) - this helps bypass mixed content
-        return `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
-    }
-    
-    // Load stream with HLS.js
-    function loadStream(streamId, useProxy = false) {
+    function loadStream(streamId, proxyFn = null) {
         const stream = STREAMS[streamId];
         if (!stream) return;
         
         currentStreamId = streamId;
+        currentProxy = proxyFn;
         
-        // Update UI
         document.querySelectorAll('.stream-card').forEach(card => {
             card.classList.remove('active');
-            if (card.getAttribute('data-stream') === streamId) {
-                card.classList.add('active');
-            }
+            if (card.getAttribute('data-stream') === streamId) card.classList.add('active');
         });
         
         cleanupPlayer();
         
-        let streamUrl = stream.url;
-        let mode = "direct";
+        let streamUrl;
+        let modeText;
         
-        if (useProxy) {
-            streamUrl = getProxyUrl(stream.url);
-            mode = "proxy (bypass HTTPS block)";
+        if (proxyFn) {
+            streamUrl = proxyFn(stream.url);
+            modeText = "via HTTPS Proxy";
             updateStatus(`Loading ${stream.name} via proxy...`);
-            addSystemMessage(`🔄 Loading ${stream.name} via CORS proxy (bypasses HTTPS restriction)`);
-        } else if (window.location.protocol === 'https:' && stream.url.startsWith('http://')) {
-            // On HTTPS page, try HTTPS version first
-            streamUrl = tryHttpsUrl(stream.url);
-            mode = "https-converted";
-            updateStatus(`Loading ${stream.name} (converted to HTTPS)...`);
+            addSystemMessage(`🔄 Loading ${stream.name} through HTTPS proxy...`);
+            document.getElementById('successBox').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successBox').style.display = 'none';
+            }, 3000);
         } else {
-            updateStatus(`Loading ${stream.name}...`);
+            streamUrl = stream.url;
+            modeText = "direct";
+            updateStatus(`Loading ${stream.name} directly...`);
         }
         
         if (Hls.isSupported()) {
@@ -261,46 +265,34 @@
                 debug: false,
                 enableWorker: true,
                 manifestLoadingTimeOut: 15000,
-                manifestLoadingMaxRetry: 2,
-                fragLoadingTimeOut: 15000
+                manifestLoadingMaxRetry: 3,
+                fragLoadingTimeOut: 20000
             });
             
             hlsInstance.loadSource(streamUrl);
             hlsInstance.attachMedia(videoElement);
             
             hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                updateStatus(`${stream.name} · LIVE (${mode})`);
-                addSystemMessage(`✅ ${stream.name} is now playing! Mode: ${mode}`);
+                updateStatus(`${stream.name} · LIVE (${modeText})`, true);
+                addSystemMessage(`✅ ${stream.name} is now playing!`);
                 videoElement.play().catch(e => console.log("Autoplay blocked"));
             });
             
             hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-                console.error("HLS Error:", data);
                 if (data.fatal) {
-                    if (mode === "direct" && window.location.protocol === 'https:') {
-                        addSystemMessage(`⚠️ ${stream.name} failed with direct HTTP. Try using the PROXY button below.`);
-                        updateStatus(`Failed - Use PROXY button`, true);
-                    } else if (mode === "proxy") {
-                        addSystemMessage(`❌ ${stream.name} failed even with proxy. The stream server might be offline or token expired.`);
-                        updateStatus(`Stream failed - Server unreachable`, true);
-                    } else {
-                        addSystemMessage(`❌ ${stream.name} failed. Try clicking "Fix with Proxy" button.`);
-                        updateStatus(`Failed - Try proxy`, true);
-                    }
+                    addSystemMessage(`❌ ${stream.name}: Failed. Try the other fix button.`);
+                    updateStatus(`Failed - Try other fix`, false);
                 }
             });
         } else {
-            addSystemMessage(`❌ HLS not supported in this browser`);
+            addSystemMessage(`❌ HLS not supported`);
         }
     }
     
-    // Test stream directly in new tab (bypasses mixed content)
-    function testStreamDirect(streamId) {
-        const stream = STREAMS[streamId];
-        if (stream) {
-            window.open(stream.url, '_blank');
-            addSystemMessage(`📺 Opened ${stream.name} stream in new tab. If it plays there, the issue is GitHub Pages HTTPS blocking.`);
-        }
+    function testInNewTab() {
+        const stream = currentStreamId ? STREAMS[currentStreamId] : STREAMS.ghani;
+        window.open(stream.url, '_blank');
+        addSystemMessage(`📺 Opened ${stream.name} in new tab. It should play there!`);
     }
     
     // ==================== CHAT ====================
@@ -319,48 +311,32 @@
     }
     
     function initChat() {
-        addSystemMessage(`✨ Welcome ${username}!`);
+        addSystemMessage(`✨ Welcome ${username}! Click a FIX button above to play streams.`);
         document.getElementById('sendChatBtn').onclick = sendMessage;
         document.getElementById('chatInput').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-    }
-    
-    // Detect if we're on HTTPS (GitHub Pages)
-    function checkHttpsWarning() {
-        if (window.location.protocol === 'https:') {
-            addSystemMessage("⚠️ DETECTED: You're on HTTPS (GitHub Pages). Your HTTP streams are blocked by browsers!");
-            addSystemMessage("💡 SOLUTION: Click 'Click to Fix: Load Streams via Proxy' button above.");
-        } else {
-            document.getElementById('warningBox').style.display = 'none';
-            addSystemMessage("✅ You're on HTTP - streams should work normally!");
-        }
     }
     
     // Initialize
     window.addEventListener('load', () => {
         initChat();
-        checkHttpsWarning();
         
-        // Stream card clicks - direct (will likely fail on HTTPS)
-        document.querySelector('[data-stream="ghani"]').onclick = () => loadStream('ghani', false);
-        document.querySelector('[data-stream="mazari"]').onclick = () => loadStream('mazari', false);
-        document.querySelector('[data-stream="taklu"]').onclick = () => loadStream('taklu', false);
+        // Stream selectors
+        document.querySelector('[data-stream="ghani"]').onclick = () => loadStream('ghani', currentProxy);
+        document.querySelector('[data-stream="mazari"]').onclick = () => loadStream('mazari', currentProxy);
+        document.querySelector('[data-stream="taklu"]').onclick = () => loadStream('taklu', currentProxy);
         
-        // FIX BUTTON: Load with proxy
-        document.getElementById('fixHttpsBtn').onclick = () => {
-            if (currentStreamId) {
-                loadStream(currentStreamId, true);
-            } else {
-                loadStream('ghani', true);
-            }
+        // Fix buttons
+        document.getElementById('proxyBtn1').onclick = () => {
+            currentProxy = PROXIES.proxy1;
+            loadStream('ghani', currentProxy);
         };
-        
-        // TEST BUTTON: Open directly in new tab
-        document.getElementById('directHttpBtn').onclick = () => {
-            const streamId = currentStreamId || 'ghani';
-            testStreamDirect(streamId);
+        document.getElementById('proxyBtn2').onclick = () => {
+            currentProxy = PROXIES.proxy2;
+            loadStream('ghani', currentProxy);
         };
+        document.getElementById('testTabBtn').onclick = testInNewTab;
         
-        addSystemMessage("🎬 TIP: If streams don't play, click the 'Fix with Proxy' button!");
+        addSystemMessage("💡 Click 'Fix 1' or 'Fix 2' button to enable HTTPS proxy and play streams!");
     });
 </script>
 </body>
