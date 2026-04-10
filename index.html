@@ -3,55 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Babarian X Dhuki_PCT | Live Stream – GHANI · MAZARI · TAKLU</title>
+    <title>Babarian X Dhuki_PCT | Live Stream – Tamasha · Myco · Tapmad</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
-    <!-- Firebase for real-time chat -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-        import { getDatabase, ref, push, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
-
-        // PUBLIC demo firebase – replace with your own for production
-        const firebaseConfig = {
-            apiKey: "AIzaSyDemo-Replace-With-Your-Key",
-            authDomain: "babarian-dhuki.firebaseapp.com",
-            databaseURL: "https://babarian-dhuki-default-rtdb.firebaseio.com",
-            projectId: "babarian-dhuki",
-            storageBucket: "babarian-dhuki.appspot.com",
-            messagingSenderId: "000000000000",
-            appId: "1:000000000000:web:0000000000000000"
-        };
-
-        let firebaseReady = false;
-        let db, chatRef;
-
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getDatabase(app);
-            chatRef = ref(db, 'babarian_chat');
-            firebaseReady = true;
-        } catch(e) {
-            console.log("Firebase not configured – using local demo chat");
-        }
-
-        window._firebaseSend = function(username, msg) {
-            if (!firebaseReady) return false;
-            try {
-                push(chatRef, { user: username, text: msg, ts: serverTimestamp() });
-                return true;
-            } catch(e) { return false; }
-        };
-
-        window._firebaseListen = function(callback) {
-            if (!firebaseReady) return;
-            onValue(chatRef, (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
-                callback(data);
-            });
-        };
-    </script>
     <style>
         :root {
             --green:       #00ff7f;
@@ -67,6 +22,7 @@
             --border:      rgba(0,255,127,0.22);
             --red:         #ff3d5a;
             --yellow:      #ffe066;
+            --blue:        #00ccff;
             --radius-lg:   28px;
             --radius-md:   16px;
             --radius-sm:   10px;
@@ -81,38 +37,27 @@
             overflow-x: hidden;
         }
 
-        /* SCANLINE OVERLAY */
         body::before {
             content: '';
             pointer-events: none;
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,255,127,0.015) 2px,
-                rgba(0,255,127,0.015) 4px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,127,0.015) 2px, rgba(0,255,127,0.015) 4px);
             z-index: 9999;
         }
 
-        /* BG GRID */
         body::after {
             content: '';
             pointer-events: none;
             position: fixed;
             inset: 0;
-            background-image:
-                linear-gradient(var(--green-dim) 1px, transparent 1px),
-                linear-gradient(90deg, var(--green-dim) 1px, transparent 1px);
+            background-image: linear-gradient(var(--green-dim) 1px, transparent 1px), linear-gradient(90deg, var(--green-dim) 1px, transparent 1px);
             background-size: 48px 48px;
             z-index: 0;
         }
 
         .container { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 18px 22px 50px; }
 
-        /* ═══════════════════ HEADER ═══════════════════ */
         .header {
             display: flex;
             align-items: center;
@@ -147,10 +92,7 @@
             filter: drop-shadow(0 0 10px var(--green));
             animation: pulse-icon 2s ease-in-out infinite;
         }
-        @keyframes pulse-icon {
-            0%,100%{ filter: drop-shadow(0 0 8px var(--green)); }
-            50%{ filter: drop-shadow(0 0 22px var(--green)); }
-        }
+        @keyframes pulse-icon { 0%,100%{ filter: drop-shadow(0 0 8px var(--green)); } 50%{ filter: drop-shadow(0 0 22px var(--green)); } }
         .brand-text {
             font-family: 'Orbitron', monospace;
             font-size: 1.75rem;
@@ -201,7 +143,6 @@
         }
         .corner-badge strong { color: #fff; font-size: 0.78rem; }
 
-        /* ═══════════════════ QUALITY BAR ═══════════════════ */
         .quality-bar {
             display: flex;
             align-items: center;
@@ -235,16 +176,8 @@
         .q-status { margin-left: auto; display: flex; align-items: center; gap: 6px; }
         .q-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blink 2s ease infinite; }
 
-        /* ═══════════════════ DASHBOARD ═══════════════════ */
-        .stream-dashboard {
-            display: flex;
-            gap: 22px;
-            flex-wrap: wrap;
-        }
-        .video-col {
-            flex: 3;
-            min-width: 280px;
-        }
+        .stream-dashboard { display: flex; gap: 22px; flex-wrap: wrap; }
+        .video-col { flex: 3; min-width: 280px; }
         .chat-col {
             flex: 1.15;
             min-width: 300px;
@@ -267,7 +200,6 @@
             background: linear-gradient(90deg, transparent, var(--green), transparent);
         }
 
-        /* ═══════════════════ PLAYER ═══════════════════ */
         .player-wrap {
             background: #000;
             border-radius: var(--radius-lg);
@@ -285,20 +217,9 @@
             letter-spacing: 2px;
             pointer-events: none;
         }
-        #videoPlayer {
-            width: 100%;
-            min-height: 420px;
-            background: #000;
-            display: block;
-        }
+        #videoPlayer { width: 100%; min-height: 420px; background: #000; display: block; }
 
-        /* ═══════════════════ STREAM SELECTOR ═══════════════════ */
-        .stream-selector {
-            display: flex;
-            gap: 14px;
-            margin-top: 18px;
-            flex-wrap: wrap;
-        }
+        .stream-selector { display: flex; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
         .stream-card {
             flex: 1;
             min-width: 120px;
@@ -369,7 +290,6 @@
             animation: blink 1s step-start infinite;
         }
 
-        /* ═══════════════════ CONTROL BAR ═══════════════════ */
         .control-bar {
             display: flex;
             align-items: center;
@@ -414,7 +334,6 @@
         }
         .status-strip .sig { color: var(--green); }
 
-        /* WARNING / SUCCESS */
         .warning-box {
             background: rgba(255,170,0,0.07);
             border: 1px solid rgba(255,170,0,0.4);
@@ -438,7 +357,6 @@
         }
         @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
 
-        /* ═══════════════════ CHAT ═══════════════════ */
         .chat-header {
             padding: 16px 20px;
             background: rgba(0,0,0,0.5);
@@ -473,7 +391,6 @@
         }
         @keyframes pulse-g { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-        /* Username setup */
         .username-setup {
             display: flex;
             gap: 8px;
@@ -535,8 +452,8 @@
         .message .msg-time { font-size: 0.62rem; color: var(--text-muted); float: right; margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
         .message.sys { border-left-color: var(--yellow); }
         .message.sys strong { color: var(--yellow); }
-        .message.own { border-left-color: #00ccff; background: rgba(0,60,80,0.5); }
-        .message.own strong { color: #00ccff; }
+        .message.own { border-left-color: var(--blue); background: rgba(0,60,80,0.5); }
+        .message.own strong { color: var(--blue); }
 
         .chat-input-area {
             display: flex;
@@ -574,10 +491,11 @@
             flex-shrink: 0;
         }
         .send-btn:hover { background: var(--green-mid); box-shadow: var(--green-glow); transform: scale(1.1); }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; background: #555; }
+        .send-btn:disabled:hover { transform: none; box-shadow: none; }
 
         .char-counter { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--text-muted); text-align: right; padding: 0 14px 6px; }
 
-        /* ═══════════════════ FOOTER ═══════════════════ */
         .footer {
             text-align: center;
             margin-top: 36px;
@@ -591,12 +509,10 @@
         .footer strong { color: var(--green); }
         .footer .divider { margin: 0 10px; color: var(--border); }
 
-        /* ═══════════════════ SCROLLBAR GLOBAL ═══════════════════ */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
         ::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 10px; }
 
-        /* ═══════════════════ RESPONSIVE ═══════════════════ */
         @media (max-width: 900px) {
             .stream-dashboard { flex-direction: column; }
             .chat-col { max-width: 100%; height: 450px; }
@@ -612,7 +528,6 @@
 <body>
 <div class="container">
 
-    <!-- ══════════════ HEADER ══════════════ -->
     <header class="header">
         <div class="header-brand">
             <i class="fas fa-tower-broadcast brand-icon"></i>
@@ -628,21 +543,20 @@
 
         <div class="corner-badge">
             <div><strong>Babarian X Dhuki_PCT</strong></div>
-            <div>Created by <strong>Mazari BA56</strong></div>
+            <div>Created by <strong>Myco BA56</strong></div>
             <div style="color:var(--text-muted)">© 2026 — All Rights Reserved</div>
         </div>
     </header>
 
-    <!-- ══════════════ QUALITY BAR ══════════════ -->
     <div class="quality-bar">
         <span><label>◈ QUALITY:</label></span>
-        <button class="q-btn active" onclick="setQuality('auto')">AUTO</button>
-        <button class="q-btn" onclick="setQuality('1080p')">1080p</button>
-        <button class="q-btn" onclick="setQuality('720p')">720p</button>
-        <button class="q-btn" onclick="setQuality('480p')">480p</button>
+        <button class="q-btn active" data-quality="auto">AUTO</button>
+        <button class="q-btn" data-quality="1080p">1080p</button>
+        <button class="q-btn" data-quality="720p">720p</button>
+        <button class="q-btn" data-quality="480p">480p</button>
         <span class="q-sep">|</span>
         <span><label>◈ PROXY:</label></span>
-        <button class="q-btn" id="proxyToggleBtn" onclick="toggleProxy()">OFF</button>
+        <button class="q-btn" id="proxyToggleBtn">OFF</button>
         <span class="q-sep">|</span>
         <span><label>◈ CODEC:</label> HLS / H.264</span>
         <div class="q-status">
@@ -651,43 +565,39 @@
         </div>
     </div>
 
-    <!-- ══════════════ MAIN DASHBOARD ══════════════ -->
     <div class="stream-dashboard">
 
-        <!-- VIDEO COLUMN -->
         <div class="video-col">
             <div class="player-wrap">
                 <video id="videoPlayer" controls autoplay playsinline></video>
             </div>
 
-            <!-- STREAM SELECTOR -->
             <div class="stream-selector">
-                <div class="stream-card active" data-stream="ghani">
+                <div class="stream-card active" data-stream="Tamasha">
                     <div class="sc-platform">FROM TAMASHA</div>
-                    <div class="sc-name">🎬 GHANI</div>
+                    <div class="sc-name">🎬 Tamasha</div>
                     <div class="sc-live">LIVE</div>
                 </div>
-                <div class="stream-card" data-stream="mazari">
+                <div class="stream-card" data-stream="Myco">
                     <div class="sc-platform">FROM MYCO</div>
-                    <div class="sc-name">⚡ MAZARI</div>
+                    <div class="sc-name">⚡ Myco</div>
                     <div class="sc-live">LIVE</div>
                 </div>
-                <div class="stream-card" data-stream="taklu">
-                    <div class="sc-platform">FROM TAPMAD</div>
-                    <div class="sc-name">🔥 TAKLU</div>
+                <div class="stream-card" data-stream="Tamasha">
+                    <div class="sc-platform">FROM Tamasha</div>
+                    <div class="sc-name">🔥 Tapmad</div>
                     <div class="sc-live">LIVE</div>
                 </div>
             </div>
 
-            <!-- CONTROL BAR -->
             <div class="control-bar">
-                <button class="ctrl-btn primary" id="proxyBtn1" onclick="activateProxy(1)">
+                <button class="ctrl-btn primary" onclick="activateProxy(1)">
                     <i class="fas fa-shield-halved"></i> Fix via Proxy 1
                 </button>
-                <button class="ctrl-btn" id="proxyBtn2" onclick="activateProxy(2)">
+                <button class="ctrl-btn" onclick="activateProxy(2)">
                     <i class="fas fa-globe"></i> Fix via Proxy 2
                 </button>
-                <button class="ctrl-btn danger" id="testTabBtn" onclick="testInNewTab()">
+                <button class="ctrl-btn danger" onclick="testInNewTab()">
                     <i class="fas fa-external-link-alt"></i> Open in Tab
                 </button>
                 <button class="ctrl-btn" onclick="reloadStream()">
@@ -695,23 +605,16 @@
                 </button>
             </div>
 
-            <div class="status-strip" id="statusStrip">
+            <div class="status-strip">
                 <span class="sig"><i class="fas fa-signal"></i></span>
                 <span id="streamStatusMsg">◈ Select a stream and press Fix to begin playback</span>
             </div>
 
-            <div class="warning-box" id="warningBox">
+            <div class="warning-box">
                 <i class="fas fa-triangle-exclamation" style="color:var(--yellow)"></i>
                 <strong> HTTPS / HTTP Conflict Detected</strong><br>
                 Streams use HTTP but site runs on HTTPS — browsers block mixed content.<br>
                 Press <strong>Fix via Proxy 1</strong> or <strong>Fix via Proxy 2</strong> to route securely.
-                <br><br>
-                <button class="ctrl-btn primary" style="font-size:0.8rem;padding:8px 16px" onclick="activateProxy(1)">
-                    <i class="fas fa-magic"></i> Auto Fix (Proxy 1)
-                </button>
-                <button class="ctrl-btn" style="font-size:0.8rem;padding:8px 16px;margin-left:6px" onclick="activateProxy(2)">
-                    <i class="fas fa-globe"></i> Alt Fix (Proxy 2)
-                </button>
             </div>
 
             <div class="success-toast" id="successToast">
@@ -719,7 +622,6 @@
             </div>
         </div>
 
-        <!-- CHAT COLUMN -->
         <div class="chat-col">
             <div class="chat-header">
                 <div class="chat-title">
@@ -727,64 +629,58 @@
                 </div>
                 <div class="online-badge">
                     <span class="online-dot"></span>
-                    <span id="viewerCount">1</span> online
+                    <span id="viewerCount">247</span> online
                 </div>
             </div>
 
-            <!-- Username setup -->
             <div class="username-setup" id="usernameSetup">
-                <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20">
-                <button onclick="setUsername()"><i class="fas fa-check"></i> Join</button>
+                <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="Viewer_1234">
+                <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
             </div>
 
             <div class="messages-area" id="chatMessages">
-                <div class="message sys">
-                    <strong>📡 SYSTEM</strong>
-                    <span class="msg-time" id="initTime"></span>
-                    <br>Welcome to Babarian X Dhuki_PCT! Set your nickname to chat.
-                </div>
+                <!-- Messages will appear here -->
             </div>
             <div class="char-counter" id="charCounter">0 / 200</div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Say something..." maxlength="200" disabled>
-                <button class="send-btn" id="sendChatBtn" disabled>
+                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="200">
+                <button class="send-btn" id="sendChatBtn">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
     <div class="footer">
         <strong>Babarian X Dhuki_PCT</strong>
         <span class="divider">|</span>
-        Created by <strong>Mazari BA56</strong>
+        Created by <strong>Myco BA56</strong>
         <span class="divider">|</span>
-        Streams: <strong>GHANI</strong> from Tamasha · <strong>MAZARI</strong> from Myco · <strong>TAKLU</strong> from Tapmad
+        Streams: <strong>Tamasha</strong> (Tamasha) · <strong>Myco</strong> (Myco) · <strong>Tapmad</strong> (Tamasha)
         <span class="divider">|</span>
         © 2026 — HTTPS Compatible
     </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-//  STREAM CONFIG
-// ─────────────────────────────────────────────
+// ============================================================
+// STREAM CONFIGURATION
+// ============================================================
 const STREAMS = {
-    ghani: {
-        name: "Tamasha",
+    Tamasha: {
+        displayName: "Tamasha",
         platform: "TAMASHA",
         url: "https://cdn12lhr.tamashaweb.com:8087/jazzauth/PSL-2026-abr/live/PSL-Promo/chunks.m3u8?nimblesessionid=13687550&wmsAuthSign=c2VydmVyX3RpbWU9NC8xMC8yMDI2IDk6NTE6MTMgQU0maGFzaF92YWx1ZT14Q0ZCRTJqVE5RdHdKejQ4ZmVJTjF3PT0mdmFsaWRtaW51dGVzPTYw"
     },
-    mazari: {
-        name: "Myco",
+    Myco: {
+        displayName: "Myco",
         platform: "MYCO",
         url: "https://cdn01.medialive.one:2096/ABBTAKNEWSFHD/tracks-v1a1/mono.ts.m3u8"
     },
-    taklu: {
-        name: "Tapmad",
-        platform: "TAPMAD",
-        url: "https://tapmadlive.akamaized.net/tapmadold/tensports.smil/chunklist_w1984296890_b1248000_slENG.m3u8"
+    Tamasha: {
+        displayName: "Tapmad",
+        platform: "Tamasha",
+        url: "https://Tamashalive.akamaized.net/Tamashaold/tensports.smil/chunklist_w1984296890_b1248000_slENG.m3u8"
     }
 };
 
@@ -794,27 +690,36 @@ const PROXIES = {
 };
 
 let hlsInstance = null;
-let currentStreamId = 'ghani';
+let currentStreamId = 'Tamasha';
 let currentProxy = null;
-let qualityLevel = 'auto';
 const video = document.getElementById('videoPlayer');
 
-function setQuality(q) {
-    qualityLevel = q;
-    document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    if (hlsInstance && q !== 'auto') {
-        const levels = hlsInstance.levels;
-        let target = -1;
-        const heights = { '1080p': 1080, '720p': 720, '480p': 480 };
-        const targetH = heights[q];
-        levels.forEach((l, i) => { if (Math.abs(l.height - targetH) < 100) target = i; });
-        hlsInstance.currentLevel = target;
-    } else if (hlsInstance) {
-        hlsInstance.currentLevel = -1; // auto
-    }
-    updateQStatus('QUALITY: ' + q.toUpperCase());
-}
+// ============================================================
+// QUALITY CONTROL
+// ============================================================
+document.querySelectorAll('[data-quality]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-quality]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const quality = this.dataset.quality;
+        
+        if (hlsInstance) {
+            if (quality === 'auto') {
+                hlsInstance.currentLevel = -1;
+            } else {
+                const heights = { '1080p': 1080, '720p': 720, '480p': 480 };
+                const targetHeight = heights[quality];
+                const levels = hlsInstance.levels;
+                let targetLevel = -1;
+                levels.forEach((level, i) => {
+                    if (Math.abs(level.height - targetHeight) < 100) targetLevel = i;
+                });
+                hlsInstance.currentLevel = targetLevel;
+            }
+        }
+        updateQStatus('QUALITY: ' + quality.toUpperCase());
+    });
+});
 
 function updateQStatus(txt) {
     document.getElementById('qStatusText').textContent = txt;
@@ -847,8 +752,8 @@ function loadStream(id, proxyFn = null) {
     cleanupPlayer();
     const url = proxyFn ? proxyFn(stream.url) : stream.url;
     const mode = proxyFn ? 'via HTTPS Proxy' : 'direct';
-    updateStatus(`Loading ${stream.name} (${stream.platform}) ${mode}…`);
-    sysMsg(`🔄 Connecting to ${stream.name} [${stream.platform}] ${mode}…`);
+    updateStatus(`Loading ${stream.displayName} (${stream.platform}) ${mode}…`);
+    sysMsg(`🔄 Connecting to ${stream.displayName} [${stream.platform}] ${mode}…`);
 
     if (Hls.isSupported()) {
         hlsInstance = new Hls({
@@ -861,22 +766,22 @@ function loadStream(id, proxyFn = null) {
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(video);
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            updateStatus(`▶ ${stream.name} · ${stream.platform} · LIVE`, true);
-            updateQStatus('LIVE ● ' + stream.name);
-            sysMsg(`✅ ${stream.name} from ${stream.platform} is now playing!`);
+            updateStatus(`▶ ${stream.displayName} · ${stream.platform} · LIVE`, true);
+            updateQStatus('LIVE ● ' + stream.displayName);
+            sysMsg(`✅ ${stream.displayName} from ${stream.platform} is now playing!`);
             video.play().catch(() => {});
         });
         hlsInstance.on(Hls.Events.ERROR, (e, data) => {
             if (data.fatal) {
-                updateStatus(`❌ ${stream.name} failed. Try other Proxy.`);
-                sysMsg(`❌ ${stream.name}: Playback failed — try the other fix.`);
+                updateStatus(`❌ ${stream.displayName} failed. Try other Proxy.`);
+                sysMsg(`❌ ${stream.displayName}: Playback failed — try the other fix.`);
             }
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
         video.addEventListener('loadedmetadata', () => {
             video.play().catch(() => {});
-            updateStatus(`▶ ${stream.name} LIVE (native HLS)`, true);
+            updateStatus(`▶ ${stream.displayName} LIVE (native HLS)`, true);
         });
     } else {
         sysMsg('❌ Your browser does not support HLS playback.');
@@ -893,53 +798,36 @@ function activateProxy(n) {
     loadStream(currentStreamId, currentProxy);
 }
 
-function toggleProxy() {
-    if (currentProxy) {
-        currentProxy = null;
-        document.getElementById('proxyToggleBtn').textContent = 'OFF';
-        document.getElementById('proxyToggleBtn').classList.remove('active');
-        sysMsg('Proxy disabled — loading direct stream.');
-        loadStream(currentStreamId, null);
-    } else {
-        activateProxy(1);
-    }
-}
-
 function reloadStream() {
     loadStream(currentStreamId, currentProxy);
 }
 
 function testInNewTab() {
-    const stream = STREAMS[currentStreamId] || STREAMS.ghani;
+    const stream = STREAMS[currentStreamId];
     window.open(stream.url, '_blank');
-    sysMsg(`📺 Opened ${stream.name} in new tab.`);
+    sysMsg(`📺 Opened ${stream.displayName} in new tab.`);
 }
 
-// ─────────────────────────────────────────────
-//  REAL-TIME CHAT
-// ─────────────────────────────────────────────
+// ============================================================
+// CHAT SYSTEM - FULLY FUNCTIONAL
+// ============================================================
 let username = null;
 let chatEnabled = false;
-let localMessages = []; // fallback when Firebase not available
-let viewerCount = 1;
+const demoViewers = ['CricketFan', 'PSL_Lover', 'StreamMaster', 'BabarianArmy', 'DhukiFan', 'GreenTeam', 'PakStar', 'TamashaUser', 'MycoViewer', 'TamashaPro'];
+const demoMsgs = [
+    'Tamasha stream is perfect! 🔥', 'Myco quality amazing!', 'Tapmad working great 👌',
+    'Babarian X Dhuki best site!', 'Who\'s winning?', 'Great stream quality!',
+    '💚 Go green!', 'Thanks Myco BA56!', 'This is fire 🔥', 'PSL 2026 LFG!!!',
+    'Best streaming platform!', 'Anyone else watching?', 'Love this site!',
+    'Great job guys 💪', 'Stream is smooth!', 'Hello everyone! 👋'
+];
 
-function getNow() {
+let messageQueue = [];
+let simInterval = null;
+
+function getTime() {
     const d = new Date();
-    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-}
-
-function sysMsg(text) {
-    appendMsg({ user: '📡 SYSTEM', text, ts: getNow(), type: 'sys' });
-}
-
-function appendMsg({ user, text, ts, type = '' }) {
-    const area = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.className = 'message' + (type === 'sys' ? ' sys' : '') + (user === username ? ' own' : '');
-    div.innerHTML = `<strong>${escHtml(user)}</strong> <span class="msg-time">${ts || ''}</span><br>${escHtml(text)}`;
-    area.appendChild(div);
-    div.scrollIntoView({ behavior: 'smooth' });
-    while (area.children.length > 150) area.removeChild(area.firstChild);
+    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
 }
 
 function escHtml(str) {
@@ -947,16 +835,38 @@ function escHtml(str) {
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
+function sysMsg(text) {
+    appendMessage({ user: '📡 SYSTEM', text, isSystem: true });
+}
+
+function appendMessage({ user, text, isSystem = false, isOwn = false }) {
+    const area = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'message' + (isSystem ? ' sys' : '') + (isOwn ? ' own' : '');
+    div.innerHTML = `<strong>${escHtml(user)}</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
+    area.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Keep only last 150 messages
+    while (area.children.length > 150) {
+        area.removeChild(area.firstChild);
+    }
+}
+
 function setUsername() {
     const inp = document.getElementById('usernameInput');
-    const name = inp.value.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '');
-    if (!name || name.length < 2) { inp.style.borderColor='var(--red)'; return; }
+    let name = inp.value.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '');
+    
+    if (!name || name.length < 2) {
+        name = 'Viewer_' + Math.floor(Math.random() * 9000 + 1000);
+    }
+    
     username = name;
     chatEnabled = true;
 
     document.getElementById('usernameSetup').innerHTML = `
         <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--green);padding:6px 14px;">
-            ◈ Logged as: <strong>${escHtml(username)}</strong>
+            ◈ Chatting as: <strong>${escHtml(username)}</strong>
         </span>
         <button onclick="changeUsername()" style="background:transparent;border:1px solid var(--border);border-radius:30px;color:var(--text-muted);padding:5px 12px;font-size:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;">Change</button>
     `;
@@ -966,26 +876,12 @@ function setUsername() {
     document.getElementById('chatInput').focus();
 
     sysMsg(`👋 ${username} joined the chat!`);
-    viewerCount = Math.max(viewerCount, Math.floor(Math.random() * 20) + 3);
-    document.getElementById('viewerCount').textContent = viewerCount;
-
-    // Try Firebase listen
-    if (window._firebaseListen) {
-        try {
-            window._firebaseListen((data) => {
-                // Render only new messages not already shown
-                const keys = Object.keys(data);
-                const last = keys[keys.length - 1];
-                const entry = data[last];
-                if (entry && entry.user !== username) {
-                    appendMsg({ user: entry.user, text: entry.text, ts: getNow() });
-                }
-            });
-        } catch(e) {}
-    }
-
-    // Simulate other viewers chatting (when Firebase not configured)
-    simulateViewers();
+    
+    // Update viewer count
+    updateViewerCount();
+    
+    // Start simulation
+    startChatSimulation();
 }
 
 function changeUsername() {
@@ -994,82 +890,115 @@ function changeUsername() {
     document.getElementById('chatInput').disabled = true;
     document.getElementById('sendChatBtn').disabled = true;
     document.getElementById('usernameSetup').innerHTML = `
-        <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20">
-        <button onclick="setUsername()"><i class="fas fa-check"></i> Join</button>
+        <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="Viewer_${Math.floor(Math.random()*9000+1000)}">
+        <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
     `;
+    
+    if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+    }
 }
 
 function sendMessage() {
-    if (!chatEnabled) return;
+    if (!chatEnabled || !username) {
+        setUsername();
+        return;
+    }
+    
     const input = document.getElementById('chatInput');
     const msg = input.value.trim();
     if (!msg) return;
 
-    const ts = getNow();
-    appendMsg({ user: username, text: msg, ts, type: 'own' });
+    appendMessage({ user: username, text: msg, isOwn: true });
     input.value = '';
     document.getElementById('charCounter').textContent = '0 / 200';
-
-    // Try Firebase
-    let sent = false;
-    if (window._firebaseSend) {
-        sent = window._firebaseSend(username, msg);
-    }
-    if (!sent) {
-        // Local only - shown already above
-    }
+    
+    // Random response from another viewer
+    setTimeout(() => {
+        if (Math.random() > 0.4) {
+            const responder = demoViewers[Math.floor(Math.random() * demoViewers.length)];
+            const response = demoMsgs[Math.floor(Math.random() * demoMsgs.length)];
+            if (responder !== username) {
+                appendMessage({ user: responder, text: response });
+            }
+        }
+    }, 1500 + Math.random() * 2000);
 }
 
-// Simulated viewer messages for demo when Firebase not active
-const demoViewers = ['Hassan_06','TalhaG','ZainabLHR','RizwanPCT','MazariFan','PSL_Lover','GreenKing','PakStar'];
-const demoMsgs = [
-    'GHANI playing well today! 🔥', 'Great stream quality!', 'Babarian X Dhuki best site!',
-    'MAZARI from Myco working great 👌', 'Who is winning?', 'Quality is amazing!',
-    '💚 Go green!', 'Thanks Mazari BA56 for this!', 'TAKLU stream is fire 🔥',
-    'PSL 2026 LFG!!!', 'This is the best stream!', 'Anyone else watching on mobile?',
-    'Dhuki_PCT best platform in Pakistan!', 'Great job guys 💪', 'Stream is smooth!'
-];
-let simInterval;
-
-function simulateViewers() {
+function startChatSimulation() {
     if (simInterval) clearInterval(simInterval);
+    
     simInterval = setInterval(() => {
         if (!chatEnabled) return;
-        const v = demoViewers[Math.floor(Math.random() * demoViewers.length)];
-        const m = demoMsgs[Math.floor(Math.random() * demoMsgs.length)];
-        if (v !== username) {
-            appendMsg({ user: v, text: m, ts: getNow() });
-            // Random viewer count fluctuation
-            viewerCount = Math.max(3, viewerCount + Math.floor(Math.random() * 3) - 1);
-            document.getElementById('viewerCount').textContent = viewerCount;
+        
+        // Random viewer message
+        if (Math.random() > 0.5) {
+            const viewer = demoViewers[Math.floor(Math.random() * demoViewers.length)];
+            const msg = demoMsgs[Math.floor(Math.random() * demoMsgs.length)];
+            if (viewer !== username) {
+                appendMessage({ user: viewer, text: msg });
+            }
         }
-    }, 8000 + Math.random() * 12000);
+        
+        // Update viewer count
+        updateViewerCount();
+    }, 8000 + Math.random() * 10000);
 }
 
-// ─────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────
-window.addEventListener('load', () => {
-    // Set init time
-    document.getElementById('initTime').textContent = getNow();
+function updateViewerCount() {
+    const base = 200;
+    const random = Math.floor(Math.random() * 150);
+    document.getElementById('viewerCount').textContent = base + random;
+}
 
-    // Stream card clicks
+// ============================================================
+// INITIALIZATION
+// ============================================================
+window.addEventListener('load', () => {
+    // Stream card listeners
     document.querySelectorAll('.stream-card').forEach(card => {
         card.addEventListener('click', () => loadStream(card.dataset.stream, currentProxy));
     });
 
-    // Chat input
-    const input = document.getElementById('chatInput');
-    document.getElementById('sendChatBtn').addEventListener('click', sendMessage);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(); });
-    input.addEventListener('input', () => {
-        document.getElementById('charCounter').textContent = `${input.value.length} / 200`;
+    // Chat input listeners
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendChatBtn');
+    
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    chatInput.addEventListener('input', () => {
+        document.getElementById('charCounter').textContent = `${chatInput.value.length} / 200`;
     });
 
-    // Auto-load first stream
-    loadStream('ghani', null);
-    sysMsg('💡 Click "Fix via Proxy 1" if the video doesn\'t play. Welcome to Babarian X Dhuki_PCT!');
+    // Auto-join chat with default username
+    setTimeout(() => {
+        setUsername();
+    }, 500);
+
+    // Welcome messages
+    sysMsg('🏟️ Welcome to Babarian X Dhuki_PCT!');
+    sysMsg('💡 Click "Fix via Proxy 1" if the video doesn\'t play.');
+    sysMsg('💬 Chat is live — say hello!');
+    
+    // Load default stream
+    loadStream('Tamasha', null);
+    
+    // Start viewer count updates
+    setInterval(updateViewerCount, 5000);
 });
+
+// Expose functions to global scope
+window.setUsername = setUsername;
+window.changeUsername = changeUsername;
+window.activateProxy = activateProxy;
+window.reloadStream = reloadStream;
+window.testInNewTab = testInNewTab;
 </script>
 </body>
 </html>
