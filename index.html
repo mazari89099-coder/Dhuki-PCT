@@ -7,6 +7,76 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded, serverTimestamp, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        
+        // 🔥 YOUR ACTUAL FIREBASE CONFIGURATION 🔥
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-wAGcaxNgT4eHwJVCXsHh5yiPSxlmE5Y",
+            authDomain: "babariandhukipct.firebaseapp.com",
+            databaseURL: "https://babariandhukipct-default-rtdb.firebaseio.com",
+            projectId: "babariandhukipct",
+            storageBucket: "babariandhukipct.appspot.com",
+            messagingSenderId: "483175877430",
+            appId: "1:483175877430:web:831a834b56ec4938530197"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const chatRef = ref(database, 'live_chat');
+        const onlineRef = ref(database, 'online_users');
+        
+        let userRef = null;
+        
+        // Export Firebase functions to global scope
+        window.firebaseSendMessage = function(username, message) {
+            push(chatRef, {
+                username: username,
+                message: message,
+                timestamp: serverTimestamp()
+            });
+        };
+        
+        window.firebaseListenMessages = function(callback) {
+            onChildAdded(chatRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    callback({
+                        username: data.username,
+                        message: data.message,
+                        timestamp: data.timestamp
+                    });
+                }
+            });
+        };
+        
+        window.firebaseAddOnlineUser = function(username) {
+            const userKey = username.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Date.now();
+            userRef = ref(database, 'online_users/' + userKey);
+            
+            set(userRef, {
+                username: username,
+                lastSeen: serverTimestamp()
+            });
+            
+            onDisconnect(userRef).remove();
+        };
+        
+        window.firebaseGetOnlineCount = function(callback) {
+            onValue(onlineRef, (snapshot) => {
+                const data = snapshot.val();
+                const count = data ? Object.keys(data).length : 0;
+                callback(count);
+            });
+        };
+        
+        console.log('✅ Firebase connected to babariandhukipct!');
+    </script>
+    
     <style>
         :root {
             --green:       #00ff7f;
@@ -199,6 +269,7 @@
             color: rgba(0,255,127,0.5);
             letter-spacing: 2px;
             pointer-events: none;
+            z-index: 10;
         }
         #videoPlayer { width: 100%; min-height: 420px; background: #000; display: block; }
 
@@ -533,12 +604,14 @@
     </header>
 
     <div class="quality-bar">
-        <span><i class="fas fa-video" style="color:var(--green);"></i> <label>STREAM QUALITY:</label> FORCED 1080p FHD</span>
+        <span><i class="fas fa-video" style="color:var(--green);"></i> <label>QUALITY:</label> <strong style="color:#fff;">FORCED MAX QUALITY (1080p/HD)</strong></span>
         <span class="q-sep">|</span>
         <span><i class="fas fa-microchip"></i> CODEC: HLS / H.264</span>
+        <span class="q-sep">|</span>
+        <span><i class="fas fa-arrow-up"></i> <span id="currentQuality">Auto → Max</span></span>
         <div class="q-status">
             <span class="dot"></span>
-            <span id="qStatusText">READY</span>
+            <span id="qStatusText">MAX QUALITY</span>
         </div>
     </div>
 
@@ -606,7 +679,7 @@
                 </div>
                 <div class="online-badge">
                     <span class="online-dot"></span>
-                    <span id="viewerCount">1</span> online
+                    <span id="viewerCount">0</span> online
                 </div>
             </div>
 
@@ -676,30 +749,40 @@ let currentProxy = null;
 const video = document.getElementById('videoPlayer');
 
 // ============================================================
-// FORCE FULL QUALITY (1080p)
+// FORCE MAX QUALITY
 // ============================================================
-function forceHighestQuality() {
-    if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 0) {
-        // Find highest quality level (highest height/bitrate)
-        let highestLevel = 0;
-        let maxHeight = 0;
-        let maxBitrate = 0;
-        
-        hlsInstance.levels.forEach((level, index) => {
-            if (level.height > maxHeight || (level.height === maxHeight && level.bitrate > maxBitrate)) {
-                maxHeight = level.height;
-                maxBitrate = level.bitrate;
-                highestLevel = index;
-            }
-        });
-        
-        hlsInstance.currentLevel = highestLevel;
-        hlsInstance.autoLevelCapping = -1;
-        
-        const quality = hlsInstance.levels[highestLevel];
-        const height = quality?.height || 1080;
-        updateQStatus(`FORCED ${height}p FHD`);
+function forceMaxQuality() {
+    if (!hlsInstance || !hlsInstance.levels || hlsInstance.levels.length === 0) {
+        setTimeout(forceMaxQuality, 500);
+        return;
     }
+    
+    const levels = hlsInstance.levels;
+    let maxIndex = 0;
+    let maxHeight = 0;
+    let maxBitrate = 0;
+    
+    levels.forEach((level, index) => {
+        const height = level.height || 0;
+        const bitrate = level.bitrate || 0;
+        if (height > maxHeight || (height === maxHeight && bitrate > maxBitrate)) {
+            maxHeight = height;
+            maxBitrate = bitrate;
+            maxIndex = index;
+        }
+    });
+    
+    hlsInstance.currentLevel = maxIndex;
+    hlsInstance.autoLevelCapping = -1;
+    hlsInstance.autoLevelEnabled = false;
+    hlsInstance.loadLevel = maxIndex;
+    
+    const qualityInfo = levels[maxIndex];
+    const height = qualityInfo.height || 'MAX';
+    const bitrate = qualityInfo.bitrate ? Math.round(qualityInfo.bitrate / 1000) + 'k' : '';
+    
+    document.getElementById('currentQuality').textContent = `${height}p ${bitrate}`;
+    document.getElementById('qStatusText').textContent = `${height}p MAX`;
 }
 
 function updateQStatus(txt) {
@@ -734,7 +817,6 @@ function loadStream(id, proxyFn = null) {
     const url = proxyFn ? proxyFn(stream.url) : stream.url;
     const mode = proxyFn ? 'via HTTPS Proxy' : 'direct';
     updateStatus(`Loading ${stream.displayName} (${stream.platform}) ${mode}…`);
-    sysMsg(`🔄 Connecting to ${stream.displayName} [${stream.platform}] ${mode}…`);
 
     if (Hls.isSupported()) {
         hlsInstance = new Hls({
@@ -744,50 +826,38 @@ function loadStream(id, proxyFn = null) {
             manifestLoadingMaxRetry: 3,
             fragLoadingTimeOut: 20000,
             autoStartLoad: true,
-            startLevel: -1
+            capLevelToPlayerSize: false
         });
+        
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(video);
         
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
             updateStatus(`▶ ${stream.displayName} · ${stream.platform} · LIVE`, true);
-            sysMsg(`✅ ${stream.displayName} from ${stream.platform} is now playing!`);
-            
-            // Force highest quality
-            setTimeout(() => {
-                forceHighestQuality();
-            }, 500);
-            
+            forceMaxQuality();
             video.play().catch(() => {});
         });
         
-        hlsInstance.on(Hls.Events.LEVEL_LOADED, () => {
-            forceHighestQuality();
+        hlsInstance.on(Hls.Events.LEVEL_SWITCHED, () => {
+            setTimeout(forceMaxQuality, 100);
         });
         
         hlsInstance.on(Hls.Events.ERROR, (e, data) => {
             if (data.fatal) {
                 updateStatus(`❌ ${stream.displayName} failed. Try other Proxy.`);
-                sysMsg(`❌ ${stream.displayName}: Playback failed — try the other fix.`);
             }
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
-        video.addEventListener('loadedmetadata', () => {
-            video.play().catch(() => {});
-            updateStatus(`▶ ${stream.displayName} LIVE (native HLS)`, true);
-            updateQStatus('FORCED BEST QUALITY');
-        });
-    } else {
-        sysMsg('❌ Your browser does not support HLS playback.');
+        video.play().catch(() => {});
+        updateStatus(`▶ ${stream.displayName} LIVE (native HLS)`, true);
     }
 }
 
 function activateProxy(n) {
     currentProxy = PROXIES[n];
-    const toast = document.getElementById('successToast');
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3500);
+    document.getElementById('successToast').style.display = 'block';
+    setTimeout(() => document.getElementById('successToast').style.display = 'none', 3500);
     loadStream(currentStreamId, currentProxy);
 }
 
@@ -797,18 +867,15 @@ function reloadStream() {
 
 function openInExternalPlayer() {
     const stream = STREAMS[currentStreamId];
-    if (stream) {
-        // Open raw stream URL in new tab (direct stream)
-        window.open(stream.url, '_blank');
-        sysMsg(`📺 Opened ${stream.displayName} in external player (new tab)`);
-    }
+    if (stream) window.open(stream.url, '_blank');
 }
 
 // ============================================================
-// CHAT SYSTEM
+// FIREBASE REAL-TIME CHAT
 // ============================================================
 let username = null;
 let chatEnabled = false;
+const processedMessages = new Set();
 
 function getTime() {
     const d = new Date();
@@ -820,15 +887,16 @@ function escHtml(str) {
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-function sysMsg(text) {
-    appendMessage({ user: '📡 SYSTEM', text, isSystem: true });
-}
-
-function appendMessage({ user, text, isSystem = false, isOwn = false }) {
+function appendMessage({ username: msgUser, message: text, isSystem = false, isOwn = false }) {
     const area = document.getElementById('chatMessages');
+    
+    const msgKey = `${msgUser}-${text}-${Date.now()}`;
+    if (processedMessages.has(msgKey)) return;
+    processedMessages.add(msgKey);
+    
     const div = document.createElement('div');
     div.className = 'message' + (isSystem ? ' sys' : '') + (isOwn ? ' own' : '');
-    div.innerHTML = `<strong>${escHtml(user)}</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
+    div.innerHTML = `<strong>${escHtml(msgUser)}</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
     area.appendChild(div);
     div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     
@@ -860,8 +928,11 @@ function setUsername() {
     document.getElementById('sendChatBtn').disabled = false;
     document.getElementById('chatInput').focus();
 
-    sysMsg(`👋 ${username} joined the chat!`);
-    document.getElementById('viewerCount').textContent = '1';
+    appendMessage({ username: '📡 SYSTEM', message: `👋 ${username} joined the chat!`, isSystem: true });
+    
+    if (window.firebaseAddOnlineUser) {
+        window.firebaseAddOnlineUser(username);
+    }
 }
 
 function changeUsername() {
@@ -873,7 +944,6 @@ function changeUsername() {
         <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="">
         <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
     `;
-    document.getElementById('viewerCount').textContent = '1';
 }
 
 function sendMessage() {
@@ -886,7 +956,12 @@ function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    appendMessage({ user: username, text: msg, isOwn: true });
+    if (window.firebaseSendMessage) {
+        window.firebaseSendMessage(username, msg);
+    } else {
+        appendMessage({ username: username, message: msg, isOwn: true });
+    }
+    
     input.value = '';
     document.getElementById('charCounter').textContent = '0 / 200';
 }
@@ -913,10 +988,28 @@ window.addEventListener('load', () => {
         document.getElementById('charCounter').textContent = `${chatInput.value.length} / 200`;
     });
 
-    sysMsg('🏟️ Welcome to Babarian X Dhuki_PCT!');
-    sysMsg('💡 Click "Fix via Proxy 1" if the video doesn\'t play.');
-    sysMsg('💬 Set your nickname above to start chatting.');
-    sysMsg('🎬 Streams force 1080p FHD quality!');
+    if (window.firebaseListenMessages) {
+        window.firebaseListenMessages((data) => {
+            if (data.username !== '📡 SYSTEM') {
+                const isOwn = data.username === username;
+                appendMessage({
+                    username: data.username,
+                    message: data.message,
+                    isOwn: isOwn
+                });
+            }
+        });
+    }
+    
+    if (window.firebaseGetOnlineCount) {
+        window.firebaseGetOnlineCount((count) => {
+            document.getElementById('viewerCount').textContent = count || 0;
+        });
+    }
+
+    appendMessage({ username: '📡 SYSTEM', message: '🏟️ Welcome to Babarian X Dhuki_PCT!', isSystem: true });
+    appendMessage({ username: '📡 SYSTEM', message: '💡 Click "Fix via Proxy 1" if the video doesn\'t play.', isSystem: true });
+    appendMessage({ username: '📡 SYSTEM', message: '💬 REAL-TIME CHAT IS LIVE! Messages sync across all users!', isSystem: true });
     
     loadStream('Tamasha', null);
 });
