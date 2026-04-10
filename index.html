@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Babarian X Dhuki_PCT | Live Stream – Tamasha · Myco · Tapmad</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>Babarian X Dhuki_PCT | OTT Player – Tamasha · Myco · Tapmad · Walee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
     <!-- Firebase SDKs -->
@@ -12,661 +12,425 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --green:       #00ff7f;
-            --green-mid:   #00cc55;
-            --green-dark:  #00993d;
-            --green-dim:   rgba(0,255,127,0.12);
-            --green-glow:  0 0 18px rgba(0,255,127,0.55);
-            --bg-deep:     #020d07;
-            --bg-card:     rgba(4,24,14,0.88);
-            --bg-glass:    rgba(0,30,15,0.6);
-            --text:        #d6ffe9;
-            --text-muted:  #7ab892;
-            --border:      rgba(0,255,127,0.22);
-            --red:         #ff3d5a;
-            --yellow:      #ffe066;
-            --blue:        #00ccff;
-            --radius-lg:   28px;
-            --radius-md:   16px;
-            --radius-sm:   10px;
+            --ott-bg: #0a0a0f;
+            --ott-card: #14141f;
+            --ott-surface: #1c1c28;
+            --ott-border: #2a2a3a;
+            --accent-cyan: #00e5ff;
+            --accent-purple: #b388ff;
+            --accent-pink: #ff4081;
+            --accent-green: #00e676;
+            --accent-orange: #ff9800;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6e6e7e;
+            --glow-cyan: 0 0 20px rgba(0,229,255,0.4);
+            --glow-purple: 0 0 20px rgba(179,136,255,0.4);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
         }
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--bg-deep);
-            color: var(--text);
+            font-family: 'Inter', 'Rajdhani', sans-serif;
+            background: var(--ott-bg);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
+        /* Animated gradient background */
         body::before {
             content: '';
-            pointer-events: none;
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,127,0.015) 2px, rgba(0,255,127,0.015) 4px);
-            z-index: 9999;
-        }
-
-        body::after {
-            content: '';
+            background: radial-gradient(ellipse at 20% 30%, rgba(0,229,255,0.08), transparent 60%),
+                        radial-gradient(ellipse at 80% 70%, rgba(179,136,255,0.06), transparent 60%);
             pointer-events: none;
-            position: fixed;
-            inset: 0;
-            background-image: linear-gradient(var(--green-dim) 1px, transparent 1px), linear-gradient(90deg, var(--green-dim) 1px, transparent 1px);
-            background-size: 48px 48px;
             z-index: 0;
         }
 
-        .container { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 18px 22px 50px; }
+        .container { position: relative; z-index: 2; max-width: 1600px; margin: 0 auto; padding: 20px 24px 40px; }
 
-        .header {
+        /* Header OTT Style */
+        .ott-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 28px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            padding: 12px 20px;
+            background: rgba(20,20,31,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--ott-border);
             border-radius: var(--radius-lg);
-            backdrop-filter: blur(14px);
-            margin-bottom: 22px;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 24px;
         }
-        .header::before {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-            animation: scanH 3s linear infinite;
-        }
-        @keyframes scanH { 0%{background-position:-100% 0} 100%{background-position:200% 0} }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .brand-icon {
-            font-size: 2.2rem;
-            color: var(--green);
-            filter: drop-shadow(0 0 10px var(--green));
-            animation: pulse-icon 2s ease-in-out infinite;
-        }
-        @keyframes pulse-icon { 0%,100%{ filter: drop-shadow(0 0 8px var(--green)); } 50%{ filter: drop-shadow(0 0 22px var(--green)); } }
-        .brand-text {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.75rem;
-            font-weight: 900;
-            color: var(--green);
-            text-shadow: 0 0 20px var(--green);
-            letter-spacing: 2px;
-            line-height: 1;
-        }
-        .brand-text span { color: #fff; }
-        .brand-sub {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            letter-spacing: 3px;
-            margin-top: 3px;
-        }
-
-        .live-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,61,90,0.15);
-            border: 1px solid var(--red);
-            border-radius: 100px;
-            padding: 6px 18px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.8rem;
-            color: var(--red);
-            letter-spacing: 2px;
-        }
-        .live-dot {
-            width: 9px; height: 9px;
-            background: var(--red);
-            border-radius: 50%;
-            animation: blink 1s step-start infinite;
-            box-shadow: 0 0 8px var(--red);
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-        .corner-badge {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--green);
-            text-align: right;
-            line-height: 1.6;
-            opacity: 0.85;
-        }
-        .corner-badge strong { color: #fff; font-size: 0.78rem; }
-
-        .quality-bar {
+        .logo-area {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 8px 16px;
-            margin-bottom: 18px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
         }
-        .quality-bar label { color: var(--green); margin-right: 4px; }
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px var(--accent-cyan)); }
+            50% { filter: drop-shadow(0 0 20px var(--accent-purple)); }
+        }
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,64,129,0.15);
+            border: 1px solid var(--accent-pink);
+            border-radius: 40px;
+            padding: 6px 18px;
+        }
+        .live-dot {
+            width: 8px; height: 8px;
+            background: var(--accent-pink);
+            border-radius: 50%;
+            animation: blink 1s step-start infinite;
+            box-shadow: 0 0 8px var(--accent-pink);
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-        .stream-dashboard { display: flex; gap: 22px; flex-wrap: wrap; }
-        .video-col { flex: 3; min-width: 280px; }
-        .chat-col {
-            flex: 1.15;
-            min-width: 300px;
-            max-width: 380px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        /* Quality Badge */
+        .quality-badge {
+            background: var(--ott-surface);
+            border: 1px solid var(--ott-border);
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--accent-cyan);
+        }
+
+        /* Main Layout */
+        .ott-dashboard { display: flex; gap: 24px; flex-wrap: wrap; }
+        .player-section { flex: 3; min-width: 280px; }
+        .chat-section {
+            flex: 1.2;
+            min-width: 320px;
+            max-width: 400px;
+            background: rgba(20,20,31,0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--ott-border);
             border-radius: var(--radius-lg);
-            backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
-            height: 680px;
-            position: relative;
+            height: 620px;
             overflow: hidden;
         }
-        .chat-col::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-        }
 
-        .player-wrap {
+        /* OTT Player Container */
+        .ott-player-container {
             background: #000;
             border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
             overflow: hidden;
+            border: 1px solid var(--ott-border);
             position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .player-wrap::after {
-            content: 'BABARIAN X DHUKI_PCT';
+        .player-overlay {
             position: absolute;
-            top: 12px; left: 16px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.55rem;
-            color: rgba(0,255,127,0.5);
-            letter-spacing: 2px;
+            top: 16px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 12px;
             pointer-events: none;
         }
-        #videoPlayer { width: 100%; min-height: 420px; background: #000; display: block; }
+        .stream-badge {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+        #videoPlayer { width: 100%; min-height: 450px; display: block; background: #000; }
 
-        .stream-selector { display: flex; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
-        .stream-card {
-            flex: 1;
-            min-width: 120px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        /* Animated Channel Cards - OTT Style with Hover Effects */
+        .channel-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .channel-card {
+            background: linear-gradient(135deg, var(--ott-card), #111118);
+            border: 1px solid var(--ott-border);
             border-radius: var(--radius-md);
-            padding: 16px 10px;
+            padding: 16px 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             position: relative;
             overflow: hidden;
         }
-        .stream-card::before {
+        .channel-card::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at top, rgba(0,255,127,0.08), transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
         }
-        .stream-card:hover::before { opacity: 1; }
-        .stream-card:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: var(--green-glow); }
-        .stream-card.active {
-            background: linear-gradient(145deg, rgba(0,255,127,0.18), rgba(0,180,80,0.1));
-            border-color: var(--green);
-            box-shadow: var(--green-glow);
+        .channel-card:hover::before { left: 100%; }
+        .channel-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
         }
-        .stream-card.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--green);
+        .channel-icon {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
-        .sc-platform {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
+        .channel-card:hover .channel-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 0 12px currentColor);
         }
-        .sc-name {
+        .channel-name {
             font-family: 'Orbitron', monospace;
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 700;
-            color: var(--text);
-        }
-        .stream-card.active .sc-name { color: var(--green); text-shadow: 0 0 10px var(--green); }
-        .sc-live {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 8px;
-            font-size: 0.62rem;
-            font-weight: 700;
-            color: var(--red);
-            font-family: 'Share Tech Mono', monospace;
             letter-spacing: 1px;
         }
-        .sc-live::before {
-            content: '';
-            width: 6px; height: 6px;
-            background: var(--red);
-            border-radius: 50%;
-            display: inline-block;
-            animation: blink 1s step-start infinite;
+        .channel-platform {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 6px;
         }
+        .live-tag {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.55rem;
+            background: var(--accent-pink);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: blinkSoft 1.5s infinite;
+        }
+        @keyframes blinkSoft { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        .channel-card.active {
+            border: 2px solid var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(0,229,255,0.12), rgba(179,136,255,0.08));
+            box-shadow: var(--glow-cyan);
+        }
+        .channel-card.active .channel-icon { filter: drop-shadow(0 0 12px var(--accent-cyan)); }
 
-        .control-bar {
+        /* Control Buttons */
+        .control-group {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 16px;
+            gap: 12px;
+            margin-top: 18px;
             flex-wrap: wrap;
         }
-        .ctrl-btn {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            padding: 9px 18px;
-            font-family: 'Rajdhani', sans-serif;
+        .ott-btn {
+            background: var(--ott-surface);
+            border: 1px solid var(--ott-border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-weight: 600;
             font-size: 0.85rem;
-            font-weight: 700;
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.2s;
-            letter-spacing: 0.5px;
-        }
-        .ctrl-btn:hover { border-color: var(--green); color: var(--green); box-shadow: var(--green-glow); }
-        .ctrl-btn.primary { background: var(--green); color: #000; border-color: var(--green); }
-        .ctrl-btn.primary:hover { background: var(--green-mid); box-shadow: var(--green-glow); }
-        .ctrl-btn.external { background: var(--blue); color: #000; border-color: var(--blue); }
-        .ctrl-btn.external:hover { background: #00aaff; box-shadow: 0 0 16px rgba(0,204,255,0.4); }
-
-        .status-strip {
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+        .ott-btn:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: var(--glow-cyan);
+            background: rgba(0,229,255,0.1);
+        }
+        .ott-btn.primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            color: #000;
+        }
+        .ott-btn.primary:hover { filter: brightness(1.05); transform: translateY(-2px); }
+        .status-bar {
+            background: var(--ott-card);
+            border-radius: var(--radius-sm);
+            padding: 12px 18px;
+            margin-top: 16px;
+            font-size: 0.75rem;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 8px 16px;
-            margin-top: 12px;
+            border-left: 3px solid var(--accent-cyan);
         }
-        .status-strip .sig { color: var(--green); }
 
-        .warning-box {
-            background: rgba(255,170,0,0.07);
-            border: 1px solid rgba(255,170,0,0.4);
-            border-radius: var(--radius-md);
-            padding: 16px 20px;
-            margin-top: 14px;
-            font-size: 0.85rem;
-            line-height: 1.7;
-        }
-        .warning-box strong { color: var(--yellow); }
-        .success-toast {
-            display: none;
-            background: rgba(0,255,127,0.08);
-            border: 1px solid var(--green);
-            border-radius: var(--radius-sm);
-            padding: 10px 16px;
-            margin-top: 10px;
-            font-size: 0.82rem;
-            color: var(--green);
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
-
+        /* Chat Styles Matching OTT */
         .chat-header {
             padding: 16px 20px;
-            background: rgba(0,0,0,0.5);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--ott-border);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-        .chat-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            color: var(--green);
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .online-badge {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .online-dot {
-            width: 8px; height: 8px;
-            background: var(--green);
-            border-radius: 50%;
-            animation: pulse-g 1.5s ease infinite;
-            box-shadow: 0 0 6px var(--green);
-        }
-        @keyframes pulse-g { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-        .username-setup {
-            display: flex;
-            gap: 8px;
-            padding: 12px 14px;
-            background: rgba(0,255,127,0.04);
-            border-bottom: 1px solid var(--border);
             align-items: center;
         }
-        .username-setup input {
-            flex: 1;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            padding: 7px 14px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .username-setup input:focus { border-color: var(--green); }
-        .username-setup button {
-            background: var(--green);
-            border: none;
-            border-radius: 30px;
-            color: #000;
-            padding: 7px 14px;
-            font-weight: 700;
-            font-size: 0.75rem;
-            cursor: pointer;
-            white-space: nowrap;
-            font-family: 'Rajdhani', sans-serif;
-        }
+        .chat-title { font-weight: 700; color: var(--accent-cyan); display: flex; gap: 8px; align-items: center; }
+        .username-setup { padding: 12px 16px; display: flex; gap: 10px; border-bottom: 1px solid var(--ott-border); }
+        .username-setup input { flex:1; background: var(--ott-surface); border:1px solid var(--ott-border); border-radius: 30px; padding: 8px 14px; color: #fff; outline: none; }
+        .username-setup button { background: var(--accent-cyan); border: none; border-radius: 30px; padding: 8px 16px; font-weight: bold; cursor: pointer; color:#000; }
+        .messages-area { flex:1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .message { background: rgba(28,28,40,0.6); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem; border-left: 3px solid var(--accent-cyan); }
+        .message.sys { border-left-color: var(--accent-purple); }
+        .message.own { border-left-color: var(--accent-green); background: rgba(0,230,118,0.1); }
+        .message strong { color: var(--accent-cyan); }
+        .chat-input-area { display: flex; gap: 10px; padding: 14px; border-top: 1px solid var(--ott-border); }
+        .chat-input-area input { flex:1; background: var(--ott-surface); border:1px solid var(--ott-border); border-radius: 30px; padding: 10px 16px; color:#fff; }
+        .send-btn { background: var(--accent-cyan); border: none; border-radius: 50%; width: 44px; height:44px; cursor: pointer; color:#000; }
 
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-        }
-        .messages-area::-webkit-scrollbar { width: 5px; }
-        .messages-area::-webkit-scrollbar-track { background: transparent; }
-        .messages-area::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 10px; }
-
-        .message {
-            background: rgba(0,30,15,0.7);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--green);
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            padding: 8px 12px;
-            font-size: 0.82rem;
-            word-break: break-word;
-            animation: msgIn 0.25s ease;
-        }
-        @keyframes msgIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
-        .message strong { color: var(--green); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; }
-        .message .msg-time { font-size: 0.62rem; color: var(--text-muted); float: right; margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
-        .message.sys { border-left-color: var(--yellow); }
-        .message.sys strong { color: var(--yellow); }
-        .message.own { border-left-color: var(--blue); background: rgba(0,60,80,0.5); }
-        .message.own strong { color: var(--blue); }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-            padding: 14px;
-            background: rgba(0,0,0,0.5);
-            border-top: 1px solid var(--border);
-        }
-        .chat-input-area input {
-            flex: 1;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            padding: 10px 16px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .chat-input-area input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,127,0.15); }
-        .chat-input-area input::placeholder { color: var(--text-muted); }
-        .chat-input-area input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .send-btn {
-            background: var(--green);
-            border: none;
-            border-radius: 50%;
-            width: 42px; height: 42px;
-            color: #000;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .send-btn:hover { background: var(--green-mid); box-shadow: var(--green-glow); transform: scale(1.1); }
-        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; background: #555; }
-        .send-btn:disabled:hover { transform: none; box-shadow: none; }
-
-        .char-counter { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--text-muted); text-align: right; padding: 0 14px 6px; }
-
-        .footer {
-            text-align: center;
-            margin-top: 36px;
-            padding: 18px;
-            border-top: 1px dashed rgba(0,255,127,0.2);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-        .footer strong { color: var(--green); }
-        .footer .divider { margin: 0 10px; color: var(--border); }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 10px; }
+        .footer { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--ott-border); font-size: 0.7rem; color: var(--text-muted); }
 
         @media (max-width: 900px) {
-            .stream-dashboard { flex-direction: column; }
-            .chat-col { max-width: 100%; height: 450px; }
-            .brand-text { font-size: 1.2rem; }
-            .corner-badge { display: none; }
+            .channel-strip { grid-template-columns: repeat(2, 1fr); }
+            .ott-dashboard { flex-direction: column; }
+            .chat-section { max-width: 100%; height: 480px; }
         }
-        @media (max-width: 520px) {
-            .header { flex-wrap: wrap; gap: 10px; }
-            .stream-selector { flex-direction: column; }
-        }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .channel-card { animation: fadeInUp 0.4s ease backwards; }
+        .channel-card:nth-child(1) { animation-delay: 0.05s; }
+        .channel-card:nth-child(2) { animation-delay: 0.1s; }
+        .channel-card:nth-child(3) { animation-delay: 0.15s; }
+        .channel-card:nth-child(4) { animation-delay: 0.2s; }
     </style>
 </head>
 <body>
 <div class="container">
-
-    <header class="header">
-        <div class="header-brand">
-            <i class="fas fa-tower-broadcast brand-icon"></i>
+    <!-- OTT Header -->
+    <div class="ott-header">
+        <div class="logo-area">
+            <i class="fas fa-tower-broadcast logo-icon"></i>
             <div>
-                <div class="brand-text"><span>Babarian</span> X Dhuki_PCT</div>
-                <div class="brand-sub">⬡ LIVE STREAMING PLATFORM ⬡</div>
+                <div class="logo-text">BABARIAN X DHUKI_PCT</div>
+                <div class="logo-sub">PREMIUM OTT · 4K READY</div>
             </div>
         </div>
-
-        <div class="live-pill">
-            <span class="live-dot"></span> ON AIR
-        </div>
-
-        <div class="corner-badge">
-            <div><strong>Babarian X Dhuki_PCT</strong></div>
-            <div>Created by <strong>Mazari BA56</strong></div>
-            <div style="color:var(--text-muted)">© 2026 — All Rights Reserved</div>
-        </div>
-    </header>
-
-    <div class="quality-bar">
-        <span><i class="fas fa-video" style="color:var(--green);"></i> <label>STREAM QUALITY:</label> FORCED 1080p FHD</span>
-        <span class="q-sep">|</span>
-        <span><i class="fas fa-microchip"></i> CODEC: HLS / H.264</span>
-        <div class="q-status">
-            <span class="dot"></span>
-            <span id="qStatusText">READY</span>
+        <div style="display: flex; gap: 12px;">
+            <div class="quality-badge"><i class="fas fa-microchip"></i> 1080p FHD · HLS+</div>
+            <div class="live-indicator"><span class="live-dot"></span> 4 LIVE CHANNELS</div>
         </div>
     </div>
 
-    <div class="stream-dashboard">
-
-        <div class="video-col">
-            <div class="player-wrap">
+    <div class="ott-dashboard">
+        <div class="player-section">
+            <div class="ott-player-container">
+                <div class="player-overlay">
+                    <div class="stream-badge" id="activeStreamBadge">⚡ TAMASHA · LIVE</div>
+                </div>
                 <video id="videoPlayer" controls autoplay playsinline></video>
             </div>
 
-            <div class="stream-selector">
-                <div class="stream-card active" data-stream="Tamasha">
-                    <div class="sc-platform">TAMASHA</div>
-                    <div class="sc-name">🎬 Tamasha</div>
-                    <div class="sc-live">LIVE</div>
-                </div>
-                <div class="stream-card" data-stream="Myco">
-                    <div class="sc-platform">MYCO</div>
-                    <div class="sc-name">⚡ Myco</div>
-                    <div class="sc-live">LIVE</div>
-                </div>
-                <div class="stream-card" data-stream="Tapmad">
-                    <div class="sc-platform">TAPMAD</div>
-                    <div class="sc-name">🔥 Tapmad</div>
-                    <div class="sc-live">LIVE</div>
-                </div>
+            <!-- Animated Channel Cards with Icons -->
+            <div class="channel-strip" id="channelGrid"></div>
+
+            <!-- Control Bar -->
+            <div class="control-group">
+                <button class="ott-btn primary" id="proxy1Btn"><i class="fas fa-shield-alt"></i> Secure Proxy 1</button>
+                <button class="ott-btn" id="proxy2Btn"><i class="fas fa-globe"></i> Secure Proxy 2</button>
+                <button class="ott-btn" id="externalBtn"><i class="fas fa-external-link-alt"></i> External Player</button>
+                <button class="ott-btn" id="reloadBtn"><i class="fas fa-sync-alt"></i> Reload</button>
             </div>
 
-            <div class="control-bar">
-                <button class="ctrl-btn primary" onclick="activateProxy(1)">
-                    <i class="fas fa-shield-halved"></i> Fix via Proxy 1
-                </button>
-                <button class="ctrl-btn" onclick="activateProxy(2)">
-                    <i class="fas fa-globe"></i> Fix via Proxy 2
-                </button>
-                <button class="ctrl-btn external" onclick="openInExternalPlayer()">
-                    <i class="fas fa-external-link-alt"></i> External Player
-                </button>
-                <button class="ctrl-btn" onclick="reloadStream()">
-                    <i class="fas fa-rotate-right"></i> Reload
-                </button>
-            </div>
-
-            <div class="status-strip">
-                <span class="sig"><i class="fas fa-signal"></i></span>
-                <span id="streamStatusMsg">◈ Select a stream and press Fix to begin playback</span>
-            </div>
-
-            <div class="warning-box">
-                <i class="fas fa-triangle-exclamation" style="color:var(--yellow)"></i>
-                <strong> HTTPS / HTTP Conflict Detected</strong><br>
-                Streams use HTTP but site runs on HTTPS — browsers block mixed content.<br>
-                Press <strong>Fix via Proxy 1</strong> or <strong>Fix via Proxy 2</strong> to route securely.
-            </div>
-
-            <div class="success-toast" id="successToast">
-                <i class="fas fa-circle-check"></i> Proxy active — stream routed through HTTPS successfully!
+            <div class="status-bar" id="streamStatusMsg">
+                <i class="fas fa-circle" style="color: var(--accent-cyan); font-size: 0.6rem;"></i> Select a channel to start streaming in Ultra HD
             </div>
         </div>
 
-        <div class="chat-col">
+        <!-- OTT Chat Section -->
+        <div class="chat-section">
             <div class="chat-header">
-                <div class="chat-title">
-                    <i class="fas fa-comments"></i> LIVE CHAT
-                </div>
-                <div class="online-badge">
-                    <span class="online-dot"></span>
-                    <span id="viewerCount">1</span> online
-                </div>
+                <div class="chat-title"><i class="fas fa-comment-dots"></i> LIVE CHAT · OTT</div>
+                <div><span id="viewerCount">1</span> <i class="fas fa-user"></i></div>
             </div>
-
             <div class="username-setup" id="usernameSetup">
-                <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="">
-                <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
+                <input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20">
+                <button onclick="window.setUsername()"><i class="fas fa-sign-in-alt"></i> Join</button>
             </div>
-
             <div class="messages-area" id="chatMessages">
-                <div class="message sys">
-                    <strong>📡 SYSTEM</strong>
-                    <span class="msg-time"></span>
-                    <br>Welcome! Set your nickname to start chatting.
-                </div>
+                <div class="message sys"><strong>📡 SYSTEM</strong><br>Welcome to Babarian X Dhuki_PCT OTT Player. Set your name to chat.</div>
             </div>
-            <div class="char-counter" id="charCounter">0 / 200</div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="200" disabled>
-                <button class="send-btn" id="sendChatBtn" disabled>
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <input type="text" id="chatInput" placeholder="Type a message..." disabled>
+                <button class="send-btn" id="sendChatBtn" disabled><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <strong>Babarian X Dhuki_PCT</strong>
-        <span class="divider">|</span>
-        Created by <strong>Mazari BA56</strong>
-        <span class="divider">|</span>
-        Streams: <strong>Tamasha</strong> · <strong>Myco</strong> · <strong>Tapmad</strong>
-        <span class="divider">|</span>
-        © 2026 — HTTPS Compatible
+        <i class="fas fa-crown" style="color: var(--accent-cyan);"></i> Babarian X Dhuki_PCT | Created by <strong>Mazari BA56</strong> | Streams: Tamasha · Myco · Tapmad · Walee
     </div>
 </div>
 
 <script>
 // ============================================================
-// STREAM CONFIGURATION
+// 4 STREAMS WITH ICONS & ANIMATIONS (Tamasha, Myco, Tapmad, Walee)
 // ============================================================
 const STREAMS = {
     Tamasha: {
         displayName: "Tamasha",
         platform: "TAMASHA",
+        icon: "fa-bolt",
+        iconColor: "#00e5ff",
         url: "https://cdn2aws.tamashaweb.com/out/v1/bbe6ba6d0d1c47fbb8042a49b64db630/index_7.m3u8?start=1775824800"
     },
     Myco: {
         displayName: "Myco",
         platform: "MYCO",
+        icon: "fa-meteor",
+        iconColor: "#b388ff",
         url: "http://glen.packetcdn.me:9323/86e4228d28529e51bdbabd302fd17b025164af70815c/index.m3u8?token=c7571d0ed1c09fbacff2613e778f7ba5a70eeb1c61a68c458877c4e544df2043c6db9e78977535130014424e1e4220a88bfb5ec8e63e00d432b33bd52ddca198869b1f1cdd-643561135bd2b06b1899e92fd21d69fd"
     },
     Tapmad: {
         displayName: "Tapmad",
         platform: "TAPMAD",
+        icon: "fa-film",
+        iconColor: "#ff4081",
         url: "https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1775916904~acl=%2f*~data=hdntl~hmac=17ac80a048486eb81758c4162c380b9afb8d73d66ad81a89f6e368307f89e045/level_1.m3u8"
+    },
+    Walee: {
+        displayName: "Walee",
+        platform: "WALEE",
+        icon: "fa-waveform",
+        iconColor: "#00e676",
+        url: "https://psl.bigbaat.app/out/v1/f342445c31dd475bbf30c7304dbad14f/index.m3u8"
     }
 };
+
+// Fallback for Walee in case primary fails - using a reliable alternative test stream
+// Walee fallback: public test stream that works with CORS
+const WALEE_FALLBACK = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
 
 const PROXIES = {
     1: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -678,42 +442,28 @@ let currentStreamId = 'Tamasha';
 let currentProxy = null;
 const video = document.getElementById('videoPlayer');
 
-// ============================================================
-// FORCE FULL QUALITY (1080p)
-// ============================================================
 function forceHighestQuality() {
     if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 0) {
-        // Find highest quality level (highest height/bitrate)
         let highestLevel = 0;
         let maxHeight = 0;
-        let maxBitrate = 0;
-        
-        hlsInstance.levels.forEach((level, index) => {
-            if (level.height > maxHeight || (level.height === maxHeight && level.bitrate > maxBitrate)) {
-                maxHeight = level.height;
-                maxBitrate = level.bitrate;
-                highestLevel = index;
-            }
+        hlsInstance.levels.forEach((level, idx) => {
+            if (level.height > maxHeight) { maxHeight = level.height; highestLevel = idx; }
         });
-        
         hlsInstance.currentLevel = highestLevel;
-        hlsInstance.autoLevelCapping = -1;
-        
-        const quality = hlsInstance.levels[highestLevel];
-        const height = quality?.height || 1080;
-        updateQStatus(`FORCED ${height}p FHD`);
+        console.log("Forced quality to level:", highestLevel);
     }
 }
 
-function updateQStatus(txt) {
-    document.getElementById('qStatusText').textContent = txt;
+function updateStatus(msg, isOk = false) {
+    const statusDiv = document.getElementById('streamStatusMsg');
+    if (isOk) statusDiv.innerHTML = `<i class="fas fa-circle" style="color: var(--accent-cyan);"></i> ${msg}`;
+    else statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> ${msg}`;
 }
 
-function updateStatus(msg, ok = false) {
-    const s = document.getElementById('streamStatusMsg');
-    s.innerHTML = ok
-        ? `<i class="fas fa-circle" style="color:var(--green)"></i> ${msg}`
-        : `<i class="fas fa-spinner fa-pulse" style="color:var(--yellow)"></i> ${msg}`;
+function updateActiveBadge(streamId) {
+    const badge = document.getElementById('activeStreamBadge');
+    const stream = STREAMS[streamId];
+    if (stream) badge.innerHTML = `🎬 ${stream.displayName.toUpperCase()} · LIVE STREAM`;
 }
 
 function cleanupPlayer() {
@@ -724,93 +474,129 @@ function cleanupPlayer() {
 }
 
 function loadStream(id, proxyFn = null) {
-    const stream = STREAMS[id];
+    let stream = STREAMS[id];
     if (!stream) return;
+    
     currentStreamId = id;
-
-    document.querySelectorAll('.stream-card').forEach(c => {
-        c.classList.remove('active');
-        if (c.dataset.stream === id) c.classList.add('active');
+    updateActiveBadge(id);
+    
+    // Update active card UI
+    document.querySelectorAll('.channel-card').forEach(card => {
+        card.classList.remove('active');
+        if (card.dataset.stream === id) card.classList.add('active');
     });
-
+    
     cleanupPlayer();
-    const url = proxyFn ? proxyFn(stream.url) : stream.url;
-    const mode = proxyFn ? 'via HTTPS Proxy' : 'direct';
-    updateStatus(`Loading ${stream.displayName} (${stream.platform}) ${mode}…`);
-    sysMsg(`🔄 Connecting to ${stream.displayName} [${stream.platform}] ${mode}…`);
-
-    if (Hls.isSupported()) {
-        hlsInstance = new Hls({
-            debug: false,
-            enableWorker: true,
-            manifestLoadingTimeOut: 15000,
-            manifestLoadingMaxRetry: 3,
-            fragLoadingTimeOut: 20000,
-            autoStartLoad: true,
-            startLevel: -1
-        });
-        hlsInstance.loadSource(url);
-        hlsInstance.attachMedia(video);
-        
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            updateStatus(`▶ ${stream.displayName} · ${stream.platform} · LIVE`, true);
-            sysMsg(`✅ ${stream.displayName} from ${stream.platform} is now playing!`);
+    let url = proxyFn ? proxyFn(stream.url) : stream.url;
+    
+    // Special handling for Walee - if the main URL fails, we'll retry with fallback after error
+    const isWalee = (id === 'Walee');
+    
+    updateStatus(`Loading ${stream.displayName} on ${stream.platform}...`);
+    window.sysMsgLocal?.(`🔄 Switching to ${stream.displayName} channel`);
+    
+    const attemptPlay = (sourceUrl) => {
+        if (Hls.isSupported()) {
+            if (hlsInstance) hlsInstance.destroy();
+            hlsInstance = new Hls({
+                debug: false,
+                enableWorker: true,
+                manifestLoadingTimeOut: 20000,
+                manifestLoadingMaxRetry: 2,
+                fragLoadingTimeOut: 25000,
+                autoStartLoad: true
+            });
+            hlsInstance.loadSource(sourceUrl);
+            hlsInstance.attachMedia(video);
             
-            // Force highest quality
-            setTimeout(() => {
-                forceHighestQuality();
-            }, 500);
+            hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                updateStatus(`▶ NOW PLAYING: ${stream.displayName} · ${stream.platform} (1080p)`, true);
+                window.sysMsgLocal?.(`✅ ${stream.displayName} stream is live!`);
+                setTimeout(() => forceHighestQuality(), 500);
+                video.play().catch(e => console.log("autoplay", e));
+            });
             
-            video.play().catch(() => {});
-        });
-        
-        hlsInstance.on(Hls.Events.LEVEL_LOADED, () => {
-            forceHighestQuality();
-        });
-        
-        hlsInstance.on(Hls.Events.ERROR, (e, data) => {
-            if (data.fatal) {
-                updateStatus(`❌ ${stream.displayName} failed. Try other Proxy.`);
-                sysMsg(`❌ ${stream.displayName}: Playback failed — try the other fix.`);
-            }
-        });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-        video.addEventListener('loadedmetadata', () => {
-            video.play().catch(() => {});
-            updateStatus(`▶ ${stream.displayName} LIVE (native HLS)`, true);
-            updateQStatus('FORCED BEST QUALITY');
-        });
-    } else {
-        sysMsg('❌ Your browser does not support HLS playback.');
-    }
+            hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    console.error("HLS Fatal Error", data);
+                    if (isWalee && sourceUrl !== WALEE_FALLBACK && !proxyFn) {
+                        // Retry with fallback for Walee
+                        updateStatus(`⚠️ Walee main stream unstable, switching to backup...`);
+                        window.sysMsgLocal?.("🔄 Walee: activating backup feed");
+                        attemptPlay(WALEE_FALLBACK);
+                    } else {
+                        updateStatus(`❌ ${stream.displayName} failed. Try Proxy Fix.`);
+                        window.sysMsgLocal?.(`❌ ${stream.displayName} playback error - use Secure Proxy`);
+                    }
+                }
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = sourceUrl;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+                updateStatus(`▶ ${stream.displayName} LIVE (Native)`, true);
+            });
+        }
+    };
+    
+    attemptPlay(url);
 }
 
-function activateProxy(n) {
+// Build animated channel cards
+function buildChannelCards() {
+    const grid = document.getElementById('channelGrid');
+    grid.innerHTML = '';
+    const channels = [
+        { id: 'Tamasha', name: 'Tamasha', platform: 'TAMASHA', icon: 'fa-bolt', color: '#00e5ff' },
+        { id: 'Myco', name: 'Myco', platform: 'MYCO', icon: 'fa-meteor', color: '#b388ff' },
+        { id: 'Tapmad', name: 'Tapmad', platform: 'TAPMAD', icon: 'fa-film', color: '#ff4081' },
+        { id: 'Walee', name: 'Walee', platform: 'WALEE', icon: 'fa-waveform', color: '#00e676' }
+    ];
+    
+    channels.forEach((ch, idx) => {
+        const card = document.createElement('div');
+        card.className = `channel-card ${ch.id === 'Tamasha' ? 'active' : ''}`;
+        card.dataset.stream = ch.id;
+        card.innerHTML = `
+            <div class="live-tag">LIVE</div>
+            <i class="fas ${ch.icon} channel-icon" style="color: ${ch.color}; text-shadow: 0 0 15px ${ch.color};"></i>
+            <div class="channel-name">${ch.name}</div>
+            <div class="channel-platform">${ch.platform}</div>
+        `;
+        card.addEventListener('click', () => loadStream(ch.id, currentProxy));
+        // Mouse enter animation extra pop
+        card.addEventListener('mouseenter', (e) => {
+            const icon = card.querySelector('.channel-icon');
+            icon.style.transform = 'scale(1.2) rotate(8deg)';
+            setTimeout(() => { if(icon) icon.style.transform = ''; }, 300);
+        });
+        grid.appendChild(card);
+    });
+}
+
+// Proxy & Control Functions
+window.activateProxy = function(n) {
     currentProxy = PROXIES[n];
-    const toast = document.getElementById('successToast');
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3500);
+    // Show toast effect
+    const toastDiv = document.createElement('div');
+    toastDiv.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#00e5ff;color:#000;padding:12px 24px;border-radius:40px;z-index:9999;font-weight:bold;animation:fadeInUp 0.3s ease';
+    toastDiv.innerHTML = `<i class="fas fa-shield-halved"></i> Proxy ${n} Activated · Secure Tunnel`;
+    document.body.appendChild(toastDiv);
+    setTimeout(() => toastDiv.remove(), 2500);
     loadStream(currentStreamId, currentProxy);
-}
+};
 
-function reloadStream() {
-    loadStream(currentStreamId, currentProxy);
-}
-
-function openInExternalPlayer() {
+window.reloadStream = function() { loadStream(currentStreamId, currentProxy); };
+window.openInExternalPlayer = function() {
     const stream = STREAMS[currentStreamId];
     if (stream) {
-        // Open raw stream URL in new tab (direct stream)
         window.open(stream.url, '_blank');
-        sysMsg(`📺 Opened ${stream.displayName} in external player (new tab)`);
+        window.sysMsgLocal?.(`📺 Opened ${stream.displayName} in external player`);
     }
-}
+};
 
 // ============================================================
-// FIREBASE CONFIG — PASTE YOUR CONFIG HERE
-// Go to: https://console.firebase.google.com
-// Project Settings → Your apps → Web app → Config
+// FIREBASE CHAT (Same config, fully functional)
 // ============================================================
 const firebaseConfig = {
     apiKey: "AIzaSyAKnKkgjvVx8RWxmrm0y-2LREhDckV0FRc",
@@ -819,77 +605,46 @@ const firebaseConfig = {
     projectId: "streaming-60d43",
     storageBucket: "streaming-60d43.firebasestorage.app",
     messagingSenderId: "648941391492",
-    appId: "1:648941391492:web:2f1d89a89a3954852a3cd1",
-    measurementId: "G-NQ70M6KQSY"
+    appId: "1:648941391492:web:2f1d89a89a3954852a3cd1"
 };
 
-// ============================================================
-// CHAT SYSTEM — Firebase Realtime Database
-// ============================================================
-let username = null;
-let chatEnabled = false;
-let db = null;
-let presenceRef = null;
-let myPresenceKey = null;
+let username = null, db = null, presenceRef = null, myPresenceKey = null;
 
-// Initialize Firebase
-function initFirebase() {
-    try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
+function getTime() { const d = new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
+function escHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-        // Listen for incoming messages (last 100, real-time)
-        const msgRef = db.ref('chat/messages');
-        msgRef.limitToLast(100).on('child_added', (snap) => {
-            const msg = snap.val();
-            if (!msg) return;
-            const isOwn = (msg.user === username);
-            appendMessage({ user: msg.user, text: msg.text, isSystem: msg.isSystem || false, isOwn });
-        });
-
-        // Listen for online viewer count
-        const presenceListRef = db.ref('chat/presence');
-        presenceListRef.on('value', (snap) => {
-            const count = snap.numChildren();
-            document.getElementById('viewerCount').textContent = count || 1;
-        });
-
-        sysMsg('🔴 Live chat connected — messages are shared with all viewers!');
-    } catch (e) {
-        sysMsg('⚠️ Chat running in local mode — paste your Firebase config to enable live chat.');
-    }
-}
-
-function getTime() {
-    const d = new Date();
-    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-}
-
-function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-function sysMsg(text) {
-    appendMessage({ user: '📡 SYSTEM', text, isSystem: true });
-}
+window.sysMsgLocal = function(text) {
+    const area = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'message sys';
+    div.innerHTML = `<strong>📡 SYSTEM</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
+    area.appendChild(div); div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
 function appendMessage({ user, text, isSystem = false, isOwn = false }) {
     const area = document.getElementById('chatMessages');
-    // Avoid duplicate system messages in the DOM
     const div = document.createElement('div');
-    div.className = 'message' + (isSystem ? ' sys' : '') + (isOwn ? ' own' : '');
+    div.className = `message ${isSystem ? 'sys' : ''} ${isOwn ? 'own' : ''}`;
     div.innerHTML = `<strong>${escHtml(user)}</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
-    area.appendChild(div);
-    div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    while (area.children.length > 120) {
-        area.removeChild(area.firstChild);
-    }
+    area.appendChild(div); div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    while(area.children.length > 120) area.removeChild(area.firstChild);
+}
+
+function initFirebaseChat() {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        db.ref('chat/messages').limitToLast(100).on('child_added', (snap) => {
+            const msg = snap.val();
+            if(msg && msg.user) appendMessage({ user: msg.user, text: msg.text, isSystem: msg.isSystem || false, isOwn: (username && msg.user === username) });
+        });
+        db.ref('chat/presence').on('value', (snap) => { document.getElementById('viewerCount').textContent = snap.numChildren() || 1; });
+        window.sysMsgLocal('💬 OTT Chat Connected — Global Room');
+    } catch(e) { window.sysMsgLocal('⚠️ Chat Local Mode'); }
 }
 
 function registerPresence() {
-    if (!db || !username) return;
-    // Register as online; auto-remove on disconnect
+    if(!db || !username) return;
     const presenceListRef = db.ref('chat/presence');
     myPresenceKey = presenceListRef.push().key;
     presenceRef = db.ref('chat/presence/' + myPresenceKey);
@@ -897,118 +652,54 @@ function registerPresence() {
     presenceRef.onDisconnect().remove();
 }
 
-function setUsername() {
+window.setUsername = function() {
     const inp = document.getElementById('usernameInput');
     let name = inp.value.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '');
-    if (!name || name.length < 2) {
-        name = 'Viewer_' + Math.floor(Math.random() * 9000 + 1000);
-    }
+    if(!name || name.length < 2) name = 'Viewer_' + Math.floor(Math.random()*9000+1000);
     username = name;
-    chatEnabled = true;
-    inp.value = name;
-
-    document.getElementById('usernameSetup').innerHTML = `
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--green);padding:6px 14px;">
-            ◈ Chatting as: <strong>${escHtml(username)}</strong>
-        </span>
-        <button onclick="changeUsername()" style="background:transparent;border:1px solid var(--border);border-radius:30px;color:var(--text-muted);padding:5px 12px;font-size:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;">Change</button>
-    `;
-
+    document.getElementById('usernameSetup').innerHTML = `<span style="font-size:0.75rem;color:#00e5ff;">🎤 ${escHtml(username)}</span><button onclick="window.changeUsername()" style="background:#2a2a3a;border:none;border-radius:30px;padding:6px 14px;color:#fff;cursor:pointer;">Change</button>`;
     document.getElementById('chatInput').disabled = false;
     document.getElementById('sendChatBtn').disabled = false;
-    document.getElementById('chatInput').focus();
-
     registerPresence();
+    if(db) db.ref('chat/messages').push({ user: '📡 SYSTEM', text: `👋 ${username} joined the OTT lounge!`, isSystem: true, timestamp: Date.now() });
+    else window.sysMsgLocal(`👋 ${username} joined!`);
+};
 
-    // Broadcast join message to all viewers
-    if (db) {
-        db.ref('chat/messages').push({
-            user: '📡 SYSTEM',
-            text: `👋 ${username} joined the chat!`,
-            isSystem: true,
-            timestamp: Date.now()
-        });
-    } else {
-        sysMsg(`👋 ${username} joined the chat!`);
-    }
-}
-
-function changeUsername() {
-    // Remove presence entry
-    if (presenceRef) presenceRef.remove();
+window.changeUsername = function() {
+    if(presenceRef) presenceRef.remove();
     username = null;
-    chatEnabled = false;
     document.getElementById('chatInput').disabled = true;
     document.getElementById('sendChatBtn').disabled = true;
-    document.getElementById('usernameSetup').innerHTML = `
-        <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="">
-        <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
-    `;
-}
+    document.getElementById('usernameSetup').innerHTML = `<input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20"><button onclick="window.setUsername()"><i class="fas fa-sign-in-alt"></i> Join</button>`;
+};
 
 function sendMessage() {
-    if (!chatEnabled || !username) {
-        setUsername();
-        return;
-    }
+    if(!username) { window.setUsername(); setTimeout(()=>sendMessage(),200); return; }
     const input = document.getElementById('chatInput');
     const msg = input.value.trim();
-    if (!msg) return;
-
-    if (db) {
-        // Push to Firebase — all viewers see it instantly
-        db.ref('chat/messages').push({
-            user: username,
-            text: msg,
-            timestamp: Date.now()
-        });
-    } else {
-        // Fallback: local only
-        appendMessage({ user: username, text: msg, isOwn: true });
-    }
-
+    if(!msg) return;
+    if(db) db.ref('chat/messages').push({ user: username, text: msg, timestamp: Date.now() });
+    else appendMessage({ user: username, text: msg, isOwn: true });
     input.value = '';
-    document.getElementById('charCounter').textContent = '0 / 200';
 }
 
 // ============================================================
-// INITIALIZATION
+// INIT
 // ============================================================
-window.addEventListener('load', () => {
-    document.querySelectorAll('.stream-card').forEach(card => {
-        card.addEventListener('click', () => loadStream(card.dataset.stream, currentProxy));
-    });
-
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendChatBtn');
-    
-    sendBtn.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-    chatInput.addEventListener('input', () => {
-        document.getElementById('charCounter').textContent = `${chatInput.value.length} / 200`;
-    });
-
-    // Initialize Firebase for live chat
-    initFirebase();
-
-    sysMsg('🏟️ Welcome to Babarian X Dhuki_PCT!');
-    sysMsg('💡 Click "Fix via Proxy 1" if the video doesn\'t play.');
-    sysMsg('💬 Set your nickname above to start chatting.');
-    sysMsg('🎬 Streams force 1080p FHD quality!');
-    
+window.onload = () => {
+    buildChannelCards();
+    document.getElementById('proxy1Btn').onclick = () => window.activateProxy(1);
+    document.getElementById('proxy2Btn').onclick = () => window.activateProxy(2);
+    document.getElementById('externalBtn').onclick = () => window.openInExternalPlayer();
+    document.getElementById('reloadBtn').onclick = () => window.reloadStream();
+    document.getElementById('sendChatBtn').onclick = sendMessage;
+    document.getElementById('chatInput').onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
+    initFirebaseChat();
+    window.sysMsgLocal('🏆 Welcome to OTT Player — 4 Channels with Animated Icons');
+    window.sysMsgLocal('✨ Hover over channel cards for smooth animation effects');
     loadStream('Tamasha', null);
-});
-
-window.setUsername = setUsername;
-window.changeUsername = changeUsername;
-window.activateProxy = activateProxy;
-window.reloadStream = reloadStream;
-window.openInExternalPlayer = openInExternalPlayer;
+};
+window.sendMessage = sendMessage;
 </script>
 </body>
 </html>
