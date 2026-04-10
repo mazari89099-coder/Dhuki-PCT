@@ -158,23 +158,6 @@
             flex-wrap: wrap;
         }
         .quality-bar label { color: var(--green); margin-right: 4px; }
-        .q-btn {
-            background: var(--bg-deep);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            padding: 4px 14px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .q-btn:hover { border-color: var(--green); color: var(--green); }
-        .q-btn.active { background: var(--green); color: #000; border-color: var(--green); font-weight: 700; }
-        .q-sep { color: rgba(255,255,255,0.15); }
-        .q-status { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-        .q-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blink 2s ease infinite; }
 
         .stream-dashboard { display: flex; gap: 22px; flex-wrap: wrap; }
         .video-col { flex: 3; min-width: 280px; }
@@ -257,7 +240,7 @@
         }
         .sc-platform {
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -265,7 +248,7 @@
         }
         .sc-name {
             font-family: 'Orbitron', monospace;
-            font-size: 1.05rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--text);
         }
@@ -316,8 +299,8 @@
         .ctrl-btn:hover { border-color: var(--green); color: var(--green); box-shadow: var(--green-glow); }
         .ctrl-btn.primary { background: var(--green); color: #000; border-color: var(--green); }
         .ctrl-btn.primary:hover { background: var(--green-mid); box-shadow: var(--green-glow); }
-        .ctrl-btn.danger { border-color: var(--red); color: var(--red); }
-        .ctrl-btn.danger:hover { background: rgba(255,61,90,0.15); box-shadow: 0 0 16px rgba(255,61,90,0.4); }
+        .ctrl-btn.external { background: var(--blue); color: #000; border-color: var(--blue); }
+        .ctrl-btn.external:hover { background: #00aaff; box-shadow: 0 0 16px rgba(0,204,255,0.4); }
 
         .status-strip {
             display: flex;
@@ -476,6 +459,7 @@
         }
         .chat-input-area input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,127,0.15); }
         .chat-input-area input::placeholder { color: var(--text-muted); }
+        .chat-input-area input:disabled { opacity: 0.5; cursor: not-allowed; }
         .send-btn {
             background: var(--green);
             border: none;
@@ -543,22 +527,15 @@
 
         <div class="corner-badge">
             <div><strong>Babarian X Dhuki_PCT</strong></div>
-            <div>Created by <strong>Myco BA56</strong></div>
+            <div>Created by <strong>Mazari BA56</strong></div>
             <div style="color:var(--text-muted)">© 2026 — All Rights Reserved</div>
         </div>
     </header>
 
     <div class="quality-bar">
-        <span><label>◈ QUALITY:</label></span>
-        <button class="q-btn active" data-quality="auto">AUTO</button>
-        <button class="q-btn" data-quality="1080p">1080p</button>
-        <button class="q-btn" data-quality="720p">720p</button>
-        <button class="q-btn" data-quality="480p">480p</button>
+        <span><i class="fas fa-video" style="color:var(--green);"></i> <label>STREAM QUALITY:</label> FORCED 1080p FHD</span>
         <span class="q-sep">|</span>
-        <span><label>◈ PROXY:</label></span>
-        <button class="q-btn" id="proxyToggleBtn">OFF</button>
-        <span class="q-sep">|</span>
-        <span><label>◈ CODEC:</label> HLS / H.264</span>
+        <span><i class="fas fa-microchip"></i> CODEC: HLS / H.264</span>
         <div class="q-status">
             <span class="dot"></span>
             <span id="qStatusText">READY</span>
@@ -574,17 +551,17 @@
 
             <div class="stream-selector">
                 <div class="stream-card active" data-stream="Tamasha">
-                    <div class="sc-platform">FROM TAMASHA</div>
+                    <div class="sc-platform">TAMASHA</div>
                     <div class="sc-name">🎬 Tamasha</div>
                     <div class="sc-live">LIVE</div>
                 </div>
                 <div class="stream-card" data-stream="Myco">
-                    <div class="sc-platform">FROM MYCO</div>
+                    <div class="sc-platform">MYCO</div>
                     <div class="sc-name">⚡ Myco</div>
                     <div class="sc-live">LIVE</div>
                 </div>
-                <div class="stream-card" data-stream="Tamasha">
-                    <div class="sc-platform">FROM Tamasha</div>
+                <div class="stream-card" data-stream="Tapmad">
+                    <div class="sc-platform">TAPMAD</div>
                     <div class="sc-name">🔥 Tapmad</div>
                     <div class="sc-live">LIVE</div>
                 </div>
@@ -597,8 +574,8 @@
                 <button class="ctrl-btn" onclick="activateProxy(2)">
                     <i class="fas fa-globe"></i> Fix via Proxy 2
                 </button>
-                <button class="ctrl-btn danger" onclick="testInNewTab()">
-                    <i class="fas fa-external-link-alt"></i> Open in Tab
+                <button class="ctrl-btn external" onclick="openInExternalPlayer()">
+                    <i class="fas fa-external-link-alt"></i> External Player
                 </button>
                 <button class="ctrl-btn" onclick="reloadStream()">
                     <i class="fas fa-rotate-right"></i> Reload
@@ -629,22 +606,26 @@
                 </div>
                 <div class="online-badge">
                     <span class="online-dot"></span>
-                    <span id="viewerCount">247</span> online
+                    <span id="viewerCount">1</span> online
                 </div>
             </div>
 
             <div class="username-setup" id="usernameSetup">
-                <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="Viewer_1234">
+                <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="">
                 <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
             </div>
 
             <div class="messages-area" id="chatMessages">
-                <!-- Messages will appear here -->
+                <div class="message sys">
+                    <strong>📡 SYSTEM</strong>
+                    <span class="msg-time"></span>
+                    <br>Welcome! Set your nickname to start chatting.
+                </div>
             </div>
             <div class="char-counter" id="charCounter">0 / 200</div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="200">
-                <button class="send-btn" id="sendChatBtn">
+                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="200" disabled>
+                <button class="send-btn" id="sendChatBtn" disabled>
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
@@ -654,9 +635,9 @@
     <div class="footer">
         <strong>Babarian X Dhuki_PCT</strong>
         <span class="divider">|</span>
-        Created by <strong>Myco BA56</strong>
+        Created by <strong>Mazari BA56</strong>
         <span class="divider">|</span>
-        Streams: <strong>Tamasha</strong> (Tamasha) · <strong>Myco</strong> (Myco) · <strong>Tapmad</strong> (Tamasha)
+        Streams: <strong>Tamasha</strong> · <strong>Myco</strong> · <strong>Tapmad</strong>
         <span class="divider">|</span>
         © 2026 — HTTPS Compatible
     </div>
@@ -677,10 +658,10 @@ const STREAMS = {
         platform: "MYCO",
         url: "https://cdn01.medialive.one:2096/ABBTAKNEWSFHD/tracks-v1a1/mono.ts.m3u8"
     },
-    Tamasha: {
+    Tapmad: {
         displayName: "Tapmad",
-        platform: "Tamasha",
-        url: "https://Tamashalive.akamaized.net/Tamashaold/tensports.smil/chunklist_w1984296890_b1248000_slENG.m3u8"
+        platform: "TAPMAD",
+        url: "https://tapmadlive.akamaized.net/tapmadold/tensports.smil/chunklist_w1984296890_b1248000_slENG.m3u8"
     }
 };
 
@@ -695,31 +676,31 @@ let currentProxy = null;
 const video = document.getElementById('videoPlayer');
 
 // ============================================================
-// QUALITY CONTROL
+// FORCE FULL QUALITY (1080p)
 // ============================================================
-document.querySelectorAll('[data-quality]').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('[data-quality]').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        const quality = this.dataset.quality;
+function forceHighestQuality() {
+    if (hlsInstance && hlsInstance.levels && hlsInstance.levels.length > 0) {
+        // Find highest quality level (highest height/bitrate)
+        let highestLevel = 0;
+        let maxHeight = 0;
+        let maxBitrate = 0;
         
-        if (hlsInstance) {
-            if (quality === 'auto') {
-                hlsInstance.currentLevel = -1;
-            } else {
-                const heights = { '1080p': 1080, '720p': 720, '480p': 480 };
-                const targetHeight = heights[quality];
-                const levels = hlsInstance.levels;
-                let targetLevel = -1;
-                levels.forEach((level, i) => {
-                    if (Math.abs(level.height - targetHeight) < 100) targetLevel = i;
-                });
-                hlsInstance.currentLevel = targetLevel;
+        hlsInstance.levels.forEach((level, index) => {
+            if (level.height > maxHeight || (level.height === maxHeight && level.bitrate > maxBitrate)) {
+                maxHeight = level.height;
+                maxBitrate = level.bitrate;
+                highestLevel = index;
             }
-        }
-        updateQStatus('QUALITY: ' + quality.toUpperCase());
-    });
-});
+        });
+        
+        hlsInstance.currentLevel = highestLevel;
+        hlsInstance.autoLevelCapping = -1;
+        
+        const quality = hlsInstance.levels[highestLevel];
+        const height = quality?.height || 1080;
+        updateQStatus(`FORCED ${height}p FHD`);
+    }
+}
 
 function updateQStatus(txt) {
     document.getElementById('qStatusText').textContent = txt;
@@ -761,16 +742,29 @@ function loadStream(id, proxyFn = null) {
             enableWorker: true,
             manifestLoadingTimeOut: 15000,
             manifestLoadingMaxRetry: 3,
-            fragLoadingTimeOut: 20000
+            fragLoadingTimeOut: 20000,
+            autoStartLoad: true,
+            startLevel: -1
         });
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(video);
+        
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
             updateStatus(`▶ ${stream.displayName} · ${stream.platform} · LIVE`, true);
-            updateQStatus('LIVE ● ' + stream.displayName);
             sysMsg(`✅ ${stream.displayName} from ${stream.platform} is now playing!`);
+            
+            // Force highest quality
+            setTimeout(() => {
+                forceHighestQuality();
+            }, 500);
+            
             video.play().catch(() => {});
         });
+        
+        hlsInstance.on(Hls.Events.LEVEL_LOADED, () => {
+            forceHighestQuality();
+        });
+        
         hlsInstance.on(Hls.Events.ERROR, (e, data) => {
             if (data.fatal) {
                 updateStatus(`❌ ${stream.displayName} failed. Try other Proxy.`);
@@ -782,6 +776,7 @@ function loadStream(id, proxyFn = null) {
         video.addEventListener('loadedmetadata', () => {
             video.play().catch(() => {});
             updateStatus(`▶ ${stream.displayName} LIVE (native HLS)`, true);
+            updateQStatus('FORCED BEST QUALITY');
         });
     } else {
         sysMsg('❌ Your browser does not support HLS playback.');
@@ -790,8 +785,6 @@ function loadStream(id, proxyFn = null) {
 
 function activateProxy(n) {
     currentProxy = PROXIES[n];
-    document.getElementById('proxyToggleBtn').textContent = 'ON';
-    document.getElementById('proxyToggleBtn').classList.add('active');
     const toast = document.getElementById('successToast');
     toast.style.display = 'block';
     setTimeout(() => toast.style.display = 'none', 3500);
@@ -802,28 +795,20 @@ function reloadStream() {
     loadStream(currentStreamId, currentProxy);
 }
 
-function testInNewTab() {
+function openInExternalPlayer() {
     const stream = STREAMS[currentStreamId];
-    window.open(stream.url, '_blank');
-    sysMsg(`📺 Opened ${stream.displayName} in new tab.`);
+    if (stream) {
+        // Open raw stream URL in new tab (direct stream)
+        window.open(stream.url, '_blank');
+        sysMsg(`📺 Opened ${stream.displayName} in external player (new tab)`);
+    }
 }
 
 // ============================================================
-// CHAT SYSTEM - FULLY FUNCTIONAL
+// CHAT SYSTEM
 // ============================================================
 let username = null;
 let chatEnabled = false;
-const demoViewers = ['CricketFan', 'PSL_Lover', 'StreamMaster', 'BabarianArmy', 'DhukiFan', 'GreenTeam', 'PakStar', 'TamashaUser', 'MycoViewer', 'TamashaPro'];
-const demoMsgs = [
-    'Tamasha stream is perfect! 🔥', 'Myco quality amazing!', 'Tapmad working great 👌',
-    'Babarian X Dhuki best site!', 'Who\'s winning?', 'Great stream quality!',
-    '💚 Go green!', 'Thanks Myco BA56!', 'This is fire 🔥', 'PSL 2026 LFG!!!',
-    'Best streaming platform!', 'Anyone else watching?', 'Love this site!',
-    'Great job guys 💪', 'Stream is smooth!', 'Hello everyone! 👋'
-];
-
-let messageQueue = [];
-let simInterval = null;
 
 function getTime() {
     const d = new Date();
@@ -847,8 +832,7 @@ function appendMessage({ user, text, isSystem = false, isOwn = false }) {
     area.appendChild(div);
     div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     
-    // Keep only last 150 messages
-    while (area.children.length > 150) {
+    while (area.children.length > 100) {
         area.removeChild(area.firstChild);
     }
 }
@@ -863,6 +847,7 @@ function setUsername() {
     
     username = name;
     chatEnabled = true;
+    inp.value = name;
 
     document.getElementById('usernameSetup').innerHTML = `
         <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--green);padding:6px 14px;">
@@ -876,12 +861,7 @@ function setUsername() {
     document.getElementById('chatInput').focus();
 
     sysMsg(`👋 ${username} joined the chat!`);
-    
-    // Update viewer count
-    updateViewerCount();
-    
-    // Start simulation
-    startChatSimulation();
+    document.getElementById('viewerCount').textContent = '1';
 }
 
 function changeUsername() {
@@ -890,14 +870,10 @@ function changeUsername() {
     document.getElementById('chatInput').disabled = true;
     document.getElementById('sendChatBtn').disabled = true;
     document.getElementById('usernameSetup').innerHTML = `
-        <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="Viewer_${Math.floor(Math.random()*9000+1000)}">
+        <input type="text" id="usernameInput" placeholder="Your nickname..." maxlength="20" value="">
         <button onclick="setUsername()"><i class="fas fa-check"></i> Join Chat</button>
     `;
-    
-    if (simInterval) {
-        clearInterval(simInterval);
-        simInterval = null;
-    }
+    document.getElementById('viewerCount').textContent = '1';
 }
 
 function sendMessage() {
@@ -913,55 +889,16 @@ function sendMessage() {
     appendMessage({ user: username, text: msg, isOwn: true });
     input.value = '';
     document.getElementById('charCounter').textContent = '0 / 200';
-    
-    // Random response from another viewer
-    setTimeout(() => {
-        if (Math.random() > 0.4) {
-            const responder = demoViewers[Math.floor(Math.random() * demoViewers.length)];
-            const response = demoMsgs[Math.floor(Math.random() * demoMsgs.length)];
-            if (responder !== username) {
-                appendMessage({ user: responder, text: response });
-            }
-        }
-    }, 1500 + Math.random() * 2000);
-}
-
-function startChatSimulation() {
-    if (simInterval) clearInterval(simInterval);
-    
-    simInterval = setInterval(() => {
-        if (!chatEnabled) return;
-        
-        // Random viewer message
-        if (Math.random() > 0.5) {
-            const viewer = demoViewers[Math.floor(Math.random() * demoViewers.length)];
-            const msg = demoMsgs[Math.floor(Math.random() * demoMsgs.length)];
-            if (viewer !== username) {
-                appendMessage({ user: viewer, text: msg });
-            }
-        }
-        
-        // Update viewer count
-        updateViewerCount();
-    }, 8000 + Math.random() * 10000);
-}
-
-function updateViewerCount() {
-    const base = 200;
-    const random = Math.floor(Math.random() * 150);
-    document.getElementById('viewerCount').textContent = base + random;
 }
 
 // ============================================================
 // INITIALIZATION
 // ============================================================
 window.addEventListener('load', () => {
-    // Stream card listeners
     document.querySelectorAll('.stream-card').forEach(card => {
         card.addEventListener('click', () => loadStream(card.dataset.stream, currentProxy));
     });
 
-    // Chat input listeners
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendChatBtn');
     
@@ -976,29 +913,19 @@ window.addEventListener('load', () => {
         document.getElementById('charCounter').textContent = `${chatInput.value.length} / 200`;
     });
 
-    // Auto-join chat with default username
-    setTimeout(() => {
-        setUsername();
-    }, 500);
-
-    // Welcome messages
     sysMsg('🏟️ Welcome to Babarian X Dhuki_PCT!');
     sysMsg('💡 Click "Fix via Proxy 1" if the video doesn\'t play.');
-    sysMsg('💬 Chat is live — say hello!');
+    sysMsg('💬 Set your nickname above to start chatting.');
+    sysMsg('🎬 Streams force 1080p FHD quality!');
     
-    // Load default stream
     loadStream('Tamasha', null);
-    
-    // Start viewer count updates
-    setInterval(updateViewerCount, 5000);
 });
 
-// Expose functions to global scope
 window.setUsername = setUsername;
 window.changeUsername = changeUsername;
 window.activateProxy = activateProxy;
 window.reloadStream = reloadStream;
-window.testInNewTab = testInNewTab;
+window.openInExternalPlayer = openInExternalPlayer;
 </script>
 </body>
 </html>
