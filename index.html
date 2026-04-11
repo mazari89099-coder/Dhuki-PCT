@@ -224,6 +224,10 @@
         /* ══════════════════════════════════════
            PLAYER
            ══════════════════════════════════════ */
+        #videoPlayer:fullscreen,
+        #videoPlayer:-webkit-full-screen,
+        #videoPlayer:-moz-full-screen { touch-action:none;width:100vw!important;height:100vh!important;object-fit:contain; }
+        #videoPlayer { touch-action: manipulation; -webkit-user-select:none; user-select:none; }
         .player-shell {
             background: #000;
             border-radius: var(--r-xl);
@@ -668,7 +672,6 @@
             mask-image: linear-gradient(to bottom, transparent 0, black 36px);
             -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 36px);
         }
-        /* Prevent chat from hijacking page scroll on mobile */
         .chat-col { -webkit-overflow-scrolling: touch; }
         .msgs { overscroll-behavior: contain; scroll-behavior: auto; }
         .msgs::-webkit-scrollbar { width: 3px; }
@@ -1033,7 +1036,7 @@
                 </div>
             </div>
             <div class="user-setup" id="usernameSetup">
-                <input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off">
                 <button onclick="window.setUsername()"><i class="fas fa-sign-in-alt"></i> Join</button>
             </div>
             <div class="msgs" id="chatMessages">
@@ -1041,7 +1044,7 @@
             </div>
             <button id="scrollBottomBtn" class="scroll-bottom-btn"><i class="fas fa-arrow-down"></i> New Messages</button>
             <div class="chat-input-row">
-                <input type="text" id="chatInput" placeholder="Type a message..." disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <input type="text" id="chatInput" placeholder="Type a message..." disabled autocomplete="off" autocorrect="off" autocapitalize="off">
                 <button class="send-btn" id="sendChatBtn" disabled><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -1081,46 +1084,53 @@
 // ═══════════════════════════════════════
 const STREAMS = {
     Tamasha: {
-        displayName: "Tamasha",
-        platform: "TAMASHA",
-        url: "https://cdn2aws.tamashaweb.com/out/v1/bbe6ba6d0d1c47fbb8042a49b64db630/index.m3u8?start=1775916600"
+        displayName: "Tamasha", platform: "TAMASHA",
+        urls: [
+            "https://cdn2aws.tamashaweb.com/out/v1/bbe6ba6d0d1c47fbb8042a49b64db630/index_7.m3u8?start=1775824800",
+            "https://cdn2aws.tamashaweb.com/out/v1/bbe6ba6d0d1c47fbb8042a49b64db630/index.m3u8"
+        ]
     },
     Myco: {
-        displayName: "Myco",
-        platform: "MYCO",
-        url: "https://001.fclplayer.net/live/csstream5/chunklist.m3u8?vidictid=205541396493&id=1005&pk=5f704ad8fabd4183eec47427686cb8d7597549e2e269691a6c0547bfbd3a5d8c"
+        displayName: "Myco", platform: "MYCO",
+        urls: [
+            "http://gr-pl.litecdn.xyz:9212/86e4228d28529e51bdbabd302fc57d02437eb371893201512f660cf7/index.m3u8?token=2037563bf757329823cd89079c695960db98319ca18ddfd298e831a9cb1f47c5cef21b6db95deef114faf0d4e6c5e0c381566cf0b7643f12ab972cab797e88f70566ef6c7a-9a1b144e98dc3a0ac01e35205fbc4145"
+        ]
     },
     Tapmad: {
-        displayName: "Tapmad",
-        platform: "TAPMAD",
-        url: "http://gr-pl.litecdn.xyz:9212/86e4228d28529e51bdbabd302fc57d02437eb371893201512f660cf7/index.m3u8?token=ad9913c32dd93beb10ee795e5542c92ce76b16aa61d1100ecd6d91df6d4b550d53da1a993c6a139fab4f273884bd3fca7b79996b65fe03e9bde13173f96847a3f8f557a199f318-65fa4cf05223269d258668b5b53e181d"
+        displayName: "Tapmad", platform: "TAPMAD",
+        urls: [
+            "https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1775916904~acl=%2f*~data=hdntl~hmac=17ac80a048486eb81758c4162c380b9afb8d73d66ad81a89f6e368307f89e045/level_1.m3u8"
+        ]
     },
     Walee: {
-        displayName: "Walee",
-        platform: "WALEE",
-        url: "https://psl.bigbaat.app/out/v1/f342445c31dd475bbf30c7304dbad14f/index.m3u8"
+        displayName: "Walee", platform: "WALEE",
+        urls: [
+            "https://psl.bigbaat.app/out/v1/f342445c31dd475bbf30c7304dbad14f/index.m3u8",
+            "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        ]
     },
     Willow: {
-        displayName: "Willow",
-        platform: "WILLOW",
-        url: "http://glen.packetcdn.me:9323/86e4228d28529e51bdbabd302fd17b025164af70815c/index.m3u8?token=3b49eaccfa6c28f59c3696e07eb61640fa50d79d1df73c3e308c58dfc14b94d4c0e31b845f221e94f376bdfeff28dbef7ccd5f8c063ce3e2dab3b65536f1dd9d97e7acce7be493-84c9f9c63db2d81bda44fa754057b7b0"
+        displayName: "Willow", platform: "WILLOW",
+        urls: [
+            "https://001.fclplayer.net/live/csstream5/chunklist.m3u8?vidictid=205541396493&id=1005&pk=5f704ad8fabd4183eec47427686cb8d7597549e2e269691a6c0547bfbd3a5d8c"
+        ]
     },
     Urdu: {
-        displayName: "اردو کمنٹری",
-        platform: "URDU",
-        url: "https://premierleagpl23.akamaized.net/hls/live/2107108/tapmad-P1s5L_U2r4D6u/master.m3u8"
+        displayName: "اردو کمنٹری", platform: "URDU",
+        urls: [
+            "https://saseries.akamaized.net/hls/live/2110097/T56A87p03/hdntl=exp=1775984778~acl=%2f*~data=hdntl~hmac=ea22a918de6d426d3fee1acbcd409ad9c49cc0cf2c880531243d53e804476856/level_0.m3u8"
+        ]
     }
 };
-
-const WALEE_FALLBACK = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
 const PROXIES = {
     1: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
     2: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
 };
-
 let hlsInstance = null;
 let currentStreamId = 'Tamasha';
 let currentProxy = null;
+let _retryTimer = null;
+let _stallTimer = null;
 const video = document.getElementById('videoPlayer');
 let selectedQuality = 1080;
 
@@ -1187,42 +1197,68 @@ function buildChannelCards() {
 // ═══════════════════════════════════════
 // QUALITY
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// OPTIMISED HLS CONFIG + PLAYER ENGINE
+// ═══════════════════════════════════════
+
+function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement ||
+              document.mozFullScreenElement || video.webkitDisplayingFullscreen);
+}
+
+function makeHlsConfig() {
+    const mob = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return {
+        debug: false, enableWorker: true,
+        liveSyncDurationCount: 3, liveMaxLatencyDurationCount: 8,
+        liveDurationInfinity: true, initialLiveManifestSize: 1,
+        maxBufferLength:    mob ? 30 : 60,
+        maxMaxBufferLength: mob ? 60 : 120,
+        backBufferLength:   mob ? 10 : 30,
+        maxBufferSize:      mob ? 30e6 : 80e6,
+        maxBufferHole: 0.3,
+        startLevel: -1, abrEwmaDefaultEstimate: 2000000,
+        abrEwmaFastLive: 3, abrEwmaSlowLive: 9,
+        abrBandWidthFactor: 0.95, abrBandWidthUpFactor: 0.7,
+        abrMaxWithRealBitrate: true,
+        manifestLoadingTimeOut: 12000, manifestLoadingMaxRetry: 3, manifestLoadingRetryDelay: 500,
+        levelLoadingTimeOut:    10000, levelLoadingMaxRetry:    4, levelLoadingRetryDelay:    500,
+        fragLoadingTimeOut:     20000, fragLoadingMaxRetry:     4, fragLoadingRetryDelay:     500,
+        appendErrorMaxRetry: 4,
+        autoStartLoad: true, startFragPrefetch: true, testBandwidth: true, progressive: true,
+        xhrSetup: (xhr) => { xhr.withCredentials = false; }
+    };
+}
+
 function setQuality(target) {
     selectedQuality = target;
     localStorage.setItem('savedQuality', target);
     ['qAuto','q360','q480','q720','q1080'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
+        const el = document.getElementById(id); if (el) el.classList.remove('active');
     });
-    const map = { 'auto': 'qAuto', 360: 'q360', 480: 'q480', 720: 'q720', 1080: 'q1080' };
+    const map = { 'auto':'qAuto', 360:'q360', 480:'q480', 720:'q720', 1080:'q1080' };
     document.getElementById(map[target])?.classList.add('active');
     applyQuality();
-    // close flyout
     document.getElementById('settingsFlyout').classList.remove('open');
 }
 
 function applyQuality() {
     if (!hlsInstance?.levels?.length) return;
     if (selectedQuality === 'auto') {
-        hlsInstance.currentLevel = -1;
-        hlsInstance.autoLevelCapping = -1;
-        return;
+        hlsInstance.currentLevel = -1; hlsInstance.autoLevelCapping = -1; return;
     }
-    let bestIdx = 0, bestDiff = Infinity;
-    hlsInstance.levels.forEach((level, idx) => {
-        const diff = Math.abs((level.height || 0) - selectedQuality);
-        if (diff < bestDiff) { bestDiff = diff; bestIdx = idx; }
+    let best = 0, bestD = Infinity;
+    hlsInstance.levels.forEach((lv, i) => {
+        const d = Math.abs((lv.height || 0) - selectedQuality);
+        if (d < bestD) { bestD = d; best = i; }
     });
-   hlsInstance.currentLevel = bestIdx;
-    hlsInstance.nextLevel = bestIdx; 
-    hlsInstance.loadLevel = bestIdx; 
-    hlsInstance.autoLevelCapping = bestIdx;
-    const h = hlsInstance.levels[bestIdx]?.height || selectedQuality;
-    updateStatus(`▶ Playing · ${h}p`, true);
+    hlsInstance.currentLevel = hlsInstance.nextLevel = hlsInstance.loadLevel = hlsInstance.autoLevelCapping = best;
+    updateStatus(`▶ Playing · ${hlsInstance.levels[best]?.height || selectedQuality}p`, true);
 }
 
 function updateStatus(msg, ok = false) {
-    const el = document.getElementById('streamStatusMsg');
+    if (isFullscreen()) return;
+    const el = document.getElementById('streamStatusMsg'); if (!el) return;
     const icon = ok
         ? `<i class="fas fa-circle" style="color:var(--accent);font-size:0.45rem"></i>`
         : `<i class="fas fa-spinner fa-spin" style="color:var(--text-3);font-size:0.45rem"></i>`;
@@ -1240,107 +1276,167 @@ function updateBadge(id) {
     if (s) document.getElementById('activeStreamBadge').textContent = `${s.displayName.toUpperCase()} · LIVE`;
 }
 
+// Stall watchdog — auto-recover if video freezes more than 4 seconds
+let _lastPH = -1, _stallN = 0;
+function startWatchdog() {
+    clearInterval(_stallTimer); _lastPH = -1; _stallN = 0;
+    _stallTimer = setInterval(() => {
+        if (video.paused || video.ended || video.readyState < 2) return;
+        const cur = video.currentTime;
+        if (cur === _lastPH) {
+            if (++_stallN >= 2) {
+                _stallN = 0;
+                if (hlsInstance) {
+                    hlsInstance.recoverMediaError();
+                    setTimeout(() => { if (video.paused) video.play().catch(() => {}); }, 800);
+                } else { video.currentTime += 0.1; video.play().catch(() => {}); }
+            }
+        } else { _stallN = 0; }
+        _lastPH = cur;
+    }, 2000);
+}
+function stopWatchdog() { clearInterval(_stallTimer); _stallTimer = null; }
+
 function cleanupPlayer() {
+    clearTimeout(_retryTimer); stopWatchdog();
     if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
+    video.pause(); video.removeAttribute('src');
+    if (!isFullscreen()) video.load();
 }
 
-function attemptPlay(sourceUrl, stream, isWalee, proxyFn) {
+// HTTP streams on HTTPS pages are blocked by browsers.
+// resolveUrl auto-routes them through an HTTPS proxy.
+function resolveUrl(rawUrl, proxyFn) {
+    if (proxyFn) return proxyFn(rawUrl);
+    if (location.protocol === 'https:' && rawUrl.startsWith('http:')) {
+        return PROXIES[1](rawUrl);   // wrap http:// in https:// CORS proxy
+    }
+    return rawUrl;
+}
+
+// Core play engine: tries each url in sequence, escalates to proxy on failure
+function attemptPlay(urlList, stream, proxyFn, urlIdx = 0, proxyTried = false) {
+    if (urlIdx >= urlList.length) {
+        updateStatus(`${stream.displayName} · No signal — try Proxy`);
+        window.sysMsgLocal?.(`❌ ${stream.displayName}: all sources failed`);
+        return;
+    }
+    const src = resolveUrl(urlList[urlIdx], proxyFn);
+
     if (Hls.isSupported()) {
         if (hlsInstance) hlsInstance.destroy();
-        hlsInstance = new Hls({ debug: false, enableWorker: true, manifestLoadingTimeOut: 20000, manifestLoadingMaxRetry: 2, fragLoadingTimeOut: 25000, autoStartLoad: true });
-        hlsInstance.loadSource(sourceUrl);
+        hlsInstance = new Hls(makeHlsConfig());
+        hlsInstance.loadSource(src);
         hlsInstance.attachMedia(video);
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            updateStatus(`${stream.displayName} · Live`, true);
-            window.sysMsgLocal?.(`✅ ${stream.displayName} stream is live`);
-            setTimeout(() => applyQuality(), 500);
-            video.play().catch(() => {});
+
+        // Start playing as soon as the first fragment is buffered
+        hlsInstance.once(Hls.Events.FRAG_LOADED, () => {
+            if (video.paused) video.play().catch(() => {});
         });
-        hlsInstance.on(Hls.Events.ERROR, (_, data) => {
-            if (data.fatal) {
-                if (isWalee && sourceUrl !== WALEE_FALLBACK && !proxyFn) {
-                    attemptPlay(WALEE_FALLBACK, stream, false, null);
-                } else {
-                    updateStatus(`${stream.displayName} failed · Try Proxy`);
-                    window.sysMsgLocal?.(`❌ ${stream.displayName} error — try Secure Proxy`);
-                }
+
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+            if (selectedQuality === 1080 || selectedQuality === 'auto') {
+                hlsInstance.startLevel = data.levels.length - 1; // highest quality
+            }
+            updateStatus(`${stream.displayName} · Live`, true);
+            if (!isFullscreen()) window.sysMsgLocal?.(`✅ ${stream.displayName} · Live`);
+            setTimeout(() => applyQuality(), 300);
+            video.play().catch(() => {});
+            startWatchdog();
+        });
+
+        // Keep quality pill accurate as ABR adapts
+        hlsInstance.on(Hls.Events.LEVEL_SWITCHED, (_, data) => {
+            const lv = hlsInstance.levels[data.level];
+            if (lv && !isFullscreen()) {
+                const qEl = document.getElementById('statusQuality');
+                if (qEl) qEl.textContent = lv.height ? `${lv.height}p` : 'Live';
             }
         });
+
+        // Resume playback if buffer refills while paused
+        hlsInstance.on(Hls.Events.BUFFER_APPENDED, () => {
+            if (video.paused && video.readyState >= 2) video.play().catch(() => {});
+        });
+
+        hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+            if (!data.fatal) return;
+
+            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                updateStatus(`${stream.displayName} · Reconnecting…`);
+                hlsInstance.startLoad(); // in-place reconnect
+                _retryTimer = setTimeout(() => {
+                    if (!proxyFn && !proxyTried) {
+                        cleanupPlayer(); attemptPlay(urlList, stream, PROXIES[1], urlIdx, true);
+                    } else if (urlIdx + 1 < urlList.length) {
+                        cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1, false);
+                    } else {
+                        updateStatus(`${stream.displayName} · Signal lost`);
+                        window.sysMsgLocal?.(`⚠️ ${stream.displayName}: retrying in 15s`);
+                        stopWatchdog();
+                        _retryTimer = setTimeout(() => loadStream(currentStreamId, currentProxy), 15000);
+                    }
+                }, 5000);
+
+            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                updateStatus(`${stream.displayName} · Recovering…`);
+                hlsInstance.recoverMediaError();
+                _retryTimer = setTimeout(() => {
+                    if (video.paused) { hlsInstance.swapAudioCodec(); hlsInstance.recoverMediaError(); video.play().catch(() => {}); }
+                }, 2000);
+
+            } else {
+                if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
+                else updateStatus(`${stream.displayName} failed · Try Proxy`);
+            }
+        });
+
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = sourceUrl;
-        video.addEventListener('loadedmetadata', () => { video.play(); updateStatus(`${stream.displayName} · Live`, true); });
+        video.addEventListener('loadedmetadata', () => {
+            video.play().catch(() => {}); updateStatus(`${stream.displayName} · Live`, true); startWatchdog();
+        }, { once: true });
+        video.addEventListener('error', () => {
+            if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
+            else updateStatus(`${stream.displayName} failed`);
+        }, { once: true });
+        video.src = src; video.load();
     }
 }
 
 function irisFlash() {
     const el = document.getElementById('irisFlash');
-    el.classList.add('flash');
-    setTimeout(() => el.classList.remove('flash'), 120);
+    el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 120);
 }
 
 function loadStream(id, proxyFn = null) {
-    const stream = STREAMS[id];
-    if (!stream) return;
-    currentStreamId = id;
-    updateBadge(id);
-
+    const stream = STREAMS[id]; if (!stream) return;
+    currentStreamId = id; updateBadge(id);
     document.querySelectorAll('.ch-card').forEach(c => {
         c.classList.remove('active');
         if (c.dataset.stream === id) c.classList.add('active');
     });
-
+    if (isFullscreen()) { cleanupPlayer(); attemptPlay(stream.urls, stream, proxyFn); return; }
     updateStatus(`Loading ${stream.displayName}…`);
-    window.sysMsgLocal?.(`🔄 Switching to ${stream.displayName}`);
-
-    // Cinematic switch: fade + iris
-    video.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-    video.style.opacity = '0';
-    video.style.transform = 'scale(0.988)';
-
+    window.sysMsgLocal?.(`?? ${stream.displayName}`);
+    video.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+    video.style.opacity = '0'; video.style.transform = 'scale(0.99)';
     setTimeout(() => {
-        irisFlash();
-        cleanupPlayer();
-        const url = proxyFn ? proxyFn(stream.url) : stream.url;
-        attemptPlay(url, stream, id === 'Walee', proxyFn);
-        video.style.opacity = '1';
-        video.style.transform = 'scale(1)';
-    }, 320);
+        irisFlash(); cleanupPlayer(); attemptPlay(stream.urls, stream, proxyFn);
+        video.style.opacity = '1'; video.style.transform = 'scale(1)';
+    }, 220);
 }
 
-// ═══════════════════════════════════════
-// HEADER COMPACT ON SCROLL
-// ═══════════════════════════════════════
-window.addEventListener('scroll', () => {
-    const h = document.getElementById('mainHeader');
-    h.classList.toggle('compact', window.scrollY > 40);
-}, { passive: true });
-
-// ═══════════════════════════════════════
-// SETTINGS FLYOUT TOGGLE
-// ═══════════════════════════════════════
-document.getElementById('settingsBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('settingsFlyout').classList.toggle('open');
-});
-document.addEventListener('click', () => document.getElementById('settingsFlyout').classList.remove('open'));
-
-// ═══════════════════════════════════════
-// PROXY / CONTROLS
-// ═══════════════════════════════════════
 window.activateProxy = function(n) {
-    currentProxy = PROXIES[n];
-    localStorage.setItem('savedProxy', n);
+    currentProxy = PROXIES[n]; localStorage.setItem('savedProxy', n);
     showToast(`<i class="fas fa-shield-halved"></i> Proxy ${n} Activated`);
     loadStream(currentStreamId, currentProxy);
 };
 window.reloadStream = function() { loadStream(currentStreamId, currentProxy); };
 window.openInExternalPlayer = function() {
     const s = STREAMS[currentStreamId];
-    if (s) { window.open(s.url, '_blank'); window.sysMsgLocal?.(`📺 Opened ${s.displayName} externally`); }
+    if (s) { window.open(s.urls[0], '_blank'); window.sysMsgLocal?.(`?? Opened ${s.displayName} externally`); }
 };
+
 
 function showToast(html) {
     const t = document.createElement('div');
@@ -1409,6 +1505,7 @@ function escHtml(s) {
 // Deduplicate system messages
 let lastSysMsg = '', lastSysTime = 0;
 window.sysMsgLocal = function(text) {
+    if (isFullscreen && isFullscreen()) return;
     const now = Date.now();
     if (text === lastSysMsg && now - lastSysTime < 4000) return;
     lastSysMsg = text; lastSysTime = now;
@@ -1417,14 +1514,8 @@ window.sysMsgLocal = function(text) {
     div.className = 'msg sys';
     div.innerHTML = `<strong>📡 SYSTEM</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
     area.appendChild(div);
-    // Only scroll inside the chat box itself — never scroll the whole page
-    const isMobile = window.innerWidth <= 900;
-    if (!isMobile) {
-        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } else {
-        // On mobile: scroll only within the chat container, not the page
-        area.scrollTop = area.scrollHeight;
-    }
+    if (window.innerWidth <= 900) { area.scrollTop = area.scrollHeight; }
+    else { div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 };
 
 function appendMessage({ user, text, isSystem = false, isOwn = false, timestamp = Date.now() }) {
@@ -1464,7 +1555,8 @@ function appendMessage({ user, text, isSystem = false, isOwn = false, timestamp 
 
     area.appendChild(div);
 
-    // Smart Auto-scroll logic — scroll INSIDE chat box only, never scroll the page
+    if (isFullscreen && isFullscreen()) { while (area.children.length > 120) area.removeChild(area.firstChild); return; }
+    // Smart Auto-scroll logic
     const scrollBtn = document.getElementById('scrollBottomBtn');
     if (isAtBottom || isOwn) {
         area.scrollTop = area.scrollHeight;
@@ -1995,16 +2087,27 @@ window.onload = () => {
     document.getElementById('chatInput').onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
     initFirebaseChat();
     window.sysMsgLocal('🏆 Welcome to OTT Player — 6 Live Channels');
-    // Restore scroll to top on mobile — prevents chat from pulling viewport down
-    if (window.innerWidth <= 900) {
-        requestAnimationFrame(() => { window.scrollTo(0, 0); });
-        setTimeout(() => { window.scrollTo(0, 0); }, 300);
-        setTimeout(() => { window.scrollTo(0, 0); }, 800);
-    }
     loadStream('Tamasha', null);
 
     // PSL Score — init + smart auto-refresh
 };
+// ── Fullscreen stability ─────────────────────────────────
+function onFSChange() {
+    if (!isFullscreen()) {
+        if (window.innerWidth <= 900) { requestAnimationFrame(() => window.scrollTo(0, 0)); setTimeout(() => window.scrollTo(0, 0), 150); }
+        setTimeout(() => applyQuality(), 200);
+    }
+}
+document.addEventListener('fullscreenchange', onFSChange);
+document.addEventListener('webkitfullscreenchange', onFSChange);
+document.addEventListener('mozfullscreenchange', onFSChange);
+video.addEventListener('webkitbeginfullscreen', () => { document.body.style.overflow = 'hidden'; });
+video.addEventListener('webkitendfullscreen', () => {
+    document.body.style.overflow = '';
+    if (window.innerWidth <= 900) { requestAnimationFrame(() => window.scrollTo(0, 0)); setTimeout(() => window.scrollTo(0, 0), 150); }
+    applyQuality();
+});
+
 window.sendMessage = sendMessage;
 window.setQuality = setQuality;
 
