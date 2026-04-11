@@ -668,6 +668,9 @@
             mask-image: linear-gradient(to bottom, transparent 0, black 36px);
             -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 36px);
         }
+        /* Prevent chat from hijacking page scroll on mobile */
+        .chat-col { -webkit-overflow-scrolling: touch; }
+        .msgs { overscroll-behavior: contain; scroll-behavior: auto; }
         .msgs::-webkit-scrollbar { width: 3px; }
         .msgs::-webkit-scrollbar-track { background: transparent; }
         .msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -949,7 +952,7 @@
                 <div class="player-hud">
                     <div class="stream-badge" id="activeStreamBadge">TAMASHA · LIVE</div>
                 </div>
-                <video id="videoPlayer" controls autoplay playsinline></video>
+                <video id="videoPlayer" controls autoplay playsinline muted></video>
             </div>
 
             <!-- Channel dock with real logos -->
@@ -1030,7 +1033,7 @@
                 </div>
             </div>
             <div class="user-setup" id="usernameSetup">
-                <input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20">
+                <input type="text" id="usernameInput" placeholder="Enter nickname..." maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <button onclick="window.setUsername()"><i class="fas fa-sign-in-alt"></i> Join</button>
             </div>
             <div class="msgs" id="chatMessages">
@@ -1038,7 +1041,7 @@
             </div>
             <button id="scrollBottomBtn" class="scroll-bottom-btn"><i class="fas fa-arrow-down"></i> New Messages</button>
             <div class="chat-input-row">
-                <input type="text" id="chatInput" placeholder="Type a message..." disabled>
+                <input type="text" id="chatInput" placeholder="Type a message..." disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <button class="send-btn" id="sendChatBtn" disabled><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -1414,7 +1417,14 @@ window.sysMsgLocal = function(text) {
     div.className = 'msg sys';
     div.innerHTML = `<strong>📡 SYSTEM</strong> <span class="msg-time">${getTime()}</span><br>${escHtml(text)}`;
     area.appendChild(div);
-    div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Only scroll inside the chat box itself — never scroll the whole page
+    const isMobile = window.innerWidth <= 900;
+    if (!isMobile) {
+        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        // On mobile: scroll only within the chat container, not the page
+        area.scrollTop = area.scrollHeight;
+    }
 };
 
 function appendMessage({ user, text, isSystem = false, isOwn = false, timestamp = Date.now() }) {
@@ -1454,10 +1464,10 @@ function appendMessage({ user, text, isSystem = false, isOwn = false, timestamp 
 
     area.appendChild(div);
 
-    // Smart Auto-scroll logic
+    // Smart Auto-scroll logic — scroll INSIDE chat box only, never scroll the page
     const scrollBtn = document.getElementById('scrollBottomBtn');
     if (isAtBottom || isOwn) {
-        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        area.scrollTop = area.scrollHeight;
         scrollBtn.classList.remove('show');
     } else {
         scrollBtn.classList.add('show');
@@ -1985,6 +1995,12 @@ window.onload = () => {
     document.getElementById('chatInput').onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
     initFirebaseChat();
     window.sysMsgLocal('🏆 Welcome to OTT Player — 6 Live Channels');
+    // Restore scroll to top on mobile — prevents chat from pulling viewport down
+    if (window.innerWidth <= 900) {
+        requestAnimationFrame(() => { window.scrollTo(0, 0); });
+        setTimeout(() => { window.scrollTo(0, 0); }, 300);
+        setTimeout(() => { window.scrollTo(0, 0); }, 800);
+    }
     loadStream('Tamasha', null);
 
     // PSL Score — init + smart auto-refresh
