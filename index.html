@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;700;800;900&family=Manrope:wght@200;300;400;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <style>
@@ -241,11 +242,11 @@
             min-height: 100vh !important;
             object-fit: contain;
         }
-        /* Controls still work in fullscreen */
+        /* Controls hidden by default, shown via .ctrl-visible (JS-controlled) */
         .player-shell:fullscreen .vlc-controls,
-        .player-shell:-webkit-full-screen .vlc-controls { opacity: 0; }
+        .player-shell:-webkit-full-screen .vlc-controls { opacity: 0; pointer-events: none; }
         .player-shell:fullscreen.ctrl-visible .vlc-controls,
-        .player-shell:-webkit-full-screen.ctrl-visible .vlc-controls { opacity: 1; }
+        .player-shell:-webkit-full-screen.ctrl-visible .vlc-controls { opacity: 1; pointer-events: all; }
 
         #videoPlayer { touch-action: manipulation; -webkit-user-select:none; user-select:none; }
 
@@ -284,13 +285,14 @@
             padding: 10px 14px 12px;
             z-index: 20;
             opacity: 0;
-            transition: opacity 0.28s ease;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-        .player-shell:hover .vlc-controls,
-        .player-shell.ctrl-visible .vlc-controls { opacity: 1; }
+        /* Show controls — ctrl-visible is the ONLY trigger (set by JS on mousemove) */
+        .player-shell.ctrl-visible .vlc-controls { opacity: 1; pointer-events: all; }
 
         /* Progress bar */
         .vlc-progress {
@@ -1765,19 +1767,19 @@ const STREAMS = {
     Tamasha: {
         displayName: "Tamasha", platform: "TAMASHA",
         urls: [
-            "https://001.fclplayer.net/live/csstream2/chunklist.m3u8?vidictid=205611444324&id=1002&pk=8fcea67587e87af526169c765c96e7d2b4cec2bff8d3cc9fa25b2781e0f76759"
+            "https://vs2.bigchungus.zip/live/RD2qTgn6N/cuw2wYauRe/245146.ts?token=Q0dRVxcMEAMbDVkDBlBdBwNXBVUDWgoIVFZWVVsGAwlcVlwFU10DXwwbTRBDQBdXVF5vCFBACQoGAFUDVB0XTEsAS2kNABADGwpRBgQERx4XR1kMUUAJCQUCUgJaCAIMDUkbRg0AEAMbC1YCBwxVAhcfEgRMFlZKXFQIaAZUQ1BbABsMChFeVRUbDlxvUABfVF1UQw5AAhoeFw1EEhMPV00JVRpGBltNS1gVVxIOC0dZXxxDVw1GVkZHHRVYE2VyGkkbUxwQV1dKUA5cEg5HRkYRHENdEWxKV0YQRQdQWFxKRwMUVEYeG1RYGW1TWwtcUFBECFsMQBoIF1cVThNYVlYMTVkWO0JQXRtbEAIDVQUCBwlDSQ=="
         ]
     },
     Myco: {
         displayName: "Myco", platform: "MYCO",
         urls: [
-            "https://tapmadlive.akamaized.net/tapmadold/tensports.smil/playlist.m3u8?hdnts=exp=1776521402~acl=/hls/*~hmac=068270557d6f70e427e84debde5c1be889656f88a55e6ae37b14c65f570b1a2a"
+            "https://001.fclplayer.net/live/csstream1/playlist.m3u8?id=1001&pk=205224490b3cb3fc2d37842db8c3faf41abdfc2531986ef99c41406997b2dc82"
         ]
     },
     Tapmad: {
         displayName: "Tapmad", platform: "TAPMAD",
         urls: [
-            "https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1776606775~acl=%2f*~data=hdntl~hmac=a5825de6ee46966873115194967ef3815ead2d4b9fc3d316388df9c63fd042cf/level_0.m3u8"
+            "https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1776677113~acl=%2f*~data=hdntl~hmac=196b48b4a3c53f8bf608e112432b095f71fb29b247bd8f60567a96635ac4f6df/level_0.m3u8"
         ]
     },
     Walee: {
@@ -1789,13 +1791,13 @@ const STREAMS = {
     Willow: {
         displayName: "Willow", platform: "WILLOW",
         urls: [
-            "https://001.fclplayer.net/live/csstream5/chunklist.m3u8?vidictid=205613841415&id=1005&pk=8fcea67587e87af526169c765c96e7d2b4cec2bff8d3cc9fa25b2781e0f76759"
+            "https://002.fclplayer.net/live/csstream5/chunklist.m3u8?vidictid=20562580311&id=1005&pk=1a8d4d7f065247b3045bfb29fa482a4b793199073318261da611c2e0fad1b747"
         ]
     },
     Urdu: {
         displayName: "اردو کمنٹری", platform: "URDU",
         urls: [
-            "https://saseries.akamaized.net/hls/live/2110097/T56A87p03/hdntl=exp=1776606819~acl=%2f*~data=hdntl~hmac=aa61032a8949d0d8904cb26bc27d264b87e0571b85ae1b870fce710118aa682d/level_0.m3u8"
+            "https://saseries.akamaized.net/hls/live/2110097/T56A87p03/hdntl=exp=1776677255~acl=%2f*~data=hdntl~hmac=5b4607e67db9032fcbd15b347f06793b535c7914cba82173448e66ee3b7f95c3/level_0.m3u8"
         ]
     }
 };
@@ -1804,6 +1806,7 @@ const PROXIES = {
     2: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
 };
 let hlsInstance = null;
+let mpegtsInstance = null;
 let currentStreamId = 'Tamasha';
 let currentProxy = null;
 let _retryTimer = null;
@@ -1978,9 +1981,13 @@ function stopWatchdog() { clearInterval(_stallTimer); _stallTimer = null; }
 
 function cleanupPlayer() {
     clearTimeout(_retryTimer); stopWatchdog();
-    if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-    video.pause(); video.removeAttribute('src');
-    if (!isFullscreen()) video.load();
+    // Destroy HLS.js instance
+    if (hlsInstance) { try { hlsInstance.destroy(); } catch(e){} hlsInstance = null; }
+    // Destroy mpegts.js instance
+    if (mpegtsInstance) { try { mpegtsInstance.destroy(); } catch(e){} mpegtsInstance = null; }
+    video.pause();
+    video.removeAttribute('src');
+    if (!isFullscreen()) { try { video.load(); } catch(e){} }
 }
 
 // HTTP streams on HTTPS pages are blocked by browsers.
@@ -1988,149 +1995,144 @@ function cleanupPlayer() {
 function resolveUrl(rawUrl, proxyFn) {
     if (proxyFn) return proxyFn(rawUrl);
     if (location.protocol === 'https:' && rawUrl.startsWith('http:')) {
-        return PROXIES[1](rawUrl);   // wrap http:// in https:// CORS proxy
+        return PROXIES[1](rawUrl);
     }
     return rawUrl;
 }
 
 // Core play engine: tries each url in sequence, escalates to proxy on failure
-// Supports .m3u8 (HLS) AND .ts (direct MPEG-TS stream URLs)
+// Supports .m3u8 (HLS) AND .ts (live MPEG-TS streams via mpegts.js)
 function attemptPlay(urlList, stream, proxyFn, urlIdx = 0, proxyTried = false) {
     if (urlIdx >= urlList.length) {
-        updateStatus(`${stream.displayName} · No signal — try Proxy`);
+        updateStatus(stream.displayName + ' · No signal — try Proxy');
         if (window.sysMsgLocal) window.sysMsgLocal('❌ ' + stream.displayName + ': all sources failed');
         return;
     }
     const rawUrl = urlList[urlIdx];
     const src = resolveUrl(rawUrl, proxyFn);
-
-    // Detect raw .ts streams (token-auth MPEG-TS, not HLS playlist)
     const cleanPath = src.split('?')[0].toLowerCase();
     const isRawTS = cleanPath.endsWith('.ts');
 
-    if (Hls.isSupported()) {
-        if (hlsInstance) hlsInstance.destroy();
-
-        if (isRawTS) {
-            // ── RAW .TS STREAM via synthetic M3U8 + custom HLS.js loader ──
-            // Browsers CANNOT natively play raw MPEG-TS. We wrap it in a fake
-            // infinite live M3U8 playlist and override HLS.js's loader so it
-            // returns the synthetic manifest. HLS.js then fetches the .ts URL
-            // as a segment and demuxes it via MediaSource Extensions.
-            const tsUrl = src;
-
-            // Build synthetic live M3U8 that keeps repeating the same TS segment
-            function makeSyntheticM3U8(seq) {
-                return [
-                    '#EXTM3U',
-                    '#EXT-X-VERSION:3',
-                    '#EXT-X-TARGETDURATION:10',
-                    '#EXT-X-MEDIA-SEQUENCE:' + seq,
-                    '#EXTINF:10.0,',
-                    tsUrl
-                ].join('\n');
-            }
-
-            // Custom loader that intercepts manifest requests and returns our fake M3U8
-            const DefaultLoader = Hls.DefaultConfig.loader;
-            let manifestSeq = 0;
-            class TSLoader extends DefaultLoader {
-                constructor(config) { super(config); }
-                load(context, config, callbacks) {
-                    if (context.type === 'manifest') {
-                        // Intercept manifest load — return synthetic M3U8
-                        const stats = { trequest: performance.now(), tfirst: 0, tload: 0, loaded: 0, total: 0 };
-                        setTimeout(() => {
-                            stats.tfirst = stats.tload = performance.now();
-                            const m3u8 = makeSyntheticM3U8(manifestSeq++);
-                            callbacks.onSuccess({ data: m3u8, url: context.url }, stats, context, null);
-                        }, 0);
-                        return;
-                    }
-                    // For actual .ts segment requests — pass through to default loader
-                    super.load(context, config, callbacks);
-                }
-            }
-
-            const hlsCfg = Object.assign(makeHlsConfig(), {
-                loader: TSLoader,
-                liveSyncDurationCount: 1,
-                liveMaxLatencyDurationCount: 3,
-                manifestLoadingTimeOut: 8000,
-                manifestLoadingMaxRetry: 6,
-                levelLoadingTimeOut: 15000,
-                fragLoadingTimeOut: 30000,
-            });
-
-            hlsInstance = new Hls(hlsCfg);
-            hlsInstance.loadSource(tsUrl); // HLS.js calls loader with context.type='manifest' first
-            hlsInstance.attachMedia(video);
-
-        } else {
-            // Standard .m3u8 HLS stream
-            hlsInstance = new Hls(makeHlsConfig());
-            hlsInstance.loadSource(src);
-            hlsInstance.attachMedia(video);
+    // ── PATH A: LIVE MPEG-TS → mpegts.js ──────────────────────────────────
+    // mpegts.js is purpose-built for live TS-over-HTTP streams.
+    // It uses fetch() + ReadableStream + MSE to transmux TS→MP4 in real time.
+    if (isRawTS) {
+        if (typeof mpegts === 'undefined' || !mpegts.isSupported()) {
+            _playDirect(src, stream, urlList, proxyFn, urlIdx, proxyTried);
+            return;
         }
+        updateStatus('Loading ' + stream.displayName + ' (TS)...');
+        mpegtsInstance = mpegts.createPlayer({
+            type: 'mpegts',
+            isLive: true,
+            url: src,
+            cors: true,
+        }, {
+            enableWorker: true,
+            enableStashBuffer: false,
+            stashInitialSize: 128 * 1024,
+            liveBufferLatencyChasing: true,
+            liveBufferLatencyMaxLatency: 3.0,
+            liveBufferLatencyMinRemain: 0.5,
+        });
+        mpegtsInstance.attachMediaElement(video);
+        mpegtsInstance.load();
 
-        // ── Shared HLS.js event handlers for both TS and M3U8 ──
-
-        // Start playing as soon as the first fragment is buffered
-        hlsInstance.once(Hls.Events.FRAG_LOADED, () => {
-            if (video.paused) video.play().catch(() => {});
+        mpegtsInstance.on(mpegts.Events.ERROR, function(errType, errDetail) {
+            console.warn('mpegts error:', errType, errDetail);
+            updateStatus(stream.displayName + ' · Reconnecting...');
+            clearTimeout(_retryTimer);
+            _retryTimer = setTimeout(function() {
+                cleanupPlayer();
+                if (!proxyFn && !proxyTried) {
+                    attemptPlay(urlList, stream, PROXIES[1], urlIdx, true);
+                } else if (urlIdx + 1 < urlList.length) {
+                    attemptPlay(urlList, stream, proxyFn, urlIdx + 1);
+                } else {
+                    updateStatus(stream.displayName + ' · Signal lost - retrying...');
+                    _retryTimer = setTimeout(function() { loadStream(currentStreamId, currentProxy); }, 10000);
+                }
+            }, 3000);
         });
 
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+        mpegtsInstance.on(mpegts.Events.MEDIA_INFO, function() {
+            video.play().catch(function(){});
+            updateStatus(stream.displayName + ' · Live', true);
+            if (window.sysMsgLocal) window.sysMsgLocal('✅ ' + stream.displayName + ' · Live (TS)');
+            startWatchdog();
+            clearTimeout(_retryTimer);
+        });
+
+        // Timeout fallback: if not playing in 8s, try proxy
+        _retryTimer = setTimeout(function() {
+            if (video.readyState < 2) {
+                cleanupPlayer();
+                if (!proxyTried && !proxyFn) {
+                    attemptPlay(urlList, stream, PROXIES[1], urlIdx, true);
+                } else {
+                    updateStatus(stream.displayName + ' · TS timeout - try Proxy');
+                }
+            }
+        }, 8000);
+        return;
+    }
+
+    // ── PATH B: HLS (.m3u8) → HLS.js ───────────────────────────────────────
+    if (Hls.isSupported()) {
+        hlsInstance = new Hls(makeHlsConfig());
+        hlsInstance.loadSource(src);
+        hlsInstance.attachMedia(video);
+
+        hlsInstance.once(Hls.Events.FRAG_LOADED, function() {
+            if (video.paused) video.play().catch(function(){});
+        });
+
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function(_, data) {
             if (selectedQuality === 1080 || selectedQuality === 'auto') {
                 hlsInstance.startLevel = data.levels.length - 1;
             }
             updateStatus(stream.displayName + ' · Live', true);
-            if (!isFullscreen() && window.sysMsgLocal) window.sysMsgLocal('✅ ' + stream.displayName + ' · Live' + (isRawTS ? ' (TS)' : ''));
-            setTimeout(() => applyQuality(), 300);
-            video.play().catch(() => {});
+            if (!isFullscreen() && window.sysMsgLocal) window.sysMsgLocal('✅ ' + stream.displayName + ' · Live');
+            setTimeout(function() { applyQuality(); }, 300);
+            video.play().catch(function(){});
             startWatchdog();
         });
 
-        // Keep quality pill accurate as ABR adapts
-        hlsInstance.on(Hls.Events.LEVEL_SWITCHED, (_, data) => {
-            const lv = hlsInstance.levels[data.level];
-            if (lv && !isFullscreen()) {
-                const qEl = document.getElementById('statusQuality');
-                if (qEl) qEl.textContent = lv.height ? `${lv.height}p` : 'Live';
+        hlsInstance.on(Hls.Events.LEVEL_SWITCHED, function(_, data) {
+            var lv = hlsInstance.levels[data.level];
+            if (lv) {
+                var qEl = document.getElementById('statusQuality');
+                if (qEl) qEl.textContent = lv.height ? lv.height + 'p' : 'Live';
             }
         });
 
-        // Resume playback if buffer refills while paused
-        hlsInstance.on(Hls.Events.BUFFER_APPENDED, () => {
-            if (video.paused && video.readyState >= 2) video.play().catch(() => {});
+        hlsInstance.on(Hls.Events.BUFFER_APPENDED, function() {
+            if (video.paused && video.readyState >= 2) video.play().catch(function(){});
         });
 
-        hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+        hlsInstance.on(Hls.Events.ERROR, function(_, data) {
             if (!data.fatal) return;
-
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                updateStatus(stream.displayName + ' · Reconnecting…');
+                updateStatus(stream.displayName + ' · Reconnecting...');
                 hlsInstance.startLoad();
-                _retryTimer = setTimeout(() => {
+                _retryTimer = setTimeout(function() {
                     if (!proxyFn && !proxyTried) {
                         cleanupPlayer(); attemptPlay(urlList, stream, PROXIES[1], urlIdx, true);
                     } else if (urlIdx + 1 < urlList.length) {
                         cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1, false);
                     } else {
                         updateStatus(stream.displayName + ' · Signal lost');
-                        if (window.sysMsgLocal) window.sysMsgLocal('⚠️ ' + stream.displayName + ': retrying in 15s');
+                        if (window.sysMsgLocal) window.sysMsgLocal('⚠️ ' + stream.displayName + ': retrying...');
                         stopWatchdog();
-                        _retryTimer = setTimeout(() => loadStream(currentStreamId, currentProxy), 15000);
+                        _retryTimer = setTimeout(function() { loadStream(currentStreamId, currentProxy); }, 15000);
                     }
                 }, 5000);
-
             } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                updateStatus(stream.displayName + ' · Recovering…');
+                updateStatus(stream.displayName + ' · Recovering...');
                 hlsInstance.recoverMediaError();
-                _retryTimer = setTimeout(() => {
-                    if (video.paused) { hlsInstance.swapAudioCodec(); hlsInstance.recoverMediaError(); video.play().catch(() => {}); }
+                _retryTimer = setTimeout(function() {
+                    if (video.paused) { hlsInstance.swapAudioCodec(); hlsInstance.recoverMediaError(); video.play().catch(function(){}); }
                 }, 2000);
-
             } else {
                 if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
                 else updateStatus(stream.displayName + ' failed · Try Proxy');
@@ -2138,26 +2140,23 @@ function attemptPlay(urlList, stream, proxyFn, urlIdx = 0, proxyTried = false) {
         });
 
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native HLS (Safari/iOS)
-        video.addEventListener('loadedmetadata', () => {
-            video.play().catch(() => {}); updateStatus(stream.displayName + ' · Live', true); startWatchdog();
-        }, { once: true });
-        video.addEventListener('error', () => {
-            if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
-            else updateStatus(stream.displayName + ' failed');
-        }, { once: true });
-        video.src = src; video.load();
+        _playDirect(src, stream, urlList, proxyFn, urlIdx, proxyTried);
     } else {
-        // Last resort direct src
-        video.addEventListener('loadedmetadata', () => {
-            video.play().catch(() => {}); updateStatus(stream.displayName + ' · Live', true); startWatchdog();
-        }, { once: true });
-        video.addEventListener('error', () => {
-            if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
-            else updateStatus(stream.displayName + ' · failed');
-        }, { once: true });
-        video.src = src; video.load();
+        _playDirect(src, stream, urlList, proxyFn, urlIdx, proxyTried);
     }
+}
+
+// Direct video.src fallback (Safari native HLS / last resort)
+function _playDirect(src, stream, urlList, proxyFn, urlIdx, proxyTried) {
+    video.addEventListener('loadedmetadata', function() {
+        video.play().catch(function(){}); updateStatus(stream.displayName + ' · Live', true); startWatchdog();
+    }, { once: true });
+    video.addEventListener('error', function() {
+        if (!proxyFn && !proxyTried) { cleanupPlayer(); attemptPlay(urlList, stream, PROXIES[1], urlIdx, true); }
+        else if (urlIdx + 1 < urlList.length) { cleanupPlayer(); attemptPlay(urlList, stream, proxyFn, urlIdx + 1); }
+        else updateStatus(stream.displayName + ' · failed');
+    }, { once: true });
+    video.src = src; video.load();
 }
 
 function irisFlash() {
@@ -2926,48 +2925,49 @@ function initVLCPlayer() {
     const centerFlashIcon = document.getElementById('centerFlashIcon');
 
     let ctrlHideTimer;
+    let cursorTimer;
+
     function showControls() {
         shell.classList.add('ctrl-visible');
+        document.body.style.cursor = '';
         clearTimeout(ctrlHideTimer);
-        ctrlHideTimer = setTimeout(() => shell.classList.remove('ctrl-visible'), 3000);
+        clearTimeout(cursorTimer);
+        // Hide controls after 3s of no movement
+        ctrlHideTimer = setTimeout(() => {
+            shell.classList.remove('ctrl-visible');
+            // Also hide cursor if in fullscreen
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                document.body.style.cursor = 'none';
+            }
+        }, 3000);
     }
 
-    // In fullscreen, mousemove fires on document — listen on both
-    shell.addEventListener('mousemove', showControls);
-    shell.addEventListener('touchstart', showControls, { passive: true });
-
-    // Critical: in fullscreen the mouse events hit document, not shell
-    document.addEventListener('mousemove', () => {
-        if (document.fullscreenElement === shell || document.webkitFullscreenElement === shell) {
-            showControls();
-        }
-    });
-    document.addEventListener('touchstart', () => {
-        if (document.fullscreenElement === shell || document.webkitFullscreenElement === shell) {
-            showControls();
-        }
-    }, { passive: true });
-
-    // Hide cursor in fullscreen after idle
-    let cursorTimer;
-    document.addEventListener('mousemove', () => {
+    function hideControls() {
+        shell.classList.remove('ctrl-visible');
         if (document.fullscreenElement || document.webkitFullscreenElement) {
-            document.body.style.cursor = '';
-            clearTimeout(cursorTimer);
-            cursorTimer = setTimeout(() => {
-                if (document.fullscreenElement || document.webkitFullscreenElement) {
-                    document.body.style.cursor = 'none';
-                }
-            }, 3200);
-        } else {
-            document.body.style.cursor = '';
+            document.body.style.cursor = 'none';
         }
-    });
+    }
+
+    // Single unified mousemove listener on document (works in both normal + fullscreen)
+    document.addEventListener('mousemove', showControls);
+    document.addEventListener('touchstart', showControls, { passive: true });
+    document.addEventListener('touchend', showControls, { passive: true });
+
+    // Restore cursor when leaving fullscreen
+    function onFSExit() {
+        document.body.style.cursor = '';
+        clearTimeout(cursorTimer);
+        clearTimeout(ctrlHideTimer);
+        shell.classList.add('ctrl-visible'); // always show controls outside fullscreen
+    }
     document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) { document.body.style.cursor = ''; clearTimeout(cursorTimer); }
+        if (!document.fullscreenElement) onFSExit();
+        else showControls(); // show briefly on enter
     });
     document.addEventListener('webkitfullscreenchange', () => {
-        if (!document.webkitFullscreenElement) { document.body.style.cursor = ''; clearTimeout(cursorTimer); }
+        if (!document.webkitFullscreenElement) onFSExit();
+        else showControls();
     });
 
     // Play/Pause toggle
@@ -3130,6 +3130,9 @@ function initVLCPlayer() {
                 break;
         }
     });
+
+    // Show controls initially (before first mousemove)
+    showControls();
 }
 // ── Mobile fullscreen scroll stability ──
 video.addEventListener('webkitbeginfullscreen', () => { document.body.style.overflow = 'hidden'; });
