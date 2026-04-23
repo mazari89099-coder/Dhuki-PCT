@@ -296,16 +296,17 @@
 // ======================= STREAMS CONFIGURATION =======================
 const STREAMS = {
     Tamasha: { displayName: "Tamasha", urls: [
-        "https://tencentcdn2.tamashaweb.com/v1/0192bed4e5f11ea506ec1afe4c6abd/0192bed664ae1ea506491378f278b7/tmsh_srt_output_1080p.m3u8?timeshift=1&mode=6&delay=1800"
+        "https://alibabacdn2.tamashaweb.com/alibaba02/alibaba02stream_1080p.m3u8?aliyunols=on&is_raw_rate=1&lhs_playback_mode=1&lhs_start_unix_s_0=1776934800"
     ]},
     Myco: { displayName: "Myco", urls: [
-        "https://ml-pull-rtmp-pk1.myco.io/DirtyEnglish/hls/index/DirtyEnglish_Logo-H264-1080p.m3u8?pkg_media=video&pkg_hm=dirty.m3u8&pkg_svc=1&pkg_vcodec=avc1"
+        "https://001.fclplayer.net/live/csstream5/chunklist.m3u8?vidictid=205669060181&id=1005&pk=8714d981daabcc7c93601226b151fa7bbf9972e02f9550b3d1b4b682d39c67c8"
     ]},
-    ESPN: { displayName: "ESPN", urls: ["https://vs2.bigchungus.zip/live/RD2qTgn6N/cuw2wYauRe/245137.ts?token=Q0dRVxcMEAMbD1cFVA0GVlRQCVYMAAMNVAdTBgMJDQ4AXQADAFxXDF8bTRBDQBdXVF5vCFBACQoGAFUEVR0XTEsAS2kNABADGwpRBgQERx4XR1kMUUAJCQUCUg9WBgYMAEkbRg0AEAMbC1kEAwRVEBkRVRlAB0FWU1k7UwdHXFpdRwNYEQheFRtWD21UUQhTW1cSWxZTERQQXBdHQAtbTFQJFRQGDUZLWE0EEApaEF5ZHxICWxddTEBMRg1AYX4bFEdcThABXEpQVg8QChYRQRcfEghHPUFdQUEWUgNcUEsaXxsGRkgQVFhBPlFfWgtXVkdZDloREQIQBkYbQFxaV1ERVkQ7FFtdGwNDAAgCVwUDEU0="] },
-    Tapmad: { displayName: "Tapmad", urls: ["https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1776933926~acl=%2f*~data=hdntl~hmac=b49fdcf3e957f07ccf54585af9d6d3c623d6300e9ae0232bef60d4af03741d06/level_0.m3u8"] },
+    ESPN: { displayName: "ESPN", urls: ["https://dfs.nwyrh.xyz/auth/655249.ts?token=vWQLJ3QA965iPUJVEOv-N-kSR6RMc0l_symV8cGQiCCc08WCqzjYkDvpWTJsy0IN0YOMylZJHq8zxRqTxz_ZI-W6vljD6bpvo-4XFMO2H0WfLF8ORLXXooUXiCBiLDsDKqbSSeMHN-8S8W2WPSDoEv7o-jdzQcQywTibce0zFDGDlRcLNfyWx0AkWa0dYTJB74rJs0UbNJC_ErUriL4QqI5HwoPPDtBjwsb23gM8PPgGK0wWwYhYa3BSfTE9MhMh5-KpdZnfLpBN2IKMCpNn_6tIqtvSEtXFDumjqvcNmZPuEB4TJtMQbe1Vu6gDtdasKaEOeULbPfdQgY4F9mjo54AAOKhtCN-FSPjFIn4_dG4qefXTiVaq_OR9TEO_LrVrtgHtruQjUTtepgpmxLV6QawROCjtwiBgYYr392lMh3hSOyen2RV08N25Q493kBwYJ3YDXahvggUQrCbfVa9HMEY5D1_QPisjxkNkZqOGVvPpvLTZA69ZWxQFpIAJLXH6vXokp4ns2jxHNI_q-8F_n9Vm5EdN1p_pKC1sxYPBJq0uoA4jb7b-2PtLNCkOWICB2MKcyjNUtiZo6ZTOoT8mKRJH6KWMWo2SFbe8eIrVSKUkyiuZ-o_cznYHvHzfFIJLQVxed4q91hXF3NLYfqoRgNv9JkvXy2vmlJYxZmdDtYpbQ9zSM0Iw3IyAKkvd00e_
+"] },
+    Tapmad: { displayName: "Tapmad", urls: ["https://saseries.akamaized.net/hls/live/2110097/ICCt20-tapmad/hdntl=exp=1776677113~acl=%2f*~data=hdntl~hmac=196b48b4a3c53f8bf608e112432b095f71fb29b247bd8f60567a96635ac4f6df/level_0.m3u8"] },
     Walee: { displayName: "Walee", urls: ["https://psl.bigbaat.app/out/v1/f342445c31dd475bbf30c7304dbad14f/index.m3u8"] },
-    Willow: { displayName: "Willow", urls: ["http://akeno.net-freaks.com:8080/live/Kentynes/0176324859/824823.ts?token=Q0dRVxcMEAMbCwVTBFJXCw0DUwdVBgAABQxVBwNUVA4LAQoGBgFRWwgbTRBDQBdXVF5vCFBACQAAAVwFUR0XTEsAS2kNABADGw9WAAgDXRAZEUQIWQcRAgMCUwFaBQMNCVUVFBQNVhsDG1gDAQZHHhdWSBVREF1ZXmoAUhRYVlwaX1dDCAgeG1ZXPlZVWQRcUREKQwVAHxpbRhQVWF9AVVRJG1QNEEBYTVxDCF5BCV4ZEVMOQQxHSksXXhUyehcVGgBBQgEKQVBWV0MIEkAWEBkRWRJrEFZLRkcBVg9URxsCRwkUSEZfWEFmAl1eWgBRQVpfD0dACRoBF0gVD15bUEwKS2kUDVYbAxtYAwAMR08="] },
-    Urdu: { displayName: "اردو کمنٹری", urls: ["https://saseries.akamaized.net/hls/live/2110097/T56A87p03/hdntl=exp=1776933986~acl=%2f*~data=hdntl~hmac=39c32c9bcc6f7547208386d7b15cda7023c9da74b5ee95e5b8b55f0a42f613f4/level_0.m3u8"] }
+    Willow: { displayName: "Willow", urls: ["http://akeno.net-freaks.com:8080/live/Kentynes/0176324859/824823.ts?token=Q0dRVxcMEAMbClAFCANTCw0FUVUFUgYAVAZUAQYABVgNVVoBUFZQC1gbTRBDQBdXVF5vCFBACQAAAVwFUR0XTEsAS2kNABADGw9WAAgDXRAZEUQIWQcRAgMCUwFbAgAAAF0VFBQNVhsDG1UFAgFdEBkRVRlAB0FWU1k7UwdHXFpdRwNYEQheFRtWD21UUQhTW1cSWxZTERQQXBdHQAtbTFQJFRQGDUZLWE0EEApaEF5ZHxICWxddTEBMRg1AYX4bFEdcThABXEpQVg8QChYRQRcfEghHPUFdQUEWUgNcUEsaXxsGRkgQVFhBPlFfWgtXVkdZDloREQIQBkYbQFxaV1ERVkQ7FFtdGwNDBgcGUAYXTg=="] },
+    Urdu: { displayName: "اردو کمنٹری", urls: ["https://saseries.akamaized.net/hls/live/2110097/T56A87p03/hdntl=exp=1777022443~acl=%2f*~data=hdntl~hmac=4d5e037e9811bcd81c3637a0b0973a0b6602b3bdf6e45f8d33c9f3c63957f47b/level_0.m3u8"] }
 };
 const PROXIES = { 1: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`, 2: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` };
 let hlsInstance = null, mpegtsInstance = null, currentStreamId = 'Tamasha', currentProxy = null;
@@ -588,10 +589,10 @@ const streamLinks = {
         { name:"Sony Sport", short:"SONY", url:"https://n8.zohanayaan.com:1686/hls/mevent11.m3u8?md5=C_YSC5x2Ox4uO_S1OZHYCA&expires=1776284977" }
     ],
     ipl: [
-        { name:"Sky Sport", short:"SKY", url:"http://ae325328.ucomist.net/iptv/Z3SWF9EL3YPX5N/9258/index.m3u8" },
-        { name:"Astro", short:"ASTRO", url:"https://vs2.bigchungus.zip/live/RD2qTgn6N/cuw2wYauRe/245137.ts?token=Q0dRVxcMEAMbCVgKUwNVC1BQCFdRAwcMVwwGBQMBVFpdBgwAUQVWCQAbTRBDQBdXVF5vCFBACQoGAFUEVR0XTEsAS2kNABADGwpRBgQERx4XR1kMUUAJCQUCUg9WBwMODkkbRg0AEAMbC1cHBg1QEBkRVRlAB0FWU1k7UwdHXFpdRwNYEQheFRtWD21UUQhTW1cSWxZTERQQXBdHQAtbTFQJFRQGDUZLWE0EEApaEF5ZHxICWxddTEBMRg1AYX4bFEdcThABXEpQVg8QChYRQRcfEghHPUFdQUEWUgNcUEsaXxsGRkgQVFhBPlFfWgtXVkdZDloREQIQBkYbQFxaV1ERVkQ7FFtdGwNDAAYBUwQNEU0=" },
+        { name:"Sky Sport", short:"SKY", url:"http://edge.zerobuff.com/bb77a5a232fade5d58d6e242ddae6ca0a2a398bd27001eee3946dbac8514a70f081a5f845efab03567a6382b64ef6c878c62654020e99631e1782939eeafcbd991fff48f83d5d4923fa3fcdaaa28f5869933223e7a0f890b8f1990f26da0cbff67559769d05493df11ce05e4ec/index.m3u8" },
+        { name:"Astro", short:"ASTRO", url:"https://002.fclplayer.net/live/csstream3/playlist.m3u8?id=1003&pk=54fe1e05c9ba1b1081c1e8e2e59ba61d31eef176cc1cbe7fd303ba8cfe5b35f7" },
         { name:"Star Sports Hindi", short:"STAR", url:"https://002.fclplayer.net/live/csstream2/playlist.m3u8?id=1002&pk=54fe1e05c9ba1b1081c1e8e2e59ba61d31eef176cc1cbe7fd303ba8cfe5b35f7" },
-        { name:"Willow TV IPL", short:"WILLOW", url:"https://ss3.bigchungus.zip/live/RD2qTgn6N/cuw2wYauRe/141506.ts?token=Q0dRVxcMEAMbCARRVgZQCgFSAQAHWgcKVwxXBQQGUAEBBFtQUwELClobTRBDQBdXVF5vCFBACQkGBFEHVB0XTEsAS2kNABADGwpRBgQERx4XR1kMUUAJCQUCUg9WBwEICkkbRg0AEAMbClIKCARUAxcfEgRMFlZKXFQIaAZUQ1BbABsMChFeVRUbDlxvUABfVF1UQw5AAhoeFw1EEhMPV00JVRpGBltNS1gVVxIORwYCCwVDGEBQV0dbEEUbEw8baC4bGkYBSk1cVxJbX1pHCBdHQ0MYQFpLbUcBRBZDUFhVAEsUXkYCGxUbDFNIawZdW11VAkALXFZBF14VURMZG1UKV18QC0BmSVAFEAoWVgENBAlWBkBO" }
+        { name:"Willow TV IPL", short:"WILLOW", url:"http://edge.zerobuff.top/bb77a5a232fade5d58d6e24bdcae6ca0a2a398bd27001eee3946cc85b31f8817130240a36d978c763cf6677b26ef6c878c62654020e99631e1782939eeafcbd991fff48f83d5d4923fa3fcdaaa7fa3d0c934216e2d0cd80edc1b9bae6afd91ff335d943ed656c38b17c552eaea/index.m3u8" }
     ]
 };
 function buildStreamsPanels() {
