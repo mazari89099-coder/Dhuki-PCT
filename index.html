@@ -10,6 +10,9 @@
 <title>MAZARI BA56 ULTRA — Premium Cricket Live</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.js"></script>
+<!-- Firebase for real-time chat sync across ALL users -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -403,6 +406,48 @@ nav::before{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;b
 .ch-send svg{width:16px;height:16px}
 .em-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .em{font-size:20px;cursor:pointer;border:none;background:rgba(0,229,255,.04);border:1px solid var(--bd-1);padding:6px 9px;border-radius:8px;line-height:1;transition:all .25s;color:inherit}
+/* ── VOICE NOTE ── */
+.vn-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--bd-1);background:rgba(0,229,255,.06);color:var(--neon);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;position:relative}
+.vn-btn:hover{background:rgba(0,229,255,.15);border-color:var(--neon);box-shadow:0 0 14px rgba(0,229,255,.3)}
+.vn-btn.recording{background:var(--red,#e53935);border-color:var(--red,#e53935);color:#fff;animation:vnPulse 1s ease-in-out infinite}
+@keyframes vnPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.5)}50%{box-shadow:0 0 0 8px rgba(229,57,53,0)}}
+.vn-btn svg{width:16px;height:16px}
+.vn-panel{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) scale(0);transform-origin:bottom center;background:#0a1929;border:1px solid var(--neon);border-radius:14px;padding:16px;min-width:230px;z-index:300;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;pointer-events:none;box-shadow:0 8px 40px rgba(0,229,255,.2)}
+.vn-panel.open{transform:translateX(-50%) scale(1);opacity:1;pointer-events:all}
+.vn-panel-title{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--neon);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.vn-effects{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+.vn-fx{padding:7px 6px;border-radius:8px;border:1px solid var(--bd-1);background:rgba(0,229,255,.04);cursor:pointer;text-align:center;transition:all .2s}
+.vn-fx:hover,.vn-fx.active{border-color:var(--neon);background:rgba(0,229,255,.12);box-shadow:0 0 10px rgba(0,229,255,.2)}
+.vn-fx-icon{font-size:18px;display:block;margin-bottom:3px}
+.vn-fx-name{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff}
+.vn-rec-btn{width:100%;padding:10px;border-radius:8px;border:none;background:linear-gradient(135deg,#e53935,#ff1744);color:#fff;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.vn-rec-btn:hover{opacity:.88}
+.vn-rec-ui{display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.3);margin-top:8px}
+.vn-rec-ui.active{display:flex}
+.vn-rec-dot{width:9px;height:9px;border-radius:50%;background:#e53935;flex-shrink:0;animation:blink 1s infinite}
+.vn-rec-lbl{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#e53935;flex:1;letter-spacing:1px}
+.vn-rec-time{font-family:'Orbitron',sans-serif;font-size:14px;color:#e53935;font-weight:700}
+.vn-rec-send{padding:5px 10px;border-radius:6px;border:none;background:#e53935;color:#fff;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.vn-rec-cancel{padding:5px 8px;border-radius:6px;border:1px solid var(--bd-1);background:none;color:var(--text-2);font-size:11px;cursor:pointer}
+.vn-wave{display:flex;align-items:center;gap:2px;flex:1}
+.vn-bar{width:3px;border-radius:2px;background:#e53935;animation:vnW var(--d,.4s) ease-in-out infinite alternate}
+@keyframes vnW{from{height:4px;opacity:.4}to{height:var(--h,14px);opacity:1}}
+/* VN bubble */
+.vn-bubble{padding:10px 12px;border-radius:12px;border:1px solid var(--bd-1);background:rgba(0,229,255,.05);min-width:180px;max-width:220px}
+.vn-bubble.mine-b{background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(0,184,212,.1));border-color:var(--neon)}
+.vn-bubble-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.vn-play-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--neon);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .2s,box-shadow .2s}
+.vn-bubble.mine-b .vn-play-btn{background:var(--neon)}
+.vn-play-btn:hover{transform:scale(1.1);box-shadow:0 0 14px rgba(0,229,255,.5)}
+.vn-play-btn svg{width:12px;height:12px;color:#000}
+.vn-waveform{flex:1;display:flex;align-items:center;gap:2px;height:24px;cursor:pointer}
+.vn-wbar{border-radius:2px;flex-shrink:0;background:rgba(0,229,255,.3);transition:background .2s}
+.vn-wbar.played{background:var(--neon)}
+.vn-bubble.mine-b .vn-wbar{background:rgba(0,229,255,.4)}
+.vn-bubble.mine-b .vn-wbar.played{background:var(--neon)}
+.vn-meta-row{display:flex;align-items:center;justify-content:space-between}
+.vn-dur{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text-2)}
+.vn-fx-lbl{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(0,229,255,.12);color:var(--neon);border:1px solid rgba(0,229,255,.2)}
 .em:hover,.em:active{transform:scale(1.15);border-color:var(--neon);background:rgba(0,229,255,.12)}
 
 .ov{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s;padding:14px}
@@ -789,6 +834,28 @@ nav::before{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;b
       </div>
       <div class="ch-inp-row">
         <input class="ch-inp" id="chInp" placeholder="Say something…" maxlength="200" autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()">
+        <!-- VOICE NOTE BUTTON -->
+        <div style="position:relative;flex-shrink:0">
+          <button class="vn-btn" id="vnBtn" onclick="toggleVnPanel()" title="Voice Note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <div class="vn-panel" id="vnPanel">
+            <div class="vn-panel-title">🎤 Voice Effect</div>
+            <div class="vn-effects" id="vnEffects"></div>
+            <button class="vn-rec-btn" id="vnRecBtn" onclick="startVnRec()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+              RECORD
+            </button>
+            <div class="vn-rec-ui" id="vnRecUI">
+              <span class="vn-rec-dot"></span>
+              <span class="vn-rec-lbl">Recording…</span>
+              <div class="vn-wave" id="vnWave"></div>
+              <span class="vn-rec-time" id="vnTimer">0:00</span>
+              <button class="vn-rec-send" onclick="stopVnRec()">SEND</button>
+              <button class="vn-rec-cancel" onclick="cancelVnRec()">✕</button>
+            </div>
+          </div>
+        </div>
         <button class="ch-send" onclick="sendMsg()" aria-label="Send">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -1370,7 +1437,7 @@ function updateLiveCnt(){let c=0;if(data)Object.values(data).forEach(a=>a.forEac
 function buildTicker(){
   const el=document.getElementById('ticker');
   const items=[...TICKER,...TICKER];
-  el.innerHTML=items.map(t=>`<span class="tick-i">${t.live?'<span class="tick-live"><span class="tdot"></span>LIVE</span>':''}${t.f1?`<img class="tick-flag" src="${t.f1}" alt="" loading="lazy">`:''}${t.t}${t.f2?`<img class="tick-flag" src="${t.f2}" alt="" loading="lazy">`:''}<span class="tick-score">${t.s}</span></span>`).join('');
+  el.innerHTML=items.map(t=>`<span class="tick-i">${t.live?'<span class="tick-live"><span class="tdot"></span>LIVE</span>':''}${t.f1?`<img class="tick-flag" src="${t.f1}" alt="" loading="lazy">`:''}${t.t}${t.f2?`<img class="tick-flag" src="${t.f2}" alt="" loading="lazy">`:''}${t.live?'<span class="tick-live-dot"></span>':''}</span>`).join('');
 }
 
 function logoClick(){logoCks++;clearTimeout(logoTmr);logoTmr=setTimeout(()=>logoCks=0,1500);if(logoCks>=5)openAdminFlow();}
@@ -1416,34 +1483,139 @@ function updateMe(){
   myColor=document.getElementById('colorInp').value;
   localStorage.setItem(ME_KEY,JSON.stringify({id:myId,name:myName,color:myColor}));
 }
-function loadChat(){
-  const body=document.getElementById('chBody');body.innerHTML='';
-  const msgs=getMsgs();
-  if(msgs.length===0){
-    const greet=[
-      {uid:'sys',name:'MAZARI BA56',color:'#00e5ff',text:'⚡ Welcome to MAZARI BA56 NEON — premium cricket streaming!',ts:Date.now()-30000},
-      {uid:'sys',name:'System',color:'#00ffaa',text:'🎯 Paste any HLS/TS/MP4 URL in Quick Load to play instantly.',ts:Date.now()-15000}
-    ];
-    greet.forEach(m=>appendMsg(body,m,true));
-    saveMsgs(greet);
-  }else{msgs.forEach(m=>appendMsg(body,m,true));}
-  body.scrollTop=body.scrollHeight;
+/* ═══════════════════════════════════════════════════
+   FIREBASE CONFIG — real-time chat for ALL users
+═══════════════════════════════════════════════════ */
+const FB_CFG={
+  apiKey:"AIzaSyA-wAGcaxNgT4eHwJVCXsHh5yiPSxlmE5Y",
+  authDomain:"babariandhukipct.firebaseapp.com",
+  databaseURL:"https://babariandhukipct-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"babariandhukipct",
+  storageBucket:"babariandhukipct.firebasestorage.app",
+  messagingSenderId:"483175877430",
+  appId:"1:483175877430:web:831a834b56ec4938530197"
+};
+const FB_CHAT_PATH='ba56_neon/chat/global/msgs';
+let fbDb=null, fbOk=false, chatOff=null, bcChat=null;
+
+function initFirebaseChat(){
+  try{
+    // Only init if not already done
+    if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+    fbDb=firebase.database();
+    fbDb.ref('.info/connected').on('value',s=>{
+      fbOk=s.val()===true;
+    });
+    startChatListener();
+  }catch(e){
+    console.warn('Firebase chat unavailable:',e);
+    // Fallback: BroadcastChannel (same device/browser tabs)
+    startBroadcastFallback();
+  }
 }
+
+/* Real-time Firebase listener — fires for every user automatically */
+function startChatListener(){
+  if(chatOff){chatOff();chatOff=null;}
+  const ref=fbDb.ref(FB_CHAT_PATH);
+  const q=ref.limitToLast(60);
+  const body=document.getElementById('chBody');
+
+  // Load history once
+  q.once('value',snap=>{
+    body.innerHTML='';
+    const msgs=[];snap.forEach(c=>msgs.push(c.val()));
+    if(msgs.length===0){
+      // Show greeting on first load
+      const greet=[
+        {uid:'sys',name:'MAZARI BA56',color:'#00e5ff',text:'⚡ Welcome to MAZARI BA56 NEON — premium cricket streaming!',ts:Date.now()-30000},
+        {uid:'sys',name:'System',color:'#00ffaa',text:'🎯 Paste any HLS/TS/MP4 URL in Quick Load to play instantly.',ts:Date.now()-15000}
+      ];
+      greet.forEach(m=>appendMsg(body,m,true));
+    }else{
+      msgs.forEach(m=>appendMsg(body,m,true));
+    }
+    body.scrollTop=body.scrollHeight;
+  });
+
+  // Live listener — triggers instantly for ALL connected users when anyone sends
+  const cutTs=Date.now();
+  const handler=snap=>{
+    const m=snap.val();
+    if(m&&m.ts>=cutTs){
+      appendMsg(body,m,false);
+      body.scrollTop=body.scrollHeight;
+    }
+  };
+  q.on('child_added',handler);
+  chatOff=()=>q.off('child_added',handler);
+}
+
+/* BroadcastChannel fallback (same browser, different tabs) */
+function startBroadcastFallback(){
+  try{
+    bcChat=new BroadcastChannel('ba56_neon_chat');
+    bcChat.onmessage=e=>{
+      const body=document.getElementById('chBody');
+      appendMsg(body,e.data,false);
+      body.scrollTop=body.scrollHeight;
+    };
+  }catch{}
+  // Also poll localStorage every 2s as last resort
+  let lastCount=getMsgs().length;
+  setInterval(()=>{
+    const msgs=getMsgs();
+    if(msgs.length>lastCount){
+      const body=document.getElementById('chBody');
+      msgs.slice(lastCount).forEach(m=>appendMsg(body,m,false));
+      body.scrollTop=body.scrollHeight;
+      lastCount=msgs.length;
+    }
+  },2000);
+}
+
+function loadChat(){
+  const body=document.getElementById('chBody');
+  body.innerHTML='';
+  initFirebaseChat();
+}
+
 function getMsgs(){try{return JSON.parse(localStorage.getItem(CHAT_KEY))||[];}catch{return[];}}
 function saveMsgs(a){try{localStorage.setItem(CHAT_KEY,JSON.stringify(a.slice(-80)));}catch{}}
+
 function sendMsg(){
   const inp=document.getElementById('chInp'),text=inp.value.trim();
   if(!text)return;
   const msg={uid:myId,name:myName,color:myColor,text,ts:Date.now()};
   inp.value='';
-  const all=getMsgs();all.push(msg);saveMsgs(all);
-  appendMsg(document.getElementById('chBody'),msg,false);
-  document.getElementById('chBody').scrollTop=99999;
+
+  if(fbDb&&fbOk){
+    // Push to Firebase — ALL users get it instantly via child_added listener
+    fbDb.ref(FB_CHAT_PATH).push(msg).catch(err=>{
+      console.warn('Firebase send failed, using local:',err);
+      _sendLocal(msg);
+    });
+  }else{
+    _sendLocal(msg);
+  }
 }
+
+function _sendLocal(msg){
+  // Save to localStorage
+  const all=getMsgs();all.push(msg);saveMsgs(all);
+  // Show immediately for sender
+  const body=document.getElementById('chBody');
+  appendMsg(body,msg,false);
+  body.scrollTop=99999;
+  // Broadcast to other tabs
+  if(bcChat)bcChat.postMessage(msg);
+}
+
 function appendMsg(cont,m,silent=false){
   if(!cont||!m)return;
   const mine=m.uid===myId,d=document.createElement('div');
   d.className='msg'+(mine?' me':'');
+  if(!silent)d.style.animation='msgIn .27s ease';
   d.innerHTML=`<div class="m-av" style="background:${m.color||'#00e5ff'}">${(m.name||'?').slice(0,2).toUpperCase()}</div><div class="m-wrap"><div class="m-meta"><span class="m-name" style="color:${m.color||'#00e5ff'}">${esc(m.name||'Fan')}</span><span class="m-time">${new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div class="m-bubble ${mine?'mine':'them'}">${esc(m.text)}</div></div>`;
   cont.appendChild(d);
 }
@@ -1485,8 +1657,304 @@ window.addEventListener('load',()=>{
   renderAll(false);
   updateLiveCnt();
   loadChat();
+  buildVnFx();
   setTimeout(()=>{document.getElementById('loader').classList.add('out');},2400);
 });
+
+/* ═══════════════════════════════════════════════
+   VOICE NOTE SYSTEM
+═══════════════════════════════════════════════ */
+const VN_FX_LIST=[
+  {id:'normal',  icon:'🎙️', name:'Normal'},
+  {id:'robot',   icon:'🤖', name:'Robot'},
+  {id:'deep',    icon:'👹', name:'Deep'},
+  {id:'chipmunk',icon:'🐿️', name:'Chipmunk'},
+  {id:'echo',    icon:'🏟️', name:'Echo'},
+  {id:'stadium', icon:'🌊', name:'Stadium'},
+];
+let vnFx='normal', vnRecorder=null, vnChunks=[], vnStream=null;
+let vnTimerInt=null, vnSecs=0, vnPanelOpen=false;
+let currentVnAudio=null, currentVnBtn=null;
+
+function buildVnFx(){
+  const el=document.getElementById('vnEffects');
+  if(!el)return;
+  el.innerHTML=VN_FX_LIST.map(e=>
+    `<div class="vn-fx${e.id===vnFx?' active':''}" onclick="selectVnFx('${e.id}',this)">
+      <span class="vn-fx-icon">${e.icon}</span>
+      <span class="vn-fx-name">${e.name}</span>
+    </div>`
+  ).join('');
+}
+
+function selectVnFx(id,el){
+  vnFx=id;
+  document.querySelectorAll('.vn-fx').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+function toggleVnPanel(){
+  vnPanelOpen=!vnPanelOpen;
+  document.getElementById('vnPanel').classList.toggle('open',vnPanelOpen);
+  if(vnPanelOpen) buildVnFx();
+}
+
+// Close panel on outside click
+document.addEventListener('click',e=>{
+  if(vnPanelOpen&&!e.target.closest('#vnPanel')&&!e.target.closest('#vnBtn')){
+    vnPanelOpen=false;
+    document.getElementById('vnPanel').classList.remove('open');
+  }
+});
+
+function buildVnWave(){
+  const w=document.getElementById('vnWave');
+  w.innerHTML='';
+  for(let i=0;i<16;i++){
+    const b=document.createElement('div');
+    b.className='vn-bar';
+    const h=4+Math.random()*16, d=(.2+Math.random()*.5).toFixed(2);
+    b.style.cssText=`--h:${h}px;--d:${d}s;height:${h}px;animation-delay:${(Math.random()*.4).toFixed(2)}s`;
+    w.appendChild(b);
+  }
+}
+
+async function startVnRec(){
+  try{
+    vnStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    vnChunks=[];vnSecs=0;
+    const mime=MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':'audio/ogg';
+    vnRecorder=new MediaRecorder(vnStream,{mimeType:mime});
+    vnRecorder.ondataavailable=e=>{if(e.data.size>0)vnChunks.push(e.data);};
+    vnRecorder.onstop=processVnRec;
+    vnRecorder.start(100);
+
+    document.getElementById('vnBtn').classList.add('recording');
+    document.getElementById('vnRecUI').classList.add('active');
+    document.getElementById('vnRecBtn').style.display='none';
+    document.getElementById('vnPanel').classList.add('open');
+    vnPanelOpen=true;
+    buildVnWave();
+
+    vnTimerInt=setInterval(()=>{
+      vnSecs++;
+      const m=Math.floor(vnSecs/60),s=vnSecs%60;
+      document.getElementById('vnTimer').textContent=`${m}:${s<10?'0'+s:s}`;
+      if(vnSecs>=60) stopVnRec();
+    },1000);
+  }catch(e){
+    toast('❌','Microphone access denied');
+  }
+}
+
+function stopVnRec(){
+  if(vnRecorder&&vnRecorder.state!=='inactive') vnRecorder.stop();
+  cleanVnRec();
+}
+
+function cancelVnRec(){
+  if(vnRecorder&&vnRecorder.state!=='inactive'){
+    vnRecorder.onstop=null;
+    vnRecorder.stop();
+  }
+  cleanVnRec();
+  vnChunks=[];
+  toast('🗑️','Recording cancelled');
+}
+
+function cleanVnRec(){
+  clearInterval(vnTimerInt);
+  if(vnStream) vnStream.getTracks().forEach(t=>t.stop());
+  document.getElementById('vnBtn').classList.remove('recording');
+  document.getElementById('vnRecUI').classList.remove('active');
+  document.getElementById('vnRecBtn').style.display='';
+  document.getElementById('vnTimer').textContent='0:00';
+  vnPanelOpen=false;
+  document.getElementById('vnPanel').classList.remove('open');
+}
+
+async function processVnRec(){
+  if(!vnChunks.length)return;
+  const blob=new Blob(vnChunks,{type:vnRecorder.mimeType||'audio/webm'});
+  let processed=blob;
+  if(vnFx!=='normal'){
+    try{ processed=await applyVnFx(blob,vnFx); }
+    catch(e){ console.warn('FX failed:',e); }
+  }
+  const b64=await blobToB64(processed);
+  const fx=VN_FX_LIST.find(e=>e.id===vnFx);
+  const msg={
+    uid:myId,name:myName,color:myColor,
+    type:'vn',audio:b64,mime:processed.type,
+    dur:vnSecs||1,fx:vnFx,fxLabel:fx?fx.name:'Normal',
+    ts:Date.now()
+  };
+  vnChunks=[];
+
+  // Send via Firebase (real-time to all users) or local fallback
+  if(fbDb&&fbOk&&b64.length<900000){
+    fbDb.ref(FB_CHAT_PATH).push(msg).catch(()=>_sendLocal(msg));
+  }else{
+    _sendLocal(msg);
+    const body=document.getElementById('chBody');
+    appendMsg(body,msg,false);
+    body.scrollTop=99999;
+  }
+  toast('🎙️',`Voice note sent [${fx?.name||'Normal'}]`);
+}
+
+/* ── Web Audio Effects ── */
+async function applyVnFx(blob,fx){
+  const ab=await blob.arrayBuffer();
+  const actx=new(window.AudioContext||window.webkitAudioContext)();
+  const decoded=await actx.decodeAudioData(ab.slice(0));
+  const off=new OfflineAudioContext(decoded.numberOfChannels,decoded.length,decoded.sampleRate);
+  const src=off.createBufferSource();src.buffer=decoded;
+
+  if(fx==='robot'){
+    src.playbackRate.value=0.82;
+    const bq=off.createBiquadFilter();bq.type='bandpass';bq.frequency.value=1200;bq.Q.value=0.5;
+    src.connect(bq);bq.connect(off.destination);
+  }else if(fx==='deep'){
+    src.playbackRate.value=0.72;
+    const bq=off.createBiquadFilter();bq.type='lowshelf';bq.frequency.value=200;bq.gain.value=8;
+    src.connect(bq);bq.connect(off.destination);
+  }else if(fx==='chipmunk'){
+    src.playbackRate.value=1.72;
+    const bq=off.createBiquadFilter();bq.type='highshelf';bq.frequency.value=3000;bq.gain.value=6;
+    src.connect(bq);bq.connect(off.destination);
+  }else if(fx==='echo'){
+    const d=off.createDelay(3);const g=off.createGain();const dry=off.createGain();
+    d.delayTime.value=0.35;g.gain.value=0.55;dry.gain.value=0.7;
+    src.connect(dry);src.connect(d);d.connect(g);g.connect(d);
+    d.connect(off.destination);dry.connect(off.destination);
+  }else if(fx==='stadium'){
+    const dry=off.createGain();dry.gain.value=0.6;
+    src.connect(dry);dry.connect(off.destination);
+    [0.02,0.05,0.09,0.15,0.22,0.32,0.44,0.6].forEach((dt,i)=>{
+      const del=off.createDelay(1);const g=off.createGain();
+      del.delayTime.value=dt;g.gain.value=0.25/(i+1);
+      src.connect(del);del.connect(g);g.connect(off.destination);
+    });
+  }else{
+    src.connect(off.destination);
+  }
+  src.start(0);
+  const rendered=await off.startRendering();
+  actx.close();
+  return wavBlob(rendered);
+}
+
+function wavBlob(buf){
+  const nc=buf.numberOfChannels,sr=buf.sampleRate,bps=16;
+  const dl=buf.length*nc*bps/8;
+  const ab=new ArrayBuffer(44+dl);const dv=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');dv.setUint32(4,36+dl,true);ws(8,'WAVE');
+  ws(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,nc,true);
+  dv.setUint32(24,sr,true);dv.setUint32(28,sr*nc*bps/8,true);
+  dv.setUint16(32,nc*bps/8,true);dv.setUint16(34,bps,true);
+  ws(36,'data');dv.setUint32(40,dl,true);
+  let off=44;
+  for(let i=0;i<buf.length;i++)
+    for(let c=0;c<nc;c++){
+      const s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));
+      dv.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;
+    }
+  return new Blob([ab],{type:'audio/wav'});
+}
+
+function blobToB64(b){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b);
+  });
+}
+
+/* ── Render VN bubble ── */
+function appendVnMsg(cont,m,silent=false){
+  const mine=m.uid===myId;
+  const d=document.createElement('div');
+  d.className='msg'+(mine?' me':'');
+  if(!silent) d.style.animation='msgIn .27s ease';
+
+  const dur=m.dur||0;
+  const durStr=`${Math.floor(dur/60)}:${(dur%60)<10?'0'+(dur%60):(dur%60)}`;
+
+  // Deterministic waveform from timestamp seed
+  let seed=m.ts%997;
+  const barHeights=Array.from({length:26},()=>{
+    seed=(seed*1664525+1013904223)&0xffffffff;
+    return 4+((seed>>>0)%18);
+  });
+  const barsHtml=barHeights.map((h,i)=>
+    `<div class="vn-wbar" data-i="${i}" style="width:3px;height:${h}px"></div>`
+  ).join('');
+
+  d.innerHTML=`
+    <div class="m-av" style="background:${m.color||'#00e5ff'}">${(m.name||'?').slice(0,2).toUpperCase()}</div>
+    <div class="m-wrap">
+      <div class="m-meta">
+        <span class="m-name" style="color:${m.color||'#00e5ff'}">${esc(m.name||'Fan')}</span>
+        <span class="m-time">${new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+      </div>
+      <div class="vn-bubble${mine?' mine-b':''}">
+        <div class="vn-bubble-top">
+          <button class="vn-play-btn" onclick="playVnMsg(this,'${m.audio}',${dur})">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <div class="vn-waveform" data-dur="${dur}">${barsHtml}</div>
+        </div>
+        <div class="vn-meta-row">
+          <span class="vn-dur" id="vnd-${m.ts}">${durStr}</span>
+          <span class="vn-fx-lbl">${m.fxLabel||'Normal'}</span>
+        </div>
+      </div>
+    </div>`;
+  cont.appendChild(d);
+}
+
+function playVnMsg(btn,audio,totalDur){
+  // Stop any currently playing VN
+  if(currentVnAudio&&!currentVnAudio.paused){
+    currentVnAudio.pause();
+    if(currentVnBtn) currentVnBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    if(currentVnBtn===btn){currentVnAudio=null;currentVnBtn=null;return;}
+  }
+
+  const a=new Audio(audio);
+  currentVnAudio=a;currentVnBtn=btn;
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+
+  const wf=btn.closest('.vn-bubble-top').querySelector('.vn-waveform');
+  const bars=wf?[...wf.querySelectorAll('.vn-wbar')]:[];
+  let iv=null;
+
+  a.addEventListener('loadedmetadata',()=>{
+    const dur=a.duration||totalDur;
+    iv=setInterval(()=>{
+      const pct=a.currentTime/dur;
+      bars.forEach((b,i)=>b.classList.toggle('played',i<Math.floor(pct*bars.length)));
+    },100);
+  });
+  a.addEventListener('ended',()=>{
+    clearInterval(iv);
+    bars.forEach(b=>b.classList.remove('played'));
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    currentVnAudio=null;currentVnBtn=null;
+  });
+  a.play().catch(()=>{
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    toast('❌','Cannot play voice note');
+  });
+}
+
+/* Make appendMsg handle VN type */
+const _origAppend=appendMsg;
+window.appendMsg=function(cont,m,silent=false){
+  if(!cont||!m)return;
+  if(m.type==='vn'){appendVnMsg(cont,m,silent);return;}
+  _origAppend(cont,m,silent);
+};
 </script>
 </body>
 </html>
