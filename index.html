@@ -35,7 +35,7 @@ body{
   -webkit-font-smoothing:antialiased;
   overscroll-behavior:none;
 }
-@media (hover:hover) and (pointer:fine){body{cursor:none}}
+/* custom cursor removed — browser default cursor used */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--neon),var(--neon-deep));border-radius:3px}
@@ -84,18 +84,8 @@ button{cursor:pointer;-webkit-appearance:none;appearance:none}
 .matrix-rain{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;opacity:.22}
 .rain-line{position:absolute;width:1px;background:linear-gradient(to bottom,transparent,var(--neon) 50%,transparent);animation:dataLine linear infinite;height:200px}
 
-#cur,#cring,#clbl,.ctr{display:none}
-@media (hover:hover) and (pointer:fine){
-  #cur,#cring{position:fixed;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);z-index:9999;display:block;mix-blend-mode:screen}
-  #cur{width:8px;height:8px;background:var(--neon);box-shadow:0 0 12px var(--neon);z-index:10000;transition:width .2s,height .2s,background .2s}
-  #cring{width:34px;height:34px;border:1.5px solid var(--neon);box-shadow:0 0 20px rgba(0,229,255,.5),inset 0 0 12px rgba(0,229,255,.2);transition:width .35s cubic-bezier(.25,.8,.25,1),height .35s,border-color .25s}
-  #clbl{position:fixed;pointer-events:none;z-index:9999;background:var(--neon);color:#000;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:800;letter-spacing:3px;padding:5px 12px;border-radius:2px;opacity:0;transform:translate(20px,-50%);transition:opacity .25s;white-space:nowrap;text-transform:uppercase;display:block;box-shadow:0 0 16px var(--neon)}
-  .ctr{position:fixed;z-index:9996;pointer-events:none;width:6px;height:6px;border-radius:50%;background:var(--neon);transform:translate(-50%,-50%);opacity:0;display:block;box-shadow:0 0 8px var(--neon)}
-  body.cw #cur{width:5px;height:5px}
-  body.cw #cring{width:60px;height:60px;border-width:2px}
-  body.cw #clbl{opacity:1}
-  body.cl #cring{width:24px;height:24px;border-color:var(--emerald)}
-}
+/* custom cursor elements hidden — mouse tracker disabled */
+#cur,#cring,#clbl,.ctr{display:none!important}
 .sdot{width:8px;height:8px;border-radius:50%;background:var(--text-3);flex-shrink:0;transition:all .4s}
 .sdot.ok{background:var(--neon);animation:pulseNeon 2s infinite;box-shadow:0 0 12px var(--neon)}
 .sdot.err{background:var(--red);box-shadow:0 0 12px var(--red)}
@@ -813,6 +803,64 @@ const CHAT_KEY='ba56_neon_chat_v1';
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isAndroid = /Android/i.test(navigator.userAgent);
 
+/* ════════ FIREBASE SYNC ════════
+   HOW TO SET UP (one-time, free):
+   1. Go to https://console.firebase.google.com → Add project → Continue
+   2. Left sidebar → Build → Realtime Database → Create database → Start in TEST mode
+   3. Copy your database URL (looks like: https://YOUR-PROJECT-default-rtdb.firebaseio.com)
+   4. Paste it below replacing the placeholder.
+   ════════════════════════════════ */
+const FIREBASE_URL = 'https://babariandhukipct-default-rtdb.asia-southeast1.firebasedatabase.app'; // Firebase configured
+const FIREBASE_PATH = '/ba56_streams.json';
+const FIREBASE_ENABLED = !FIREBASE_URL.includes('YOUR-PROJECT');
+
+async function loadFromFirebase(){
+  if(!FIREBASE_ENABLED)return null;
+  try{
+    const r=await fetch(FIREBASE_URL+FIREBASE_PATH);
+    if(!r.ok)return null;
+    const d=await r.json();
+    if(d&&d.ipl&&d.intl&&d.psl)return d;
+  }catch{}
+  return null;
+}
+
+async function saveToFirebase(d){
+  if(!FIREBASE_ENABLED)return;
+  try{
+    await fetch(FIREBASE_URL+FIREBASE_PATH,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(d)
+    });
+  }catch(e){console.warn('Firebase save failed:',e);}
+}
+
+let fbPollTimer=null;
+function startFirebasePoll(){
+  if(!FIREBASE_ENABLED)return;
+  clearInterval(fbPollTimer);
+  fbPollTimer=setInterval(async()=>{
+    const fresh=await loadFromFirebase();
+    if(fresh){
+      const local=JSON.stringify(data);
+      const remote=JSON.stringify(fresh);
+      if(local!==remote){
+        data=fresh;saveCache(fresh);
+        renderAll(false);updateLiveCnt();
+        // Re-apply active stream if URL changed
+        if(curStream&&data[curStream.lg]&&data[curStream.lg][curStream.idx]){
+          const s=data[curStream.lg][curStream.idx];
+          if(lastLoad&&s.url&&s.url!==lastLoad.url){
+            toast('🔄','Stream updated by admin');
+            launchPlayer(s.url,curStream.lg,curStream.idx,s.n||s.name);
+          }
+        }
+      }
+    }
+  },30000); // poll every 30 seconds
+}
+
 const LG={
   ipl:{label:'IPL',full:'Indian Premier League',abbr:'IPL',
     logo:'https://upload.wikimedia.org/wikipedia/en/thumb/8/84/IPL_2022_Logo.svg/300px-IPL_2022_Logo.svg.png',
@@ -906,28 +954,8 @@ function clone(o){return JSON.parse(JSON.stringify(o));}
 function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify(d));}catch{}}
 function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.ipl&&c.intl&&c.psl)return c;}catch{}return clone(DEF);}
 
-/* CURSOR — desktop only */
-if(!isMobile && window.matchMedia('(hover:hover)').matches){
-  const $cur=document.getElementById('cur'),$ring=document.getElementById('cring'),$lbl=document.getElementById('clbl');
-  const trs=[0,1,2,3].map(i=>document.getElementById('tr'+i));
-  let mx=0,my=0,rx=0,ry=0,trOn=false;
-  document.addEventListener('mousemove',e=>{
-    mx=e.clientX;my=e.clientY;
-    $cur.style.left=mx+'px';$cur.style.top=my+'px';
-    $lbl.style.left=mx+'px';$lbl.style.top=my+'px';
-    if(trOn)trs.forEach((t,i)=>setTimeout(()=>{t.style.left=mx+'px';t.style.top=my+'px';t.style.opacity=(.4-i*.1)+''},i*50));
-  });
-  (function rl(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;$ring.style.left=rx+'px';$ring.style.top=ry+'px';requestAnimationFrame(rl);})();
-  function setCM(m){document.body.className=m?'c'+m:'';trOn=(m==='w');if(!trOn)trs.forEach(t=>t.style.opacity='0');}
-  document.addEventListener('mouseover',e=>{
-    if(e.target.closest('.sc,.sw-pill,.cbtn,.cu-btn'))setCM('w');
-    else if(e.target.closest('button,select,input,label,a'))setCM('l');
-    else setCM('');
-  });
-  window.setCM=setCM;
-}else{
-  window.setCM=function(){};
-}
+/* CURSOR — disabled (was causing lag on desktop, removed mouse tracker) */
+window.setCM=function(){};
 
 /* Click ripple — works on touch + mouse */
 function spawnRipple(x,y){
@@ -1398,7 +1426,12 @@ function saveAdmin(){
     });
   });
   data=d;saveCache(d);
-  toast('💾','Streams saved successfully');
+  saveToFirebase(d).then(()=>{
+    toast('💾','Streams saved & synced to all users ✅');
+  }).catch(()=>{
+    toast('💾','Streams saved locally (Firebase not configured)');
+  });
+  if(!FIREBASE_ENABLED)toast('💾','Streams saved successfully');
   closeAdmin();renderAll(true);updateLiveCnt();
 }
 
@@ -1475,17 +1508,21 @@ vid.addEventListener('webkitendfullscreen',()=>{if(screen.orientation&&screen.or
 window.addEventListener('load',()=>{
   initMe();
   buildTicker();
-  data=loadCache();
-  if(!data.custom)data.custom=clone(DEF.custom);
-  if(data.custom[0]&&!data.custom[0].url){
-    data.custom[0].url='http://45.89.51.24/live/play/ZDBkaE0wVTFNSFZHWlU1a2VIUTRVbU5zYldOMlVtdHdjakJNZUdOcGFFVXhZbVJGUmxOaU5FOXJPRDA9/227945';
-    data.custom[0].n='Demo HLS Stream';
-    saveCache(data);
-  }
-  renderAll(false);
-  updateLiveCnt();
-  loadChat();
-  setTimeout(()=>{document.getElementById('loader').classList.add('out');},2400);
+  // Try Firebase first; fall back to localStorage / DEF
+  loadFromFirebase().then(fbData=>{
+    data = fbData || loadCache();
+    if(!data.custom)data.custom=clone(DEF.custom);
+    if(data.custom[0]&&!data.custom[0].url){
+      data.custom[0].url='http://45.89.51.24/live/play/ZDBkaE0wVTFNSFZHWlU1a2VIUTRVbU5zYldOMlVtdHdjakJNZUdOcGFFVXhZbVJGUmxOaU5FOXJPRDA9/227945';
+      data.custom[0].n='Demo HLS Stream';
+      saveCache(data);
+    }
+    renderAll(false);
+    updateLiveCnt();
+    loadChat();
+    startFirebasePoll(); // start syncing changes from admin to all users
+    setTimeout(()=>{document.getElementById('loader').classList.add('out');},2400);
+  });
 });
 </script>
 </body>
